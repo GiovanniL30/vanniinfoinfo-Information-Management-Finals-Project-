@@ -14,7 +14,7 @@ public class SampleProgram {
         try {
             connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/vanniinfoinfo?user=root&password=password");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Set up Connector/J or open Database Server or password is wrong");
         }
 
     }
