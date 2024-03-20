@@ -6,6 +6,7 @@ import client.view.components.Header;
 import client.view.panels.SignUpPanel;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
+import shared.viewComponents.Picture;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -45,6 +46,8 @@ public class ClientMainView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
+        setIconImage(new ImageIcon("resources/images/GigPlatform.png").getImage());
+        setTitle("GigPlatform");
         BorderLayout borderLayout = new BorderLayout();
 
         mainLayout.setBorder(new EmptyBorder(25, 50 ,25, 50));
