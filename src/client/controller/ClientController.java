@@ -5,9 +5,12 @@ import client.view.ClientViews;
 import client.view.panels.HomeView;
 import client.view.panels.LoginView;
 import client.view.panels.SignUpView;
+import shared.Database;
+import shared.referenceClasses.LiveSet;
 import shared.viewComponents.Loading;
 
 import javax.swing.*;
+import java.util.LinkedList;
 
 public class ClientController implements ClientControllerObserver{
 
@@ -56,6 +59,11 @@ public class ClientController implements ClientControllerObserver{
 
         loading.setVisible(true);
 
+    }
+
+    @Override
+    public LinkedList<LiveSet> getLiveSet() {
+        return Database.getLiveSets();
     }
 
     public void setClientMainView(ClientMainView clientMainView) {
