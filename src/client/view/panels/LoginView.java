@@ -45,6 +45,7 @@ public class LoginView extends JPanel {
         add(buttonPanel, constraints);
 
         signUpButton.addActionListener(e -> clientControllerObserver.changeFrame(ClientViews.SIGN_UP));
+        loginButton.addActionListener( e -> clientControllerObserver.changeFrame(ClientViews.HOME));
     }
 
     private JPanel fieldInputs(){

@@ -3,10 +3,9 @@ package client.view;
 import client.controller.ClientController;
 import client.controller.ClientControllerObserver;
 import client.view.components.Header;
-import client.view.panels.SignUpPanel;
-import com.formdev.flatlaf.FlatLightLaf;
+import client.view.panels.LoginView;
+import client.view.panels.SignUpView;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
-import shared.viewComponents.Picture;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -25,7 +24,7 @@ public class ClientMainView extends JFrame {
         this.clientControllerObserver = clientControllerObserver;
         initializeFrame();
         getContentPane().add(header, BorderLayout.NORTH);
-        getContentPane().add(new SignUpPanel(clientControllerObserver), BorderLayout.CENTER);
+        getContentPane().add(new LoginView(clientControllerObserver), BorderLayout.CENTER);
     }
 
     private void initializeFrame() {

@@ -13,9 +13,9 @@ import shared.viewComponents.Picture;
 import javax.swing.*;
 import java.awt.*;
 
-public class SignUpPanel extends JPanel {
+public class SignUpView extends JPanel {
 
-    public SignUpPanel(ClientControllerObserver clientControllerObserver) {
+    public SignUpView(ClientControllerObserver clientControllerObserver) {
 
         setBackground(Color.white);
         setLayout(new GridBagLayout());
