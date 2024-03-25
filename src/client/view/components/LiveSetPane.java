@@ -15,6 +15,7 @@ public class LiveSetPane extends JPanel {
 
     private final JPanel holder = new JPanel();
     private final ClientControllerObserver clientControllerObserver;
+    private final JScrollPane scrollPane;
 
     public LiveSetPane(LinkedList<LiveSet> liveSets, ClientControllerObserver clientControllerObserver) {
         this.clientControllerObserver = clientControllerObserver;
@@ -25,7 +26,7 @@ public class LiveSetPane extends JPanel {
         holder.setBackground(Color.white);
         holder.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JScrollPane scrollPane = new JScrollPane(holder);
+        scrollPane = new JScrollPane(holder);
         scrollPane.setPreferredSize(new Dimension(ClientMainView.WIDTH, 600));
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -74,6 +75,12 @@ public class LiveSetPane extends JPanel {
                 holder.add(openedLiveSet);
                 holder.revalidate();
                 holder.repaint();
+
+                SwingUtilities.invokeLater(() -> {
+                    JViewport viewport = scrollPane.getViewport();
+                    viewport.setViewPosition(new Point(0, 0));
+                });
+
                 return null;
             }
         }.execute();

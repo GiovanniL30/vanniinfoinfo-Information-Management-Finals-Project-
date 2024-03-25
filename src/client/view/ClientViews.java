@@ -6,5 +6,6 @@ public enum ClientViews {
     SIGN_UP,
     HOME,
     LIVE_SETS,
-    MY_TICKETS
+    MY_TICKETS,
+    PAYMENT
 }

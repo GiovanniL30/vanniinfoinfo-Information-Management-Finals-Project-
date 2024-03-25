@@ -1,12 +1,12 @@
 package client.view.components;
 
 import client.controller.ClientControllerObserver;
-import client.view.ClientMainView;
 import client.view.ClientViews;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
+import shared.utilityClasses.UtilityMethods;
 import shared.viewComponents.Button;
 import shared.viewComponents.FilledButton;
 import shared.viewComponents.IconButton;
@@ -14,13 +14,7 @@ import shared.viewComponents.Picture;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.sql.Date;
-import java.sql.Time;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 public class OpenedLiveSet extends JPanel {
 
@@ -78,6 +72,7 @@ public class OpenedLiveSet extends JPanel {
         buttons.add(accessGig);
         buttons.add(purchaseTicket);
 
+        purchaseTicket.addActionListener( e -> clientControllerObserver.openPaymentView(liveSet, performer));
         return buttons;
     }
 
@@ -87,14 +82,8 @@ public class OpenedLiveSet extends JPanel {
         liveDatePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 30));
 
 
-        Date date = liveSet.getDate();
-        Time time = liveSet.getTime();
-        LocalDate localDate = date.toLocalDate();
-        String formattedDate = localDate.getMonth().name() + " " + localDate.getDayOfMonth() +  ", " + localDate.getYear() +  " " + localDate.getDayOfWeek().name().toUpperCase();
-
-        LocalTime localTime = time.toLocalTime();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
-        String formattedTime = localTime.format(formatter);
+        String formattedDate = UtilityMethods.formatDate(liveSet.getDate());
+        String formattedTime = UtilityMethods.formatTime(liveSet.getTime());
 
         JLabel dateLabel = new JLabel(formattedDate);
         dateLabel.setFont(FontFactory.newPoppinsDefault(15));
