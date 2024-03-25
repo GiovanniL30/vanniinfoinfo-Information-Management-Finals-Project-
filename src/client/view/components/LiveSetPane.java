@@ -3,6 +3,7 @@ package client.view.components;
 import client.controller.ClientControllerObserver;
 import client.view.ClientMainView;
 import shared.referenceClasses.LiveSet;
+import shared.referenceClasses.Performer;
 import shared.viewComponents.IconButton;
 
 import javax.swing.*;
@@ -25,7 +26,13 @@ public class LiveSetPane extends JPanel {
         holder.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         JScrollPane scrollPane = new JScrollPane(holder);
-        scrollPane.setPreferredSize(new Dimension(ClientMainView.WIDTH - 100, 600));
+        scrollPane.setPreferredSize(new Dimension(ClientMainView.WIDTH, 600));
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
+        verticalScrollBar.setUnitIncrement(15);
+        verticalScrollBar.setBlockIncrement(110);
+
         scrollPane.setBackground(Color.white);
 
         add(scrollPane);
@@ -38,15 +45,35 @@ public class LiveSetPane extends JPanel {
             protected Object doInBackground() {
 
                 holder.removeAll();
+                holder.setLayout(new GridLayout(0, 2, 20, 20));
 
-                for(LiveSet liveSet: liveSets) {
+                for (LiveSet liveSet : liveSets) {
                     JPanel panel = new JPanel();
-                    panel.add(new IconButton(liveSet.getThumbnail(), 400, 400));
+                    IconButton liveSetImage = new IconButton(liveSet.getThumbnail(), 400, 400);
+                    liveSetImage.addActionListener(e -> clientControllerObserver.openLiveSet(liveSet));
+                    panel.add(liveSetImage);
                     holder.add(panel);
                     holder.revalidate();
                     holder.repaint();
                 }
 
+                return null;
+            }
+        }.execute();
+
+    }
+
+    public void openLiveSet(LiveSet liveSet, Performer performer) {
+
+        new SwingWorker<>() {
+            @Override
+            protected Object doInBackground() {
+                holder.removeAll();
+                holder.setLayout(new FlowLayout(FlowLayout.CENTER));
+                OpenedLiveSet openedLiveSet = new OpenedLiveSet(liveSet, performer, clientControllerObserver);
+                holder.add(openedLiveSet);
+                holder.revalidate();
+                holder.repaint();
                 return null;
             }
         }.execute();

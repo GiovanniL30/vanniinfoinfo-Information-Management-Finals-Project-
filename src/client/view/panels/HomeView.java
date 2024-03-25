@@ -12,6 +12,7 @@ public class HomeView extends JPanel {
 
     private final ViewLiveSetSubHeader subHeader;
     private final ClientControllerObserver clientControllerObserver;
+    private LiveSetPane liveSetPane;
 
     public HomeView(ClientControllerObserver clientControllerObserver) {
 
@@ -25,11 +26,15 @@ public class HomeView extends JPanel {
         add(subHeader, BorderLayout.NORTH);
 
         new Thread(() -> {
-            add(new LiveSetPane(clientControllerObserver.getLiveSet(), clientControllerObserver));
+            liveSetPane = new LiveSetPane(clientControllerObserver.getLiveSet(), clientControllerObserver);
+            add(liveSetPane);
             revalidate();
             repaint();
         }).start();
     }
 
+    public LiveSetPane getLiveSetPane() {
+        return liveSetPane;
+    }
 
 }

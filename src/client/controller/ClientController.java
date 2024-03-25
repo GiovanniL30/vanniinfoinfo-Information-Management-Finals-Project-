@@ -7,10 +7,12 @@ import client.view.panels.LoginView;
 import client.view.panels.SignUpView;
 import shared.Database;
 import shared.referenceClasses.LiveSet;
+import shared.referenceClasses.Performer;
 import shared.viewComponents.Loading;
 
 import javax.swing.*;
 import java.util.LinkedList;
+import java.util.Optional;
 
 public class ClientController implements ClientControllerObserver{
 
@@ -34,15 +36,18 @@ public class ClientController implements ClientControllerObserver{
                 switch (clientViews) {
                     case SIGN_UP ->  {
                         clientMainView.getContentPane().remove(1);
-                        clientMainView.getContentPane().add(new SignUpView(ClientController.this), 1);
+                        clientMainView.setSignUpView(new SignUpView(ClientController.this));
+                        clientMainView.getContentPane().add(clientMainView.getSignUpView(), 1);
                     }
                     case LOGIN -> {
                         clientMainView.getContentPane().remove(1);
-                        clientMainView.getContentPane().add(new LoginView(ClientController.this), 1);
+                        clientMainView.setLoginView(new LoginView(ClientController.this));
+                        clientMainView.getContentPane().add(clientMainView.getLoginView(), 1);
                     }
                     case HOME -> {
                         clientMainView.getContentPane().remove(1);
-                        clientMainView.getContentPane().add(new HomeView(ClientController.this), 1);
+                        clientMainView.setHomeView(new HomeView(ClientController.this));
+                        clientMainView.getContentPane().add(clientMainView.getHomeView(), 1);
                     }
                 }
                 return null;
@@ -59,6 +64,13 @@ public class ClientController implements ClientControllerObserver{
 
         loading.setVisible(true);
 
+    }
+
+    @Override
+    public void openLiveSet(LiveSet liveSet) {
+       LinkedList<Performer> performers =  Database.getPerformers();
+       Optional<Performer> performer = performers.stream().filter(p -> p.getPerformerID().equals(liveSet.getPerformerID())).findAny();
+       performer.ifPresent(value -> clientMainView.getHomeView().getLiveSetPane().openLiveSet(liveSet, value));
     }
 
     @Override

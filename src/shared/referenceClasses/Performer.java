@@ -65,4 +65,16 @@ public class Performer {
     public void setPerformerStatus(String performerStatus) {
         this.performerStatus = performerStatus;
     }
+
+    @Override
+    public String toString() {
+        return "Performer{" +
+                "performerID='" + performerID + '\'' +
+                ", performerName='" + performerName + '\'' +
+                ", genre='" + genre + '\'' +
+                ", performerType='" + performerType + '\'' +
+                ", description='" + description + '\'' +
+                ", performerStatus='" + performerStatus + '\'' +
+                '}';
+    }
 }

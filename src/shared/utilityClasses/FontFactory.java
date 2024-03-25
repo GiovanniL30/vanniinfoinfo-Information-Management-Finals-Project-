@@ -9,7 +9,6 @@ public class FontFactory {
     }
 
 
-
     public static Font newPoppinsBold(int fontSize) {
         return new Font("Poppins", Font.BOLD, fontSize);
     }

@@ -255,12 +255,7 @@ public class Database {
     }
 
     private static void ensureConnection() {
-
-        if (!setConnection()) {
-            System.err.println("Having error making connection to the database");
-            System.exit(0);
-        }
-
+      setConnection();
     }
 
     //TODO: add other methods

@@ -3,6 +3,7 @@ package client.view;
 import client.controller.ClientController;
 import client.controller.ClientControllerObserver;
 import client.view.components.Header;
+import client.view.panels.HomeView;
 import client.view.panels.LoginView;
 import client.view.panels.SignUpView;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
@@ -19,12 +20,16 @@ public class ClientMainView extends JFrame {
     private JPanel mainLayout = new JPanel();
     private Header header = new Header();
     private ClientControllerObserver clientControllerObserver;
+    private HomeView homeView;
+    private LoginView loginView;
+    private SignUpView signUpView;
 
     public ClientMainView(ClientController clientControllerObserver) {
         this.clientControllerObserver = clientControllerObserver;
         initializeFrame();
         getContentPane().add(header, BorderLayout.NORTH);
-        getContentPane().add(new LoginView(clientControllerObserver), BorderLayout.CENTER);
+        loginView = new LoginView(clientControllerObserver);
+        getContentPane().add(loginView, BorderLayout.CENTER);
     }
 
     private void initializeFrame() {
@@ -57,4 +62,27 @@ public class ClientMainView extends JFrame {
         setVisible(true);
     }
 
+    public void setHomeView(HomeView homeView) {
+        this.homeView = homeView;
+    }
+
+    public void setLoginView(LoginView loginView) {
+        this.loginView = loginView;
+    }
+
+    public void setSignUpView(SignUpView signUpView) {
+        this.signUpView = signUpView;
+    }
+
+    public HomeView getHomeView() {
+        return homeView;
+    }
+
+    public LoginView getLoginView() {
+        return loginView;
+    }
+
+    public SignUpView getSignUpView() {
+        return signUpView;
+    }
 }
