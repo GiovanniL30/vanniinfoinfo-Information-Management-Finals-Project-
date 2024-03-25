@@ -1,14 +1,17 @@
 package shared.referenceClasses;
 
+import java.sql.Date;
+import java.sql.Time;
+
 public class Purchased {
 
     private String purchasedID;
-    private String date;
-    private String time;
+    private Date date;
+    private Time time;
     private String buyerID;
     private String ticketID;
 
-    public Purchased(String purchasedID, String date, String time, String buyerID, String ticketID) {
+    public Purchased(String purchasedID, Date date, Time time, String buyerID, String ticketID) {
         this.purchasedID = purchasedID;
         this.date = date;
         this.time = time;
@@ -24,19 +27,19 @@ public class Purchased {
         this.purchasedID = purchasedID;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
-    public String getTime() {
+    public Time getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(Time time) {
         this.time = time;
     }
 

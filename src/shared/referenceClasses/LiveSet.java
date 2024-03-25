@@ -100,4 +100,18 @@ public class LiveSet {
     public void setPerformerID(String performerID) {
         this.performerID = performerID;
     }
+
+    @Override
+    public String toString() {
+        return "LiveSet{" +
+                "liveSetID='" + liveSetID + '\'' +
+                ", status='" + status + '\'' +
+                ", price=" + price +
+                ", date=" + date +
+                ", time=" + time +
+                ", thumbnail='" + thumbnail + '\'' +
+                ", streamLinkURL='" + streamLinkURL + '\'' +
+                ", performerID='" + performerID + '\'' +
+                '}';
+    }
 }
