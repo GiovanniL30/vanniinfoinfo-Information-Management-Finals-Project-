@@ -115,7 +115,8 @@ public class Database {
             statement.setTime(3, UtilityMethods.getCurrentTime());
             statement.setString(4, buyerId);
             statement.setString(5, newTicket);
-            return statement.execute();
+            statement.execute();
+            return true;
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
         }

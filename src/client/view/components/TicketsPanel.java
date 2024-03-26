@@ -25,8 +25,6 @@ public class TicketsPanel extends JPanel {
         this.clientControllerObserver = clientControllerObserver;
         TicketsPanel.user = user;
 
-        System.out.println(purchasedLinkedList.size());
-
         holder.setLayout(new GridLayout(0,1, 0, 20));
         holder.setBorder(new EmptyBorder(20, 0, 20, 0));
         populateView(purchasedLinkedList);
@@ -42,7 +40,6 @@ public class TicketsPanel extends JPanel {
             protected Object doInBackground() {
 
                 for(Purchased p : purchased) {
-                    System.out.println(p.getTicketId());
                     holder.add(new PurchasedCard(p));
                     holder.revalidate();
                     holder.repaint();
