@@ -13,6 +13,7 @@ public interface ClientControllerObserver {
     void openLiveSet(LiveSet liveSet);
     void openPaymentView(LiveSet liveSet, Performer performer);
     void logIn(String userName, String password);
+    void purchaseTicket(String liveSetID);
     User getLoggedInAccount();
     LinkedList<LiveSet> getLiveSet();
 

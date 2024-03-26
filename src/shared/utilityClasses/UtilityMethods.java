@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import java.sql.Date;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.UUID;
 
 public class UtilityMethods {
 
@@ -27,6 +30,30 @@ public class UtilityMethods {
         }
         return false;
     }
+
+    public static int computeDiscount(int price) {
+        return (int) (price - (price * .20));
+    }
+
+    public static String generateRandomID() {
+        return UUID.randomUUID().toString().substring(0, 18);
+    }
+
+    public static Date getCurrentDate() {
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return Date.valueOf(currentDate.format(formatter));
+    }
+
+    public static Time getCurrentTime(){
+        LocalTime currentTime = LocalTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        return Time.valueOf(currentTime.format(formatter));
+    }
+
+
+
+
 
 
 }

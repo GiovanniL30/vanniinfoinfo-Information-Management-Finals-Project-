@@ -4,6 +4,7 @@ import client.view.ClientMainView;
 import client.view.ClientViews;
 import client.view.components.TicketsPanel;
 import client.view.panels.HomeView;
+import shared.referenceClasses.Purchased;
 import shared.viewComponents.LoginView;
 import client.view.panels.PaymentView;
 import client.view.panels.SignUpView;
@@ -16,6 +17,7 @@ import shared.viewComponents.Loading;
 import javax.swing.*;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 public class ClientController implements ClientControllerObserver{
 
@@ -54,11 +56,29 @@ public class ClientController implements ClientControllerObserver{
                         clientMainView.getContentPane().add(clientMainView.getHomeView(), 1);
                     }
                     case MY_TICKETS -> {
+
                         clientMainView.getHomeView().remove(1);
-                        clientMainView.getHomeView().add(new TicketsPanel(), 1);
-                        clientMainView.getHomeView().getSubHeader().setCurrentButton(clientMainView.getHomeView().getSubHeader().getMyTickets());
-                        clientMainView.getHomeView().revalidate();
-                        clientMainView.getHomeView().repaint();
+
+                        new SwingWorker<LinkedList<Purchased>, Void>() {
+                            @Override
+                            protected LinkedList<Purchased> doInBackground() {
+                                return Database.getMyPurchases(loggedInAccount.getUserID());
+                            }
+
+                            @Override
+                            protected void done() {
+                                try {
+                                    clientMainView.getHomeView().add(new TicketsPanel(loggedInAccount, get(), ClientController.this), 1);
+                                    clientMainView.getHomeView().getSubHeader().setCurrentButton(clientMainView.getHomeView().getSubHeader().getMyTickets());
+                                    clientMainView.getHomeView().revalidate();
+                                    clientMainView.getHomeView().repaint();
+                                } catch (InterruptedException | ExecutionException e) {
+                                    throw new RuntimeException(e);
+                                }
+
+                            }
+                        }.execute();
+
                     }
                 }
                 return null;
@@ -108,22 +128,54 @@ public class ClientController implements ClientControllerObserver{
     @Override
     public void logIn(String userName, String password) {
 
-        Optional<User> user = Database.logIn(userName, password);
-
-        if(user.isPresent()) {
-
-            if(user.get().getUserType().equals("Admin")) {
-                JOptionPane.showMessageDialog(clientMainView, "Invalid Credentials");
-                return;
+        new SwingWorker<Optional<User>, Void>() {
+            @Override
+            protected Optional<User> doInBackground() {
+                return Database.logIn(userName, password);
             }
 
-            loggedInAccount = user.get();
-            changeFrame(ClientViews.HOME);
-            clientMainView.getHeader().setUserName(loggedInAccount.getFirstName() + " " + loggedInAccount.getLastName());
-            JOptionPane.showMessageDialog(clientMainView, "Log in Success");
-        }else {
-            JOptionPane.showMessageDialog(clientMainView, "Invalid Credentials");
+            @Override
+            protected void done() {
+                loading.setVisible(false);
+                try {
+                    Optional<User> user = get();
+                    if(user.isPresent()) {
+
+                        if(user.get().getUserType().equals("Admin")) {
+                            JOptionPane.showMessageDialog(clientMainView, "Invalid Credentials");
+                            return;
+                        }
+
+                        loggedInAccount = user.get();
+                        changeFrame(ClientViews.HOME);
+                        clientMainView.getHeader().setUserName(loggedInAccount.getFirstName() + " " + loggedInAccount.getLastName());
+                        JOptionPane.showMessageDialog(clientMainView, "Log in Success");
+                    }else {
+                        JOptionPane.showMessageDialog(clientMainView, "Invalid Credentials");
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }.execute();
+
+        loading.setVisible(true);
+
+    }
+
+    @Override
+    public void purchaseTicket(String liveSetID) {
+
+        if(Database.havePurchased(loggedInAccount.getUserID(),  liveSetID)) {
+            JOptionPane.showMessageDialog(clientMainView, "You have already purchased a ticket for this liveset");
+            return;
         }
+
+        if(Database.addPurchase(liveSetID, loggedInAccount.getUserID())) {
+            JOptionPane.showMessageDialog(clientMainView, "You have successfully bought a ticket for this liveset");
+            changeFrame(ClientViews.HOME);
+        }
+
     }
 
     @Override

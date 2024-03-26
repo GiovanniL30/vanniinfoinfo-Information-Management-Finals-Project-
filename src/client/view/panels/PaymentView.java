@@ -66,6 +66,15 @@ public class PaymentView extends JPanel {
         Button cancel = new Button("CANCEL", new Dimension(300, 50), FontFactory.newPoppinsBold(13));
         cancel.addActionListener( e -> clientControllerObserver.changeFrame(ClientViews.HOME));
         FilledButton confirm = new FilledButton("CONFIRM", new Dimension(300, 50), FontFactory.newPoppinsBold(13), ColorFactory.red(), Color.WHITE);
+        confirm.addActionListener(e -> {
+
+            int choice = JOptionPane.showConfirmDialog(null, "Continue purchase?","Confirm Payment" ,JOptionPane.YES_NO_OPTION);
+
+            if(choice == JOptionPane.YES_OPTION) {
+                clientControllerObserver.purchaseTicket(liveSet.getLiveSetID());
+            }
+
+        });
         buttonPanel.add(cancel);
         buttonPanel.add(confirm);
 

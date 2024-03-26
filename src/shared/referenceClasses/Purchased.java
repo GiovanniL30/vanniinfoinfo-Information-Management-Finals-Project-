@@ -5,26 +5,22 @@ import java.sql.Time;
 
 public class Purchased {
 
-    private String purchasedID;
-    private Date date;
-    private Time time;
-    private String buyerID;
-    private String ticketID;
+   private Date date;
+   private Time time;
+   private String performerName;
+   private int liveSetPrice;
+   private String liveSetThumbnail;
+   private String ticketId;
+   private String ticketStatus;
 
-    public Purchased(String purchasedID, Date date, Time time, String buyerID, String ticketID) {
-        this.purchasedID = purchasedID;
+    public Purchased(Date date, Time time, String performerName, int liveSetPrice, String liveSetThumbnail, String ticketId, String ticketStatus) {
         this.date = date;
         this.time = time;
-        this.buyerID = buyerID;
-        this.ticketID = ticketID;
-    }
-
-    public String getPurchasedID() {
-        return purchasedID;
-    }
-
-    public void setPurchasedID(String purchasedID) {
-        this.purchasedID = purchasedID;
+        this.performerName = performerName;
+        this.liveSetPrice = liveSetPrice;
+        this.liveSetThumbnail = liveSetThumbnail;
+        this.ticketId = ticketId;
+        this.ticketStatus = ticketStatus;
     }
 
     public Date getDate() {
@@ -43,19 +39,56 @@ public class Purchased {
         this.time = time;
     }
 
-    public String getBuyerID() {
-        return buyerID;
+    public String getPerformerName() {
+        return performerName;
     }
 
-    public void setBuyerID(String buyerID) {
-        this.buyerID = buyerID;
+    public void setPerformerName(String performerName) {
+        this.performerName = performerName;
     }
 
-    public String getTicketID() {
-        return ticketID;
+    public int getLiveSetPrice() {
+        return liveSetPrice;
     }
 
-    public void setTicketID(String ticketID) {
-        this.ticketID = ticketID;
+    public void setLiveSetPrice(int liveSetPrice) {
+        this.liveSetPrice = liveSetPrice;
+    }
+
+    public String getLiveSetThumbnail() {
+        return liveSetThumbnail;
+    }
+
+    public void setLiveSetThumbnail(String liveSetThumbnail) {
+        this.liveSetThumbnail = liveSetThumbnail;
+    }
+
+    public String getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
+    }
+
+    public String getTicketStatus() {
+        return ticketStatus;
+    }
+
+    public void setTicketStatus(String ticketStatus) {
+        this.ticketStatus = ticketStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "Purchased{" +
+                "date=" + date +
+                ", time=" + time +
+                ", performerName='" + performerName + '\'' +
+                ", liveSetPrice=" + liveSetPrice +
+                ", liveSetThumbnail='" + liveSetThumbnail + '\'' +
+                ", ticketId='" + ticketId + '\'' +
+                ", ticketStatus='" + ticketStatus + '\'' +
+                '}';
     }
 }
