@@ -4,7 +4,7 @@ import client.controller.ClientController;
 import client.controller.ClientControllerObserver;
 import client.view.components.Header;
 import client.view.panels.HomeView;
-import client.view.panels.LoginView;
+import shared.viewComponents.LoginView;
 import client.view.panels.SignUpView;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
@@ -18,7 +18,7 @@ public class ClientMainView extends JFrame {
     public static final int HEIGHT = 800;
 
     private JPanel mainLayout = new JPanel();
-    private Header header = new Header();
+    private Header header = new Header("");
     private ClientControllerObserver clientControllerObserver;
     private HomeView homeView;
     private LoginView loginView;
@@ -28,7 +28,7 @@ public class ClientMainView extends JFrame {
         this.clientControllerObserver = clientControllerObserver;
         initializeFrame();
         getContentPane().add(header, BorderLayout.NORTH);
-        loginView = new LoginView(clientControllerObserver);
+        loginView = new LoginView(clientControllerObserver, false);
         getContentPane().add(loginView, BorderLayout.CENTER);
     }
 
@@ -84,5 +84,9 @@ public class ClientMainView extends JFrame {
 
     public SignUpView getSignUpView() {
         return signUpView;
+    }
+
+    public Header getHeader() {
+        return header;
     }
 }

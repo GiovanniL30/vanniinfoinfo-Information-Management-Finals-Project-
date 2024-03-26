@@ -105,4 +105,20 @@ public class User {
     public void setUserType(String userType) {
         this.userType = userType;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userID='" + userID + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", userName='" + userName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", watchedConsecutiveShows=" + watchedConsecutiveShows +
+                ", userStatus='" + userStatus + '\'' +
+                ", haveEarnedLoyalty=" + haveEarnedLoyalty +
+                ", userType='" + userType + '\'' +
+                '}';
+    }
 }

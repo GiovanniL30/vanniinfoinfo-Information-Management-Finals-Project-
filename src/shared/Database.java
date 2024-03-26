@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.LinkedList;
+import java.util.Optional;
 
 public class Database {
 
@@ -25,6 +26,28 @@ public class Database {
         return false;
     }
 
+    public static Optional<User> logIn(String giveUserName, String givenPassword) {
+
+        ensureConnection();
+
+        String query = "SELECT * FROM user WHERE userName = ? AND password = ?";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, giveUserName);
+            statement.setString(2, givenPassword);
+
+            ResultSet resultSet  = statement.executeQuery();
+
+            if(resultSet.next()) {
+                return toUser(resultSet);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+        return Optional.empty();
+    }
 
     public static LinkedList<LiveSet> getLiveSets() {
 
@@ -218,19 +241,8 @@ public class Database {
             ResultSet resultSet = statement.executeQuery(query);
 
             while(resultSet.next()) {
-
-                String userId = resultSet.getString(1);
-                String firstName = resultSet.getString(2);
-                String lastName = resultSet.getString(3);
-                String userName = resultSet.getString(4);
-                String email = resultSet.getString(5);
-                String password = resultSet.getString(6);
-                int watchedCons = resultSet.getInt(7);
-                String userStatus = resultSet.getString(8);
-                boolean haveEarnedLoyalty = resultSet.getBoolean(9);
-                String userType = resultSet.getString(10);
-
-                users.add(new User(userId, firstName, lastName, userName, email, password, watchedCons, userStatus, haveEarnedLoyalty, userType));
+                Optional<User> user = toUser(resultSet);
+                user.ifPresent(users::add);
             }
 
         } catch (SQLException e) {
@@ -241,6 +253,8 @@ public class Database {
 
         return users;
     }
+
+
 
     private static String getImage(String liveSetID, Blob blob) {
         String path = "resources/images/" + liveSetID + ".jpg";
@@ -258,6 +272,24 @@ public class Database {
       setConnection();
     }
 
-    //TODO: add other methods
+    private static Optional<User> toUser(ResultSet resultSet) {
+        try {
+            String userId = resultSet.getString(1);
+            String firstName = resultSet.getString(2);
+            String lastName = resultSet.getString(3);
+            String userName = resultSet.getString(4);
+            String email = resultSet.getString(5);
+            String password = resultSet.getString(6);
+            int watchedCons = resultSet.getInt(7);
+            String userStatus = resultSet.getString(8);
+            boolean haveEarnedLoyalty = resultSet.getInt(9) == 1;
+            String userType = resultSet.getString(10);
+            return Optional.of(new User(userId, firstName, lastName, userName, email, password, watchedCons, userStatus, haveEarnedLoyalty, userType));
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        return Optional.empty();
+    }
 
 }

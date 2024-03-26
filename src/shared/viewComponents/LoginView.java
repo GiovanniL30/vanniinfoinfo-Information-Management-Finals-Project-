@@ -1,9 +1,10 @@
-package client.view.panels;
+package shared.viewComponents;
 
 import client.controller.ClientControllerObserver;
 import client.view.ClientViews;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
+import shared.utilityClasses.UtilityMethods;
 import shared.viewComponents.Button;
 import shared.viewComponents.FieldInput;
 import shared.viewComponents.FilledButton;
@@ -14,7 +15,13 @@ import java.awt.*;
 
 public class LoginView extends JPanel {
 
-    public LoginView(ClientControllerObserver clientControllerObserver) {
+    private FilledButton loginButton;
+    private ClientControllerObserver clientControllerObserver;
+    private boolean isAdmin;
+
+    public LoginView(ClientControllerObserver clientControllerObserver, boolean isAdmin) {
+        this.clientControllerObserver = clientControllerObserver;
+        this.isAdmin = isAdmin;
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridy = 0;
@@ -23,18 +30,23 @@ public class LoginView extends JPanel {
         setBackground(Color.white);
         setLayout(new GridBagLayout());
 
-        Picture heroPicture = new Picture("resources/images/login-header.png", 500, 130);
+        Picture heroPicture = new Picture((isAdmin) ? "resources/images/Admin_login_image.png" : "resources/images/login-header.png", 500, 130);
         heroPicture.setBackground(Color.WHITE);
-
-        JPanel fieldInputs = fieldInputs();
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.white);
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20,0 ));
         Button signUpButton = new Button("Sign up", new Dimension(200, 50) , FontFactory.newPoppinsDefault(12));
-        FilledButton loginButton = new FilledButton("Login", new Dimension(200, 50) ,FontFactory.newPoppinsDefault(12), ColorFactory.red(), Color.white);
-        buttonPanel.add(signUpButton);
+
+        if(isAdmin){
+            loginButton = new FilledButton("Login", new Dimension(420, 50) ,FontFactory.newPoppinsDefault(12), ColorFactory.red(), Color.white);
+        }else {
+            buttonPanel.add(signUpButton);
+            loginButton = new FilledButton("Login", new Dimension(200, 50) ,FontFactory.newPoppinsDefault(12), ColorFactory.red(), Color.white);
+        }
         buttonPanel.add(loginButton);
+
+        JPanel fieldInputs = fieldInputs();
 
         add(heroPicture, constraints);
 
@@ -45,7 +57,7 @@ public class LoginView extends JPanel {
         add(buttonPanel, constraints);
 
         signUpButton.addActionListener(e -> clientControllerObserver.changeFrame(ClientViews.SIGN_UP));
-        loginButton.addActionListener( e -> clientControllerObserver.changeFrame(ClientViews.HOME));
+
     }
 
     private JPanel fieldInputs(){
@@ -59,6 +71,23 @@ public class LoginView extends JPanel {
         fieldInputPanel.add(userName);
         fieldInputPanel.add(password);
 
+        loginButton.addActionListener( e -> {
+
+            String name = userName.getInput();
+            String pass = password.getInput();
+
+            if(UtilityMethods.haveNullOrEmpty(name, pass)) {
+                return;
+            }
+
+            if(isAdmin) {
+
+            }else {
+                clientControllerObserver.logIn(name, pass);
+            }
+
+
+        });
         return fieldInputPanel;
     }
 

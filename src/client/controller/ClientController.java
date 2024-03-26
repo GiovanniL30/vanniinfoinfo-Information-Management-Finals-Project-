@@ -2,8 +2,9 @@ package client.controller;
 
 import client.view.ClientMainView;
 import client.view.ClientViews;
+import client.view.components.TicketsPanel;
 import client.view.panels.HomeView;
-import client.view.panels.LoginView;
+import shared.viewComponents.LoginView;
 import client.view.panels.PaymentView;
 import client.view.panels.SignUpView;
 import shared.Database;
@@ -13,7 +14,6 @@ import shared.referenceClasses.User;
 import shared.viewComponents.Loading;
 
 import javax.swing.*;
-import javax.swing.text.html.ParagraphView;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -45,13 +45,20 @@ public class ClientController implements ClientControllerObserver{
                     }
                     case LOGIN -> {
                         clientMainView.getContentPane().remove(1);
-                        clientMainView.setLoginView(new LoginView(ClientController.this));
+                        clientMainView.setLoginView(new LoginView(ClientController.this, false));
                         clientMainView.getContentPane().add(clientMainView.getLoginView(), 1);
                     }
-                    case HOME -> {
+                    case HOME, LIVE_SETS -> {
                         clientMainView.getContentPane().remove(1);
                         clientMainView.setHomeView(new HomeView(ClientController.this));
                         clientMainView.getContentPane().add(clientMainView.getHomeView(), 1);
+                    }
+                    case MY_TICKETS -> {
+                        clientMainView.getHomeView().remove(1);
+                        clientMainView.getHomeView().add(new TicketsPanel(), 1);
+                        clientMainView.getHomeView().getSubHeader().setCurrentButton(clientMainView.getHomeView().getSubHeader().getMyTickets());
+                        clientMainView.getHomeView().revalidate();
+                        clientMainView.getHomeView().repaint();
                     }
                 }
                 return null;
@@ -96,6 +103,27 @@ public class ClientController implements ClientControllerObserver{
         }.execute();
 
         loading.setVisible(true);
+    }
+
+    @Override
+    public void logIn(String userName, String password) {
+
+        Optional<User> user = Database.logIn(userName, password);
+
+        if(user.isPresent()) {
+
+            if(user.get().getUserType().equals("Admin")) {
+                JOptionPane.showMessageDialog(clientMainView, "Invalid Credentials");
+                return;
+            }
+
+            loggedInAccount = user.get();
+            changeFrame(ClientViews.HOME);
+            clientMainView.getHeader().setUserName(loggedInAccount.getFirstName() + " " + loggedInAccount.getLastName());
+            JOptionPane.showMessageDialog(clientMainView, "Log in Success");
+        }else {
+            JOptionPane.showMessageDialog(clientMainView, "Invalid Credentials");
+        }
     }
 
     @Override

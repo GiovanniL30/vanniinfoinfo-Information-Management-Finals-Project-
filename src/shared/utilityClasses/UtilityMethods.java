@@ -19,4 +19,14 @@ public class UtilityMethods {
         return localTime.format(formatter);
     }
 
+    public static boolean haveNullOrEmpty(String... strings){
+        for (String str : strings) {
+            if (str == null || str.trim().isEmpty()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }

@@ -37,4 +37,7 @@ public class HomeView extends JPanel {
         return liveSetPane;
     }
 
+    public ViewLiveSetSubHeader getSubHeader() {
+        return subHeader;
+    }
 }

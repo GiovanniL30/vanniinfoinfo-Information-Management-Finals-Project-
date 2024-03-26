@@ -26,7 +26,7 @@ public class PaymentView extends JPanel {
         this.clientControllerObserver = clientControllerObserver;
 
         setBackground(Color.WHITE);
-        setLayout(new BorderLayout(0, 20));
+        setLayout(new BorderLayout(0, 0));
         add(header(), BorderLayout.NORTH);
         add(liveSetPanel(), BorderLayout.CENTER);
         add(southPanel(), BorderLayout.SOUTH);

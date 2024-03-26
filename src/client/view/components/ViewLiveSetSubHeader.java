@@ -2,10 +2,12 @@ package client.view.components;
 
 import client.controller.ClientControllerObserver;
 import client.view.ClientMainView;
+import client.view.ClientViews;
 import shared.utilityClasses.FontFactory;
 import shared.viewComponents.ClickableText;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.LinkedList;
 
@@ -21,7 +23,7 @@ public class ViewLiveSetSubHeader extends JPanel {
     public ViewLiveSetSubHeader(ClientControllerObserver clientControllerObserver) {
         this.clientControllerObserver = clientControllerObserver;
 
-        setLayout(new FlowLayout(FlowLayout.RIGHT, 20, 0));
+        setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(ClientMainView.WIDTH, 50));
 
@@ -32,6 +34,10 @@ public class ViewLiveSetSubHeader extends JPanel {
         clickableTexts.add(liveSets);
         clickableTexts.add(myTickets);
         setCurrentButton(liveSets);
+
+
+        liveSets.addActionListener(e-> clientControllerObserver.changeFrame(ClientViews.HOME));
+        myTickets.addActionListener(e-> clientControllerObserver.changeFrame(ClientViews.MY_TICKETS));
     }
 
     public void setCurrentButton(ClickableText currentButton) {
