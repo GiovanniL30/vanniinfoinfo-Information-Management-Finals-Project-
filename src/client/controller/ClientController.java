@@ -2,6 +2,7 @@ package client.controller;
 
 import client.view.ClientMainView;
 import client.view.ClientViews;
+import client.view.components.AccessGigDialog;
 import client.view.components.TicketsPanel;
 import client.view.panels.HomeView;
 import shared.referenceClasses.Purchased;
@@ -176,6 +177,17 @@ public class ClientController implements ClientControllerObserver{
             changeFrame(ClientViews.HOME);
         }
 
+    }
+
+    @Override
+    public void accessLiveSet(LiveSet liveSet, String ticketId) {
+
+    }
+
+    @Override
+    public void openAccess(LiveSet liveSet) {
+        AccessGigDialog accessGigDialog = new AccessGigDialog(clientMainView, liveSet, this);
+        accessGigDialog.setVisible(true);
     }
 
     @Override

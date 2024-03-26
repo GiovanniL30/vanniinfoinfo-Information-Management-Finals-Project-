@@ -14,6 +14,8 @@ public interface ClientControllerObserver {
     void openPaymentView(LiveSet liveSet, Performer performer);
     void logIn(String userName, String password);
     void purchaseTicket(String liveSetID);
+    void accessLiveSet(LiveSet liveSet, String ticketId);
+    void openAccess(LiveSet liveSet);
     User getLoggedInAccount();
     LinkedList<LiveSet> getLiveSet();
 

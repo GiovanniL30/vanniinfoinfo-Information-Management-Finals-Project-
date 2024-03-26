@@ -72,6 +72,7 @@ public class OpenedLiveSet extends JPanel {
         buttons.add(accessGig);
         buttons.add(purchaseTicket);
 
+        accessGig.addActionListener( e -> clientControllerObserver.openAccess(liveSet));
         purchaseTicket.addActionListener( e -> clientControllerObserver.openPaymentView(liveSet, performer));
         return buttons;
     }
