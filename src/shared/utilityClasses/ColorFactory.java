@@ -12,5 +12,9 @@ public class ColorFactory {
         return new Color(161, 161, 161);
     }
 
+    public static Color whitishGrey() {
+        return new Color(244, 244, 244);
+    }
+
 
 }

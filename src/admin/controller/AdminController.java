@@ -2,12 +2,16 @@ package admin.controller;
 
 import admin.view.AdminMainFrame;
 import admin.view.panel.AdminHomePanel;
+import admin.view.panel.EditPerformerPanel;
 import admin.view.panel.LiveSetPanel;
 import admin.view.panel.PerformerPanel;
 import admin.view.utility.AdminPanel;
+import shared.model.Database;
+import shared.referenceClasses.Performer;
 import shared.viewComponents.Loading;
 
 import javax.swing.*;
+import java.util.LinkedList;
 
 public class AdminController implements AdminControllerObserver{
 
@@ -26,10 +30,13 @@ public class AdminController implements AdminControllerObserver{
                 switch (adminPanel) {
                     case HOME -> adminMainFrame.getContentPane().add(new AdminHomePanel(AdminController.this), 1);
                     case PERFORMER -> {
-                        PerformerPanel performerPanel = new PerformerPanel(AdminController.this);
+
+                        PerformerPanel performerPanel = new PerformerPanel(getPerformers(), AdminController.this);
                         adminMainFrame.setPerformerPanel(performerPanel);
                         adminMainFrame.getContentPane().add(performerPanel, 1);
+
                     }case LIVE_SET -> {
+
                         LiveSetPanel liveSetPanel = new LiveSetPanel(AdminController.this);
                         adminMainFrame.setLiveSetPanel(liveSetPanel);
                         adminMainFrame.getContentPane().add(liveSetPanel, 1);
@@ -40,8 +47,8 @@ public class AdminController implements AdminControllerObserver{
 
             @Override
             protected void done() {
-                adminMainFrame.revalidate();
-                adminMainFrame.repaint();
+                adminMainFrame.getContentPane().revalidate();
+                adminMainFrame.getContentPane().repaint();
                 loading.setVisible(false);
             }
         }.execute();
@@ -50,6 +57,34 @@ public class AdminController implements AdminControllerObserver{
 
 
     }
+
+    @Override
+    public void editPerformerFrame(Performer performer) {
+        new SwingWorker<>() {
+            @Override
+            protected Object doInBackground() {
+                adminMainFrame.getContentPane().remove(1);
+                EditPerformerPanel editPerformerPanel = new EditPerformerPanel(performer, AdminController.this);
+                adminMainFrame.getContentPane().add(editPerformerPanel, 1);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                adminMainFrame.getContentPane().revalidate();
+                adminMainFrame.getContentPane().repaint();
+                loading.setVisible(false);
+            }
+        }.execute();
+
+        loading.setVisible(true);
+    }
+
+    public LinkedList<Performer> getPerformers() {
+        return Database.getPerformers();
+    }
+
+
 
     public void setAdminMainFrame(AdminMainFrame adminMainFrame) {
         this.adminMainFrame = adminMainFrame;

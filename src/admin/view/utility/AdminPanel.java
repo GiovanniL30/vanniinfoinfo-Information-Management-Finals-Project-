@@ -4,6 +4,7 @@ public enum AdminPanel {
 
     LIVE_SET,
     PERFORMER,
-    HOME
+    HOME,
+    EDIT_PERFORMER
 
 }

@@ -51,6 +51,16 @@ public class UtilityMethods {
         return Time.valueOf(currentTime.format(formatter));
     }
 
+    public static String[] getGenres() {
+        return new String[] {
+                "Rock", "Pop", "Hip Hop", "Jazz", "Blues",
+                "Country", "Electronic", "Classical", "Reggae", "R&B",
+                "Metal", "Folk", "Punk", "Indie", "Alternative",
+                "Funk", "Soul", "Gospel", "Techno", "Dance"
+        };
+    }
+
+
 
 
 
