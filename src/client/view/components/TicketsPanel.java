@@ -1,7 +1,7 @@
 package client.view.components;
 
 import client.controller.ClientControllerObserver;
-import client.view.ClientMainView;
+import client.view.ClientMainFrame;
 import shared.referenceClasses.Purchased;
 import shared.referenceClasses.User;
 import shared.utilityClasses.ColorFactory;
@@ -29,7 +29,7 @@ public class TicketsPanel extends JPanel {
         holder.setBorder(new EmptyBorder(20, 0, 20, 0));
         populateView(purchasedLinkedList);
         JScrollPane scrollPane = new JScrollPane(holder);
-        scrollPane.setPreferredSize(new Dimension(ClientMainView.WIDTH - 100, 600));
+        scrollPane.setPreferredSize(new Dimension(ClientMainFrame.WIDTH - 100, 600));
         add(scrollPane);
     }
 

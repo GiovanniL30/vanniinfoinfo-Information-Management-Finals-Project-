@@ -1,4 +1,4 @@
-package shared;
+package shared.model;
 
 import shared.referenceClasses.*;
 import shared.utilityClasses.UtilityMethods;
@@ -22,6 +22,7 @@ public class Database {
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
+                System.exit(0);
             }
         }
 

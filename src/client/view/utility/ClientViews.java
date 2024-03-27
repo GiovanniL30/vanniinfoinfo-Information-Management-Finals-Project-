@@ -1,4 +1,4 @@
-package client.view;
+package client.view.utility;
 
 public enum ClientViews {
 

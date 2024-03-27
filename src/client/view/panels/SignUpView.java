@@ -1,8 +1,8 @@
 package client.view.panels;
 
 import client.controller.ClientControllerObserver;
-import client.view.ClientMainView;
-import client.view.ClientViews;
+import client.view.ClientMainFrame;
+import client.view.utility.ClientViews;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
 import shared.viewComponents.ClickableText;
@@ -19,7 +19,7 @@ public class SignUpView extends JPanel {
 
         setBackground(Color.white);
         setLayout(new GridBagLayout());
-        setPreferredSize(new Dimension(ClientMainView.WIDTH, ClientMainView.HEIGHT));
+        setPreferredSize(new Dimension(ClientMainFrame.WIDTH, ClientMainFrame.HEIGHT));
 
         GridBagConstraints layoutConstraints = new GridBagConstraints();
         layoutConstraints.gridy = 0;

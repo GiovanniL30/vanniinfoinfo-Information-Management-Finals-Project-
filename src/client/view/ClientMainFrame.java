@@ -2,7 +2,7 @@ package client.view;
 
 import client.controller.ClientController;
 import client.controller.ClientControllerObserver;
-import client.view.components.Header;
+import client.view.components.ClientHeader;
 import client.view.panels.HomeView;
 import shared.viewComponents.LoginView;
 import client.view.panels.SignUpView;
@@ -12,22 +12,22 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-public class ClientMainView extends JFrame {
+public class ClientMainFrame extends JFrame {
 
     public static final int WIDTH = 1200;
     public static final int HEIGHT = 800;
 
     private JPanel mainLayout = new JPanel();
-    private Header header = new Header("");
+    private ClientHeader clientHeader = new ClientHeader("");
     private ClientControllerObserver clientControllerObserver;
     private HomeView homeView;
     private LoginView loginView;
     private SignUpView signUpView;
 
-    public ClientMainView(ClientController clientControllerObserver) {
+    public ClientMainFrame(ClientController clientControllerObserver) {
         this.clientControllerObserver = clientControllerObserver;
         initializeFrame();
-        getContentPane().add(header, BorderLayout.NORTH);
+        getContentPane().add(clientHeader, BorderLayout.NORTH);
         loginView = new LoginView(clientControllerObserver, false);
         getContentPane().add(loginView, BorderLayout.CENTER);
     }
@@ -86,7 +86,7 @@ public class ClientMainView extends JFrame {
         return signUpView;
     }
 
-    public Header getHeader() {
-        return header;
+    public ClientHeader getHeader() {
+        return clientHeader;
     }
 }

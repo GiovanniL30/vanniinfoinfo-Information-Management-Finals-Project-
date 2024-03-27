@@ -1,7 +1,7 @@
 package client.view.panels;
 
 import client.controller.ClientControllerObserver;
-import client.view.ClientMainView;
+import client.view.ClientMainFrame;
 import client.view.components.LiveSetPane;
 import client.view.components.ViewLiveSetSubHeader;
 
@@ -21,7 +21,7 @@ public class HomeView extends JPanel {
 
         setLayout(new BorderLayout());
         setBackground(Color.white);
-        setPreferredSize(new Dimension(ClientMainView.WIDTH, ClientMainView.HEIGHT));
+        setPreferredSize(new Dimension(ClientMainFrame.WIDTH, ClientMainFrame.HEIGHT));
 
         add(subHeader, BorderLayout.NORTH);
 

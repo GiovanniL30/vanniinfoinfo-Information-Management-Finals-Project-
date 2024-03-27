@@ -1,7 +1,7 @@
 package client.controller;
 
-import client.view.ClientMainView;
-import client.view.ClientViews;
+import client.view.ClientMainFrame;
+import client.view.utility.ClientViews;
 import client.view.components.AccessGigDialog;
 import client.view.components.TicketsPanel;
 import client.view.panels.HomeView;
@@ -9,7 +9,7 @@ import shared.referenceClasses.Purchased;
 import shared.viewComponents.LoginView;
 import client.view.panels.PaymentView;
 import client.view.panels.SignUpView;
-import shared.Database;
+import shared.model.Database;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.referenceClasses.User;
@@ -27,7 +27,7 @@ public class ClientController implements ClientControllerObserver{
     private User loggedInAccount = new User("asc", "asc", "asc", "acs", "asc", "cas", 1, "asc", true, "asc");
 
 
-    private ClientMainView clientMainView;
+    private ClientMainFrame clientMainFrame;
 
     public ClientController() {
 
@@ -42,23 +42,23 @@ public class ClientController implements ClientControllerObserver{
             protected Object doInBackground() {
                 switch (clientViews) {
                     case SIGN_UP ->  {
-                        clientMainView.getContentPane().remove(1);
-                        clientMainView.setSignUpView(new SignUpView(ClientController.this));
-                        clientMainView.getContentPane().add(clientMainView.getSignUpView(), 1);
+                        clientMainFrame.getContentPane().remove(1);
+                        clientMainFrame.setSignUpView(new SignUpView(ClientController.this));
+                        clientMainFrame.getContentPane().add(clientMainFrame.getSignUpView(), 1);
                     }
                     case LOGIN -> {
-                        clientMainView.getContentPane().remove(1);
-                        clientMainView.setLoginView(new LoginView(ClientController.this, false));
-                        clientMainView.getContentPane().add(clientMainView.getLoginView(), 1);
+                        clientMainFrame.getContentPane().remove(1);
+                        clientMainFrame.setLoginView(new LoginView(ClientController.this, false));
+                        clientMainFrame.getContentPane().add(clientMainFrame.getLoginView(), 1);
                     }
                     case HOME, LIVE_SETS -> {
-                        clientMainView.getContentPane().remove(1);
-                        clientMainView.setHomeView(new HomeView(ClientController.this));
-                        clientMainView.getContentPane().add(clientMainView.getHomeView(), 1);
+                        clientMainFrame.getContentPane().remove(1);
+                        clientMainFrame.setHomeView(new HomeView(ClientController.this));
+                        clientMainFrame.getContentPane().add(clientMainFrame.getHomeView(), 1);
                     }
                     case MY_TICKETS -> {
 
-                        clientMainView.getHomeView().remove(1);
+                        clientMainFrame.getHomeView().remove(1);
 
                         new SwingWorker<LinkedList<Purchased>, Void>() {
                             @Override
@@ -69,10 +69,10 @@ public class ClientController implements ClientControllerObserver{
                             @Override
                             protected void done() {
                                 try {
-                                    clientMainView.getHomeView().add(new TicketsPanel(loggedInAccount, get(), ClientController.this), 1);
-                                    clientMainView.getHomeView().getSubHeader().setCurrentButton(clientMainView.getHomeView().getSubHeader().getMyTickets());
-                                    clientMainView.getHomeView().revalidate();
-                                    clientMainView.getHomeView().repaint();
+                                    clientMainFrame.getHomeView().add(new TicketsPanel(loggedInAccount, get(), ClientController.this), 1);
+                                    clientMainFrame.getHomeView().getSubHeader().setCurrentButton(clientMainFrame.getHomeView().getSubHeader().getMyTickets());
+                                    clientMainFrame.getHomeView().revalidate();
+                                    clientMainFrame.getHomeView().repaint();
                                 } catch (InterruptedException | ExecutionException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -87,8 +87,8 @@ public class ClientController implements ClientControllerObserver{
 
             @Override
             protected void done() {
-                clientMainView.getContentPane().revalidate();
-                clientMainView.getContentPane().repaint();
+                clientMainFrame.getContentPane().revalidate();
+                clientMainFrame.getContentPane().repaint();
                 loading.setVisible(false);
             }
         }.execute();
@@ -102,7 +102,7 @@ public class ClientController implements ClientControllerObserver{
     public void openLiveSet(LiveSet liveSet) {
        LinkedList<Performer> performers =  Database.getPerformers();
        Optional<Performer> performer = performers.stream().filter(p -> p.getPerformerID().equals(liveSet.getPerformerID())).findAny();
-       performer.ifPresent(value -> clientMainView.getHomeView().getLiveSetPane().openLiveSet(liveSet, value));
+       performer.ifPresent(value -> clientMainFrame.getHomeView().getLiveSetPane().openLiveSet(liveSet, value));
     }
 
     @Override
@@ -110,15 +110,15 @@ public class ClientController implements ClientControllerObserver{
         new SwingWorker<>() {
             @Override
             protected Object doInBackground() {
-                clientMainView.getContentPane().remove(1);
-                clientMainView.getContentPane().add(new PaymentView(liveSet, performer, ClientController.this), 1);
+                clientMainFrame.getContentPane().remove(1);
+                clientMainFrame.getContentPane().add(new PaymentView(liveSet, performer, ClientController.this), 1);
                 return null;
             }
 
             @Override
             protected void done() {
-                clientMainView.getContentPane().revalidate();
-                clientMainView.getContentPane().repaint();
+                clientMainFrame.getContentPane().revalidate();
+                clientMainFrame.getContentPane().repaint();
                 loading.setVisible(false);
             }
         }.execute();
@@ -143,16 +143,16 @@ public class ClientController implements ClientControllerObserver{
                     if(user.isPresent()) {
 
                         if(user.get().getUserType().equals("Admin")) {
-                            JOptionPane.showMessageDialog(clientMainView, "Invalid Credentials");
+                            JOptionPane.showMessageDialog(clientMainFrame, "Invalid Credentials");
                             return;
                         }
 
                         loggedInAccount = user.get();
                         changeFrame(ClientViews.HOME);
-                        clientMainView.getHeader().setUserName(loggedInAccount.getFirstName() + " " + loggedInAccount.getLastName());
-                        JOptionPane.showMessageDialog(clientMainView, "Log in Success");
+                        clientMainFrame.getHeader().setUserName(loggedInAccount.getFirstName() + " " + loggedInAccount.getLastName());
+                        JOptionPane.showMessageDialog(clientMainFrame, "Log in Success");
                     }else {
-                        JOptionPane.showMessageDialog(clientMainView, "Invalid Credentials");
+                        JOptionPane.showMessageDialog(clientMainFrame, "Invalid Credentials");
                     }
                 } catch (InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);
@@ -168,12 +168,12 @@ public class ClientController implements ClientControllerObserver{
     public void purchaseTicket(String liveSetID) {
 
         if(Database.havePurchased(loggedInAccount.getUserID(),  liveSetID)) {
-            JOptionPane.showMessageDialog(clientMainView, "You have already purchased a ticket for this liveset");
+            JOptionPane.showMessageDialog(clientMainFrame, "You have already purchased a ticket for this liveset");
             return;
         }
 
         if(Database.addPurchase(liveSetID, loggedInAccount.getUserID())) {
-            JOptionPane.showMessageDialog(clientMainView, "You have successfully bought a ticket for this liveset");
+            JOptionPane.showMessageDialog(clientMainFrame, "You have successfully bought a ticket for this liveset");
             changeFrame(ClientViews.HOME);
         }
 
@@ -186,7 +186,7 @@ public class ClientController implements ClientControllerObserver{
 
     @Override
     public void openAccess(LiveSet liveSet) {
-        AccessGigDialog accessGigDialog = new AccessGigDialog(clientMainView, liveSet, this);
+        AccessGigDialog accessGigDialog = new AccessGigDialog(clientMainFrame, liveSet, this);
         accessGigDialog.setVisible(true);
     }
 
@@ -200,8 +200,8 @@ public class ClientController implements ClientControllerObserver{
         return Database.getLiveSets();
     }
 
-    public void setClientMainView(ClientMainView clientMainView) {
-        this.clientMainView = clientMainView;
-        loading = new Loading(clientMainView);
+    public void setClientMainView(ClientMainFrame clientMainFrame) {
+        this.clientMainFrame = clientMainFrame;
+        loading = new Loading(clientMainFrame);
     }
 }

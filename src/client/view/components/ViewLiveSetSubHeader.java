@@ -1,13 +1,12 @@
 package client.view.components;
 
 import client.controller.ClientControllerObserver;
-import client.view.ClientMainView;
-import client.view.ClientViews;
+import client.view.ClientMainFrame;
+import client.view.utility.ClientViews;
 import shared.utilityClasses.FontFactory;
 import shared.viewComponents.ClickableText;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.LinkedList;
 
@@ -25,7 +24,7 @@ public class ViewLiveSetSubHeader extends JPanel {
 
         setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(ClientMainView.WIDTH, 50));
+        setPreferredSize(new Dimension(ClientMainFrame.WIDTH, 50));
 
         add(liveSets);
         add(myTickets);

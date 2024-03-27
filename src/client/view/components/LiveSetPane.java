@@ -1,7 +1,7 @@
 package client.view.components;
 
 import client.controller.ClientControllerObserver;
-import client.view.ClientMainView;
+import client.view.ClientMainFrame;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.viewComponents.IconButton;
@@ -27,7 +27,7 @@ public class LiveSetPane extends JPanel {
         holder.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         scrollPane = new JScrollPane(holder);
-        scrollPane.setPreferredSize(new Dimension(ClientMainView.WIDTH, 600));
+        scrollPane.setPreferredSize(new Dimension(ClientMainFrame.WIDTH, 600));
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();

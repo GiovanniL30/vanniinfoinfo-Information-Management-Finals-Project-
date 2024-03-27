@@ -1,6 +1,6 @@
 package client.view.components;
 
-import client.view.ClientMainView;
+import client.view.ClientMainFrame;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
 import shared.viewComponents.Picture;
@@ -8,11 +8,11 @@ import shared.viewComponents.Picture;
 import javax.swing.*;
 import java.awt.*;
 
-public class Header extends JPanel {
+public class ClientHeader extends JPanel {
 
     private JLabel userName;
-    public Header(String name) {
-        setPreferredSize(new Dimension(ClientMainView.WIDTH, 50));
+    public ClientHeader(String name) {
+        setPreferredSize(new Dimension(ClientMainFrame.WIDTH, 50));
         setLayout(new BorderLayout());
         setBackground(Color.white);
 

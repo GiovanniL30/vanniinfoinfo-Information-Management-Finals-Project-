@@ -1,14 +1,10 @@
 package shared.viewComponents;
 
 import client.controller.ClientControllerObserver;
-import client.view.ClientViews;
+import client.view.utility.ClientViews;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
 import shared.utilityClasses.UtilityMethods;
-import shared.viewComponents.Button;
-import shared.viewComponents.FieldInput;
-import shared.viewComponents.FilledButton;
-import shared.viewComponents.Picture;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,7 +1,7 @@
 package client.view.panels;
 
 import client.controller.ClientControllerObserver;
-import client.view.ClientViews;
+import client.view.utility.ClientViews;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.utilityClasses.ColorFactory;

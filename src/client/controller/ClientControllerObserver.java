@@ -1,6 +1,6 @@
 package client.controller;
 
-import client.view.ClientViews;
+import client.view.utility.ClientViews;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.referenceClasses.User;

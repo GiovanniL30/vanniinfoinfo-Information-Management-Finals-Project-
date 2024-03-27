@@ -1,7 +1,7 @@
 package client;
 
 import client.controller.ClientController;
-import client.view.ClientMainView;
+import client.view.ClientMainFrame;
 
 import javax.swing.*;
 
@@ -11,8 +11,8 @@ public class ClientApplication {
 
         SwingUtilities.invokeLater( () -> {
             ClientController clientController = new ClientController();
-            ClientMainView clientMainView = new ClientMainView(clientController);
-            clientController.setClientMainView(clientMainView);
+            ClientMainFrame clientMainFrame = new ClientMainFrame(clientController);
+            clientController.setClientMainView(clientMainFrame);
         });
 
     }
