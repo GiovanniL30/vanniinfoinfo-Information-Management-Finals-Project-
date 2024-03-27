@@ -80,6 +80,18 @@ public class AdminController implements AdminControllerObserver{
         loading.setVisible(true);
     }
 
+    @Override
+    public void updatePerformer(Performer performer) {
+
+        if(Database.updatePerformer(performer)) {
+            changeFrame(AdminPanel.PERFORMER);
+            JOptionPane.showMessageDialog(adminMainFrame, "Updated Performer successfully");
+        }else {
+            JOptionPane.showMessageDialog(adminMainFrame, "Having error updating the performer");
+        }
+
+    }
+
     public LinkedList<Performer> getPerformers() {
         return Database.getPerformers();
     }

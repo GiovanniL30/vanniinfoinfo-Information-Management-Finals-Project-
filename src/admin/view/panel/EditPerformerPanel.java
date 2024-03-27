@@ -83,6 +83,23 @@ public class EditPerformerPanel extends JPanel {
         panel.add(buttonPanel);
 
         cancel.addActionListener(e -> adminControllerObserver.changeFrame(AdminPanel.PERFORMER));
+
+        save.addActionListener(e -> {
+
+            String newName = performerName.getInput();
+            String newDescription = description.getText();
+            String newGenre = genre.getChoice();
+            String newStatus = performerStatus.getChoice();
+            String newType = performerType.getChoice();
+
+            if(UtilityMethods.haveNullOrEmpty(newName, newDescription)) {
+                return;
+            }
+
+            Performer updatedPerformer = new Performer(performer.getPerformerID(), newName, newGenre, newType, newDescription, newStatus);
+            adminControllerObserver.updatePerformer(updatedPerformer);
+        });
+
         return panel;
     }
 

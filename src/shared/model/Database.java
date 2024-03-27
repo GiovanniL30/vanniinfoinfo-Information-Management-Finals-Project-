@@ -76,6 +76,32 @@ public class Database {
         return null;
     }
 
+    public static boolean updatePerformer(Performer performer) {
+
+        ensureConnection();
+
+        String query = "UPDATE performer" +
+                " SET performerName = ?, genre = ? ,performerType = ? ,description = ? ,performerStatus = ?" +
+                " WHERE (`performerID` = ?)";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, performer.getPerformerName());
+            preparedStatement.setString(2, performer.getGenre());
+            preparedStatement.setString(3, performer.getPerformerType());
+            preparedStatement.setString(4, performer.getDescription());
+            preparedStatement.setString(5, performer.getPerformerStatus());
+            preparedStatement.setString(6, performer.getPerformerID());
+            preparedStatement.execute();
+            return true;
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+
+        return false;
+    }
+
     public static boolean havePurchased(String userID, String liveSetID) {
 
         ensureConnection();
