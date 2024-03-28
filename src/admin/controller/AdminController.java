@@ -7,6 +7,7 @@ import admin.view.panel.LiveSetPanel;
 import admin.view.panel.PerformerPanel;
 import admin.view.utility.AdminPanel;
 import shared.model.Database;
+import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.viewComponents.Loading;
 
@@ -100,6 +101,16 @@ public class AdminController implements AdminControllerObserver{
             JOptionPane.showMessageDialog(adminMainFrame, "Having error updating the performer");
         }
 
+    }
+
+    @Override
+    public void addLiveSet(LiveSet liveSet) {
+        if (Database.addLiveSet(liveSet)) {
+            changeFrame(AdminPanel.LIVE_SET);
+            JOptionPane.showMessageDialog(adminMainFrame, "Added LiveSet successfully");
+        } else {
+            JOptionPane.showMessageDialog(adminMainFrame, "Having error adding the LiveSet");
+        }
     }
 
     public LinkedList<Performer> getPerformers() {
