@@ -81,6 +81,16 @@ public class AdminController implements AdminControllerObserver{
     }
 
     @Override
+    public void addPerformer(Performer performer) {
+        if(Database.addPerformer(performer)) {
+            changeFrame(AdminPanel.PERFORMER);
+            JOptionPane.showMessageDialog(adminMainFrame, "Added Performer successfully");
+        }else {
+            JOptionPane.showMessageDialog(adminMainFrame, "Having error adding the performer");
+        }
+    }
+
+    @Override
     public void updatePerformer(Performer performer) {
 
         if(Database.updatePerformer(performer)) {
