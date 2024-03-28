@@ -75,6 +75,24 @@ public class Database {
         }
         return null;
     }
+    public static boolean addLiveSet(LiveSet liveSet) {
+        ensureConnection();
+        String query = "INSERT INTO liveset(liveSetID, status, date, time, thumbnail, streamLinkURL, performerID, price)" + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, liveSet.getLiveSetID());
+            preparedStatement.setString(2, liveSet.getStatus());
+            preparedStatement.setDate(3, liveSet.getDate());
+            preparedStatement.setTime(4, liveSet.getTime());
+            preparedStatement.setString(5, liveSet.getThumbnail());
+            preparedStatement.setString(6, liveSet.getStreamLinkURL());
+            preparedStatement.setString(7, liveSet.getPerformerID());
+            preparedStatement.setInt(8, liveSet.getPrice());
+            return true;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static boolean addPerformer(Performer performer) {
 
