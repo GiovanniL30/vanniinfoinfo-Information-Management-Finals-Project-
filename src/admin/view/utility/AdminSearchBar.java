@@ -66,4 +66,5 @@ public class AdminSearchBar extends JPanel {
         back.addActionListener( e -> adminControllerObserver.changeFrame(AdminPanel.HOME));
 
     }
+
 }

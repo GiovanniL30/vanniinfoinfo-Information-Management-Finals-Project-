@@ -20,4 +20,5 @@ public class AdminHeader extends JPanel {
         add(logo, BorderLayout.WEST);
     }
 
+
 }

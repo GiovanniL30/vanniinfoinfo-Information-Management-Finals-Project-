@@ -37,7 +37,7 @@ public class AdminController implements AdminControllerObserver{
 
                     }case LIVE_SET -> {
 
-                        LiveSetPanel liveSetPanel = new LiveSetPanel(AdminController.this);
+                        LiveSetPanel liveSetPanel = new LiveSetPanel(Database.getLiveSets(), Database.getPerformers(),AdminController.this);
                         adminMainFrame.setLiveSetPanel(liveSetPanel);
                         adminMainFrame.getContentPane().add(liveSetPanel, 1);
                     }
