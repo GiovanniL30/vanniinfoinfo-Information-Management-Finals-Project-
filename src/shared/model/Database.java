@@ -18,7 +18,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanniinfoinfo", "root", "password");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanniinfofo", "root", "");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -74,6 +74,25 @@ public class Database {
             System.err.println("Having error executing query " + query);
         }
         return null;
+    }
+
+    public static boolean addPerformer(Performer performer) {
+
+        ensureConnection();
+        String query = "INSERT INTO performer(performerID, performerName, genre, performerType, description, performerStatus)" + " VALUES (?, ?, ?, ?, ?, ?)";
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, performer.getPerformerID());
+            preparedStatement.setString(2, performer.getPerformerName());
+            preparedStatement.setString(3, performer.getGenre());
+            preparedStatement.setString(4, performer.getPerformerType());
+            preparedStatement.setString(5, performer.getDescription());
+            preparedStatement.setString(6, performer.getPerformerStatus());
+            preparedStatement.execute();
+            return true;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static boolean updatePerformer(Performer performer) {
@@ -233,7 +252,8 @@ public class Database {
             }
 
         } catch (SQLException e) {
-            System.err.println("Having error executing query " + query);
+            System.out.println(e.getMessage());
+//            System.err.println("Having error executing query " + query);
             return new LinkedList<>();
         }
 

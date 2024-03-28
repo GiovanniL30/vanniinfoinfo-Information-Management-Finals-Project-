@@ -8,6 +8,5 @@ public interface AdminControllerObserver {
     void changeFrame(AdminPanel adminPanel);
     void editPerformerFrame(Performer performer);
     void updatePerformer(Performer performer);
-
-
+    void addPerformer(Performer performer);
 }

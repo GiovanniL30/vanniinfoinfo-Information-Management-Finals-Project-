@@ -39,6 +39,15 @@ public class PerformerPanel extends JPanel {
         scrollPane.setBackground(Color.WHITE);
         scrollPane.setPreferredSize(new Dimension(AdminMainFrame.WIDTH, 550));
         add(scrollPane, BorderLayout.CENTER);
+
+        adminSearchBar.getAddButton().addActionListener(e -> {
+            Performer newPerformer = new Performer("", "", "", "", "", "Active");
+            AddPerformer addPerformerPanel = new AddPerformer(newPerformer, adminControllerObserver);
+            this.removeAll();
+            this.add(addPerformerPanel);
+            this.revalidate();
+            this.repaint();
+        });
     }
 
     public void populatePerformers(LinkedList<Performer> performers) {
