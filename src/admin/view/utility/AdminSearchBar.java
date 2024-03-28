@@ -15,7 +15,7 @@ import java.awt.*;
 public class AdminSearchBar extends JPanel {
 
     private AdminPanel adminPanel;
-
+    private FilledButton addButton;
     private AdminControllerObserver adminControllerObserver;
 
     public AdminSearchBar(AdminPanel adminPanel, AdminControllerObserver adminControllerObserver) {
@@ -36,11 +36,11 @@ public class AdminSearchBar extends JPanel {
         constraints.gridx = 0;
 
         IconButton back = new IconButton("resources/images/back.png", 40, 40);
-        FilledButton add = new FilledButton("ADD", new Dimension(120, 50), FontFactory.newPoppinsBold(13), ColorFactory.red(), Color.WHITE);
+        addButton = new FilledButton("ADD", new Dimension(120, 50), FontFactory.newPoppinsBold(13), ColorFactory.red(), Color.WHITE);
         buttonsPanel.add(back, constraints);
         constraints.gridx = 1;
         constraints.insets = new Insets(0, 40, 0, 0);
-        buttonsPanel.add(add, constraints);
+        buttonsPanel.add(addButton, constraints);
 
         FieldInput search = new FieldInput("", new Dimension(600, 50), 40, 1 ,false);
 
@@ -65,5 +65,9 @@ public class AdminSearchBar extends JPanel {
 
         back.addActionListener( e -> adminControllerObserver.changeFrame(AdminPanel.HOME));
 
+    }
+
+    public FilledButton getAddButton() {
+        return addButton;
     }
 }
