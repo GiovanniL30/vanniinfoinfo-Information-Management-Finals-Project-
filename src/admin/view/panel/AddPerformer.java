@@ -92,7 +92,7 @@ public class AddPerformer extends JPanel {
                 return;
             }
 
-            Performer newPerformer = new Performer(performer.getPerformerID(), newName, newGenre, newType, newDescription, "Active");
+            Performer newPerformer = new Performer(UtilityMethods.generateRandomID(), newName, newGenre, newType, newDescription, "Active");
             adminControllerObserver.addPerformer(newPerformer);
         });
 
