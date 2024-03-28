@@ -36,7 +36,7 @@ public class AddPerformer extends JPanel {
         JPanel n = new JPanel(new FlowLayout(FlowLayout.CENTER));
         n.setBackground(Color.WHITE);
 
-        JLabel label = new JLabel("REGISTER PERFORMER");
+        JLabel label = new JLabel("Register Performer");
         label.setFont(FontFactory.newPoppinsBold(16));
         n.add(label);
         return n;
@@ -54,7 +54,7 @@ public class AddPerformer extends JPanel {
         performerPanel.setBackground(Color.white);
         performerPanel.add(performerName);
 
-        JPanel dropDowns = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel dropDowns = new JPanel(new FlowLayout(FlowLayout.LEFT));
         dropDowns.setBackground(Color.WHITE);
         DropDown performerType = new DropDown(new Dimension(355, 60), "Performer Type", performer.getPerformerType().equals("Band") ? new String[] {"Band", "Solo"}:new String[] {"Solo", "Band"});
         DropDown genre = new DropDown(new Dimension(355, 60), "Genre", Stream.concat(Arrays.stream(new String[]{performer.getGenre()}),Arrays.stream(UtilityMethods.getGenres())).toArray(String[]::new));
