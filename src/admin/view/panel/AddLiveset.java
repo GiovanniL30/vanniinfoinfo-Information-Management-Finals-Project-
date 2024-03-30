@@ -3,6 +3,7 @@ package admin.view.panel;
 import admin.controller.AdminControllerObserver;
 import admin.view.AdminMainFrame;
 import admin.view.utility.AdminPanel;
+import org.jdesktop.swingx.JXDatePicker;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.utilityClasses.ColorFactory;
@@ -14,21 +15,24 @@ import shared.viewComponents.FieldInput;
 import shared.viewComponents.FilledButton;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.sql.Date;
 import java.sql.Time;
+import java.util.Calendar;
 import java.util.LinkedList;
+
 
 public class AddLiveset extends JPanel {
     private LinkedList<Performer> performer;
     private AdminControllerObserver adminControllerObserver;
     private LiveSet liveSet;
-//    private FieldInput dateInput;
-//    private FieldInput timeInput;
     private JLabel thumbnailPreview;
     private String thumbnailPath;
+    private JXDatePicker datePicker;
+    private JSpinner timeSpinner;
 
     public AddLiveset(LiveSet liveSet, LinkedList<Performer> performer, AdminControllerObserver adminControllerObserver) {
         this.adminControllerObserver = adminControllerObserver;
@@ -60,7 +64,6 @@ public class AddLiveset extends JPanel {
         JPanel liveSetPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         liveSetPanel.setBackground(Color.WHITE);
 
-        // Create an array of performer names
         String[] performerNames = new String[performer.size()];
         for (int i = 0; i < performer.size(); i++) {
             performerNames[i] = performer.get(i).getPerformerName();
@@ -74,22 +77,38 @@ public class AddLiveset extends JPanel {
 
         panel.add(liveSetPanel);
 
+        JPanel dateTimePanel = new JPanel(new BorderLayout());
+        dateTimePanel.setBackground(Color.WHITE);
 
-//        JPanel dateTimePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//        dateTimePanel.setBackground(Color.WHITE);
-//
-//        // Create date input
-//        dateInput = new FieldInput("", new Dimension(150, 40), 40, 1, true);
-//        dateInput.getTextField().setToolTipText("Date (YYYY-MM-DD)");
-//        dateTimePanel.add(dateInput);
-//
-//        // Create time input
-//        timeInput = new FieldInput("", new Dimension(100, 40), 40, 1, true);
-//        timeInput.getTextField().setToolTipText("Time (HH:MM)");
-//        dateTimePanel.add(timeInput);
-//
-//        panel.add(dateTimePanel);
+        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        datePanel.setBackground(Color.WHITE);
 
+        JLabel dateLabel = new JLabel("Date:");
+        datePanel.add(dateLabel);
+
+        datePicker = new JXDatePicker();
+        datePicker.setPreferredSize(new Dimension(200, 30));
+        datePanel.add(datePicker);
+
+        dateTimePanel.add(datePanel, BorderLayout.WEST);
+
+        JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        timePanel.setBackground(Color.WHITE);
+
+        JLabel timeLabel = new JLabel("Time:");
+        timePanel.add(timeLabel);
+
+        SpinnerDateModel spinnerModel = new SpinnerDateModel();
+        spinnerModel.setCalendarField(Calendar.MINUTE);
+        JSpinner timeSpinner = new JSpinner(spinnerModel);
+        JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm");
+        timeSpinner.setEditor(timeEditor);
+        timePanel.add(timeSpinner);
+
+        timePanel.setBorder(BorderFactory.createEmptyBorder(0, 100, 0, 0));
+        dateTimePanel.add(timePanel, BorderLayout.CENTER);
+
+        panel.add(dateTimePanel);
 
         JPanel thumbnailPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         thumbnailPanel.setBackground(Color.WHITE);
@@ -104,8 +123,6 @@ public class AddLiveset extends JPanel {
         thumbnailPanel.add(thumbnailPreview);
 
         panel.add(thumbnailPanel);
-
-
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
@@ -123,20 +140,16 @@ public class AddLiveset extends JPanel {
         addLiveset.addActionListener(e -> {
             String selectedPerformer = performerName.getChoice();
             String newStreamURL = streamURL.getInput();
-//            String newDate = dateInput.getInput();
-//            String newTime = timeInput.getInput();
+            Date selectedDate = new Date(datePicker.getDate().getTime());
 
-            // Validate input
-//            if (UtilityMethods.haveNullOrEmpty(selectedPerformer, newStreamURL, newDate, newTime, thumbnailPath)) {
-//                JOptionPane.showMessageDialog(null, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-
+            if (UtilityMethods.haveNullOrEmpty(selectedPerformer, newStreamURL, thumbnailPath)) {
+                JOptionPane.showMessageDialog(null, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
             String performerID = getPerformerIdByName(selectedPerformer);
-//            LiveSet newLiveSet = new LiveSet(UtilityMethods.generateRandomID(), "Open", 0, newDate, newTime, thumbnailPath, streamURL, performerID);
-//            adminControllerObserver.addLiveSet(newLiveSet);
         });
+
         return panel;
     }
 
@@ -152,7 +165,6 @@ public class AddLiveset extends JPanel {
             File selectedFile = fileChooser.getSelectedFile();
             thumbnailPath = selectedFile.getAbsolutePath();
 
-            // Update the thumbnail preview
             ImageIcon thumbnailIcon = new ImageIcon(thumbnailPath);
             Image scaledImage = thumbnailIcon.getImage().getScaledInstance(600, 300, Image.SCALE_SMOOTH);
             thumbnailPreview.setIcon(new ImageIcon(scaledImage));
@@ -168,3 +180,4 @@ public class AddLiveset extends JPanel {
         return null;
     }
 }
+
