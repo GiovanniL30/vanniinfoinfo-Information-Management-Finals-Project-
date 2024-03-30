@@ -42,7 +42,6 @@ public class LiveSetDialog extends JDialog {
 
         setTitle((liveSetDialogType == LiveSetDialogType.ADD) ? "Add Liveset" : "Edit Liveset");
         setModal(true);
-//        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout(0, 20));
         setBackground(Color.white);
 
@@ -57,13 +56,27 @@ public class LiveSetDialog extends JDialog {
         JPanel n = new JPanel(new FlowLayout(FlowLayout.CENTER));
         n.setBackground(Color.WHITE);
 
-        JLabel label = new JLabel("Add Liveset");
+        JLabel label = new JLabel(liveSetDialogType == LiveSetDialogType.ADD ? "Add Liveset" : "Edit Liveset");
         label.setFont(FontFactory.newPoppinsBold(16));
         n.add(label);
         return n;
     }
 
     private JPanel centerPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(Color.white);
+
+        if (liveSetDialogType == LiveSetDialogType.ADD) {
+            panel.add(addLiveSetPanel());
+        } else {
+            panel.add(editLiveSetPanel());
+        }
+
+        return panel;
+    }
+
+    private JPanel addLiveSetPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(Color.white);
@@ -156,6 +169,17 @@ public class LiveSetDialog extends JDialog {
 
             String performerID = getPerformerIdByName(selectedPerformer);
         });
+
+        return panel;
+    }
+
+    private JPanel editLiveSetPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(Color.white);
+
+        // Add components for the "Edit Liveset" panel here
+
 
         return panel;
     }
