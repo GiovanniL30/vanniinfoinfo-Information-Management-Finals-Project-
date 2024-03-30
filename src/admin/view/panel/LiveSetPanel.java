@@ -55,6 +55,7 @@ public class LiveSetPanel extends JPanel {
             LiveSetDialog addLivesetDialog = new LiveSetDialog(adminMainFrame, newLiveSet, performers, adminControllerObserver, LiveSetDialogType.ADD);
             addLivesetDialog.setVisible(true);
         });
+
     }
 
     public void populateLiveSet(LinkedList<LiveSet> liveSets, LinkedList<Performer> performers) {
@@ -117,6 +118,9 @@ public class LiveSetPanel extends JPanel {
 
 
     private static class LiveSetCard extends JPanel{
+        AdminMainFrame adminMainFrame;
+        LinkedList<Performer> performers;
+        AdminControllerObserver adminControllerObserver;
 
         public LiveSetCard(LiveSet liveSet, Performer performer) {
 
@@ -143,6 +147,11 @@ public class LiveSetPanel extends JPanel {
             add(time);
             add(status);
             add(editButton);
+
+            editButton.addActionListener(e -> {
+                LiveSetDialog editLivesetDialog = new LiveSetDialog(adminMainFrame, liveSet, performers, adminControllerObserver, LiveSetDialogType.EDIT);
+                editLivesetDialog.setVisible(true);
+            });
         }
 
     }
