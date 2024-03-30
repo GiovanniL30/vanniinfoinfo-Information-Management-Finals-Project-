@@ -2,8 +2,10 @@ package admin.view.panel;
 
 import admin.controller.AdminControllerObserver;
 import admin.view.AdminMainFrame;
+import admin.view.components.LiveSetDialog;
 import admin.view.utility.AdminPanel;
 import admin.view.utility.AdminSearchBar;
+import admin.view.utility.LiveSetDialogType;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.utilityClasses.ColorFactory;
@@ -21,6 +23,7 @@ import java.util.LinkedList;
 public class LiveSetPanel extends JPanel {
     private AdminSearchBar adminSearchBar;
     private JPanel scrollPaneHolder = new JPanel();
+    AdminMainFrame adminMainFrame;
     public LiveSetPanel(LinkedList<LiveSet> liveSets, LinkedList<Performer> performers, AdminControllerObserver adminControllerObserver) {
         setBackground(Color.white);
 
@@ -49,11 +52,8 @@ public class LiveSetPanel extends JPanel {
 
         adminSearchBar.getAddButton().addActionListener(e -> {
             LiveSet newLiveSet = new LiveSet("", "", 0, liveSets.element().getDate(), liveSets.element().getTime(), "", "", "");
-            AddLiveset addLiveset = new AddLiveset(newLiveSet, performers ,adminControllerObserver);
-            this.removeAll();
-            this.add(addLiveset);
-            this.revalidate();
-            this.repaint();
+            LiveSetDialog addLivesetDialog = new LiveSetDialog(adminMainFrame, newLiveSet, performers, adminControllerObserver, LiveSetDialogType.ADD);
+            addLivesetDialog.setVisible(true);
         });
     }
 
