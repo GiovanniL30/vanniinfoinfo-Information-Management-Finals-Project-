@@ -19,6 +19,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.sql.Date;
+import java.sql.Time;
 import java.util.Calendar;
 import java.util.LinkedList;
 
@@ -121,7 +122,7 @@ public class LiveSetDialog extends JDialog {
         SpinnerDateModel spinnerModel = new SpinnerDateModel();
         spinnerModel.setCalendarField(Calendar.MINUTE);
         JSpinner timeSpinner = new JSpinner(spinnerModel);
-        JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm");
+        JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm:ss");
         timeSpinner.setEditor(timeEditor);
         timePanel.add(timeSpinner);
 
@@ -161,13 +162,16 @@ public class LiveSetDialog extends JDialog {
             String selectedPerformer = performerName.getChoice();
             String newStreamURL = streamURL.getInput();
             Date selectedDate = new Date(datePicker.getDate().getTime());
-
+            java.util.Date timeDate = (java.util.Date) timeSpinner.getValue();
+            Time time = new Time(timeDate.getTime());
             if (UtilityMethods.haveNullOrEmpty(selectedPerformer, newStreamURL, thumbnailPath)) {
                 JOptionPane.showMessageDialog(null, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             String performerID = getPerformerIdByName(selectedPerformer);
+            LiveSet newLiveSet = new LiveSet(UtilityMethods.generateRandomID(), "Open",2000, selectedDate, time, thumbnailPath, newStreamURL,performerID);
+            adminControllerObserver.addLiveSet(newLiveSet);
         });
 
         return panel;

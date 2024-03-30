@@ -18,7 +18,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanniinfofo", "root", "");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/seanhehe", "root", "");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -88,7 +88,13 @@ public class Database {
             preparedStatement.setString(6, liveSet.getStreamLinkURL());
             preparedStatement.setString(7, liveSet.getPerformerID());
             preparedStatement.setInt(8, liveSet.getPrice());
-            return true;
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
