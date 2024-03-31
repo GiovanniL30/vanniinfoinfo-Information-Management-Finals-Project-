@@ -101,34 +101,37 @@ public class LiveSetDialog extends JDialog {
         JPanel dateTimePanel = new JPanel(new BorderLayout());
         dateTimePanel.setBackground(Color.WHITE);
 
-        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel datePanel = new JPanel(new BorderLayout());
         datePanel.setBackground(Color.WHITE);
 
         JLabel dateLabel = new JLabel("Date:");
-        datePanel.add(dateLabel);
+        datePanel.add(dateLabel, BorderLayout.NORTH);
 
         datePicker = new JXDatePicker();
         datePicker.setPreferredSize(new Dimension(200, 30));
-        datePanel.add(datePicker);
-
+        datePanel.add(datePicker, BorderLayout.CENTER);
+        datePanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20,0));
         dateTimePanel.add(datePanel, BorderLayout.WEST);
 
-        JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel timePanel = new JPanel(new BorderLayout());
         timePanel.setBackground(Color.WHITE);
 
         JLabel timeLabel = new JLabel("Time:");
-        timePanel.add(timeLabel);
+        timePanel.add(timeLabel, BorderLayout.NORTH);
 
         SpinnerDateModel spinnerModel = new SpinnerDateModel();
         spinnerModel.setCalendarField(Calendar.MINUTE);
         JSpinner timeSpinner = new JSpinner(spinnerModel);
         JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm:ss");
         timeSpinner.setEditor(timeEditor);
-        timePanel.add(timeSpinner);
+        timePanel.add(timeSpinner, BorderLayout.CENTER);
 
-        timePanel.setBorder(BorderFactory.createEmptyBorder(0, 100, 0, 0));
+        timePanel.setBorder(BorderFactory.createEmptyBorder(20, 100, 20, 0));
         dateTimePanel.add(timePanel, BorderLayout.CENTER);
 
+        FieldInput price = new FieldInput("Price", new Dimension(400, 30), 9, 1, false);
+        price.getTextField().setText("");
+        dateTimePanel.add(price, BorderLayout.EAST);
         panel.add(dateTimePanel);
 
         JPanel thumbnailPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -164,19 +167,44 @@ public class LiveSetDialog extends JDialog {
             Date selectedDate = new Date(datePicker.getDate().getTime());
             java.util.Date timeDate = (java.util.Date) timeSpinner.getValue();
             Time time = new Time(timeDate.getTime());
+            int priceValue;
+            try {
+                priceValue = Integer.parseInt(price.getInput());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Price should be a valid integer.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             if (UtilityMethods.haveNullOrEmpty(selectedPerformer, newStreamURL, thumbnailPath)) {
                 JOptionPane.showMessageDialog(null, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
+            if (!isValidURL(newStreamURL)) {
+                JOptionPane.showMessageDialog(null, "Please enter a valid URL for the Stream URL.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             String performerID = getPerformerIdByName(selectedPerformer);
-            LiveSet newLiveSet = new LiveSet(UtilityMethods.generateRandomID(), "Open",2000, selectedDate, time, thumbnailPath, newStreamURL,performerID);
+
+            LiveSet newLiveSet = new LiveSet(UtilityMethods.generateRandomID(), "Open",priceValue, selectedDate, time, thumbnailPath, newStreamURL,performerID);
             adminControllerObserver.addLiveSet(newLiveSet);
         });
 
         return panel;
     }
 
+    /**
+     * The method will send an error if
+     * If newStreamURL is an empty string.
+     * If newStreamURL does not start with "http://" or "https://".
+     * If newStreamURL contains characters that are not allowed in a URL (spaces or special characters).
+     * If newStreamURL is missing the domain name or the top-level domain ("example.com" or "www.example.com").
+     * If newStreamURL does not contain a valid path
+     * @param url
+     * @return
+     */
+    private boolean isValidURL(String url) {
+        String regex = "^(http(s)?://)?([\\w-]+\\.)+[\\w-]+(/[\\w- ./?%&=]*)?$";
+        return url.matches(regex);
+    }
     private JPanel editLiveSetPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
