@@ -1,55 +1,60 @@
 package admin.view.components;
 
 import admin.controller.AdminControllerObserver;
-import admin.view.AdminMainFrame;
 import admin.view.utility.LiveSetDialogType;
+import com.formdev.flatlaf.swingx.ui.FlatDatePickerUI;
 import org.jdesktop.swingx.JXDatePicker;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
 import shared.utilityClasses.UtilityMethods;
+import shared.viewComponents.*;
 import shared.viewComponents.Button;
-import shared.viewComponents.DropDown;
-import shared.viewComponents.FieldInput;
-import shared.viewComponents.FilledButton;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
-import java.sql.Date;
-import java.sql.Time;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
+
 
 public class LiveSetDialog extends JDialog {
 
-    private LinkedList<Performer> performer;
+    private LinkedList<Performer> performers;
     private AdminControllerObserver adminControllerObserver;
     private LiveSet liveSet;
-    private JLabel thumbnailPreview;
-    private String thumbnailPath;
+    private Picture thumbnailPreview;
     private JXDatePicker datePicker;
-    private JSpinner timeSpinner;
+    private  JSpinner timeSpinner;
     private LiveSetDialogType liveSetDialogType;
+    private String imagePath = "";
 
-    public LiveSetDialog(JFrame frame, LiveSet liveSet, LinkedList<Performer> performer, AdminControllerObserver adminControllerObserver, LiveSetDialogType liveSetDialogType) {
+    public LiveSetDialog(JFrame frame, LiveSet liveSet, LinkedList<Performer> performers, AdminControllerObserver adminControllerObserver, LiveSetDialogType liveSetDialogType) {
         super(frame);
         this.adminControllerObserver = adminControllerObserver;
-        this.performer = performer;
+        this.performers = performers;
         this.liveSet = liveSet;
         this.liveSetDialogType = liveSetDialogType;
 
         setTitle((liveSetDialogType == LiveSetDialogType.ADD) ? "Add Liveset" : "Edit Liveset");
         setModal(true);
-        setLayout(new BorderLayout(0, 20));
+        setLayout(new BorderLayout(0, 50));
         setBackground(Color.white);
 
         add(northPanel(), BorderLayout.NORTH);
         add(centerPanel(), BorderLayout.CENTER);
 
-        pack();
+        setSize(new Dimension(850, 900));
+        setResizable(false);
         setLocationRelativeTo(frame);
     }
 
@@ -65,7 +70,8 @@ public class LiveSetDialog extends JDialog {
 
     private JPanel centerPanel() {
         JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        panel.setBorder(new EmptyBorder(10, 10 ,10, 10));
         panel.setBackground(Color.white);
 
         if (liveSetDialogType == LiveSetDialogType.ADD) {
@@ -78,117 +84,193 @@ public class LiveSetDialog extends JDialog {
     }
 
     private JPanel addLiveSetPanel() {
+
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(Color.white);
 
-        JPanel liveSetPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        liveSetPanel.setBackground(Color.WHITE);
+        JPanel firstRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        firstRow.setBackground(Color.white);
+        DropDown performersDropDown = new DropDown(new Dimension(350, 50), "Performer", performers.stream().map(Performer::getPerformerName).toList().toArray(new String[0]));
+        FieldInput streamUrl = new FieldInput("Stream URL", new Dimension(350, 50), 200, 10, false);
 
-        String[] performerNames = new String[performer.size()];
-        for (int i = 0; i < performer.size(); i++) {
-            performerNames[i] = performer.get(i).getPerformerName();
-        }
+        firstRow.add(performersDropDown);
+        firstRow.add(streamUrl);
 
-        DropDown performerName = new DropDown(new Dimension(355, 60), "Performer", performerNames);
-        FieldInput streamURL = new FieldInput("Stream URL", new Dimension(AdminMainFrame.WIDTH - 650, 30), 40, 1, false);
-        streamURL.getTextField().setText("");
-        liveSetPanel.add(performerName);
-        liveSetPanel.add(streamURL);
-
-        panel.add(liveSetPanel);
-
-        JPanel dateTimePanel = new JPanel(new BorderLayout());
-        dateTimePanel.setBackground(Color.WHITE);
+        JPanel secondRow = new JPanel(new GridLayout(1, 2, 20, 0));
+        secondRow.setSize(new Dimension(500, 50));
+        secondRow.setBackground(Color.white);
 
         JPanel datePanel = new JPanel(new BorderLayout());
-        datePanel.setBackground(Color.WHITE);
-
-        JLabel dateLabel = new JLabel("Date:");
-        datePanel.add(dateLabel, BorderLayout.NORTH);
-
+        datePanel.setBackground(Color.white);
+        JLabel dateLabel = new JLabel("Date");
         datePicker = new JXDatePicker();
-        datePicker.setPreferredSize(new Dimension(200, 30));
+        datePicker.setUI(new FlatDatePickerUI());
+        datePicker.setPreferredSize(new Dimension(250, 50));
+        datePanel.add(dateLabel, BorderLayout.NORTH);
         datePanel.add(datePicker, BorderLayout.CENTER);
-        datePanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20,0));
-        dateTimePanel.add(datePanel, BorderLayout.WEST);
 
-        JPanel timePanel = new JPanel(new BorderLayout());
-        timePanel.setBackground(Color.WHITE);
-
-        JLabel timeLabel = new JLabel("Time:");
-        timePanel.add(timeLabel, BorderLayout.NORTH);
-
+        JPanel spinnerPanel = new JPanel(new BorderLayout());
+        JLabel spinnerLabel = new JLabel("Time");
+        spinnerPanel.setBackground(Color.white);
         SpinnerDateModel spinnerModel = new SpinnerDateModel();
         spinnerModel.setCalendarField(Calendar.MINUTE);
-        JSpinner timeSpinner = new JSpinner(spinnerModel);
-        JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm:ss");
+        timeSpinner = new JSpinner(spinnerModel);
+        JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm");
         timeSpinner.setEditor(timeEditor);
-        timePanel.add(timeSpinner, BorderLayout.CENTER);
+        timeEditor.enableInputMethods(false);
+        timeSpinner.setPreferredSize(new Dimension(250, 50));
+        spinnerPanel.add(spinnerLabel, BorderLayout.NORTH);
+        spinnerPanel.add(timeSpinner, BorderLayout.CENTER);
 
-        timePanel.setBorder(BorderFactory.createEmptyBorder(20, 100, 20, 0));
-        dateTimePanel.add(timePanel, BorderLayout.CENTER);
+        secondRow.add(datePanel);
+        secondRow.add(spinnerPanel);
 
-        FieldInput price = new FieldInput("Price", new Dimension(400, 30), 9, 1, false);
-        price.getTextField().setText("");
-        dateTimePanel.add(price, BorderLayout.EAST);
-        panel.add(dateTimePanel);
 
-        JPanel thumbnailPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        thumbnailPanel.setBackground(Color.WHITE);
+        JPanel thirdRow = new JPanel();
+        thirdRow.setPreferredSize(new Dimension(620, 300));
+        thirdRow.setLayout(null);
+        thirdRow.setBackground(Color.white);
+        Button uploadImageButton = new Button("Upload Thumbnail", new Dimension(300, 50), FontFactory.newPoppinsDefault(14));
+        uploadImageButton.setBounds(0, 0, 360, 50);
+        thumbnailPreview = new Picture("asc", 400, 300);
+        thumbnailPreview.setBounds(380, 0, 350, 300);
+        thirdRow.add(uploadImageButton);
+        thirdRow.add(thumbnailPreview);
 
-        Button uploadThumbnail = new Button("Upload Thumbnail", new Dimension(400, 40), FontFactory.newPoppinsDefault(14));
-        uploadThumbnail.addActionListener(e -> handleThumbnailUpload());
-        thumbnailPanel.add(uploadThumbnail);
 
-        thumbnailPreview = new JLabel();
-        thumbnailPreview.setPreferredSize(new Dimension(600, 300));
-        thumbnailPreview.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        thumbnailPanel.add(thumbnailPreview);
+        JPanel lastRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
+        lastRow.setBackground(Color.white);
+        Button cancel = new Button("CANCEL", new Dimension(345, 50), FontFactory.newPoppinsDefault(14));
+        FilledButton add = new FilledButton("ADD", new Dimension(345, 50), FontFactory.newPoppinsDefault(14), ColorFactory.red(), Color.white);
+        lastRow.add(cancel);
+        lastRow.add(add);
 
-        panel.add(thumbnailPanel);
+        JPanel pricePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        pricePanel.setBackground(Color.white);
+        FieldInput price = new FieldInput("Price", new Dimension(690, 50), 20, 1, false);
+        pricePanel.add(price);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-
-        buttonPanel.setBackground(Color.white);
-        Button cancel = new Button("CANCEL", new Dimension(537, 50), FontFactory.newPoppinsBold(14));
-        FilledButton addLiveset = new FilledButton("ADD", new Dimension(537, 50), FontFactory.newPoppinsBold(14), ColorFactory.red(), Color.WHITE);
-        buttonPanel.add(cancel);
-        buttonPanel.add(addLiveset);
-
+        panel.add(firstRow);
+        panel.add(secondRow);
         panel.add(Box.createVerticalStrut(30));
-        panel.add(buttonPanel);
+        panel.add(thirdRow);
+        panel.add(pricePanel);
+        panel.add(lastRow);
 
-        cancel.addActionListener(e -> dispose());
 
-        addLiveset.addActionListener(e -> {
-            String selectedPerformer = performerName.getChoice();
-            String newStreamURL = streamURL.getInput();
-            Date selectedDate = new Date(datePicker.getDate().getTime());
-            java.util.Date timeDate = (java.util.Date) timeSpinner.getValue();
-            Time time = new Time(timeDate.getTime());
-            int priceValue;
-            try {
-                priceValue = Integer.parseInt(price.getInput());
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Price should be a valid integer.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (UtilityMethods.haveNullOrEmpty(selectedPerformer, newStreamURL, thumbnailPath)) {
-                JOptionPane.showMessageDialog(null, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (!isValidURL(newStreamURL)) {
-                JOptionPane.showMessageDialog(null, "Please enter a valid URL for the Stream URL.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            String performerID = getPerformerIdByName(selectedPerformer);
+        uploadImageButton.addActionListener(e -> {
+            imagePath = uploadImage();
 
-            LiveSet newLiveSet = new LiveSet(UtilityMethods.generateRandomID(), "Open",priceValue, selectedDate, time, thumbnailPath, newStreamURL,performerID);
-            adminControllerObserver.addLiveSet(newLiveSet);
+            if(!imagePath.isEmpty()) {
+                thumbnailPreview.updatePicture(imagePath);
+            }
         });
 
+        add.addActionListener( e -> {
+
+            if(datePicker.getDate() == null) {
+                JOptionPane.showMessageDialog(null, "Date must not be null");
+                return;
+            }
+
+            if(imagePath.isEmpty()){
+                JOptionPane.showMessageDialog(null, "Please Upload a Live Set Thumbnail");
+                return;
+            }
+
+            String streamURL = streamUrl.getInput();
+            java.sql.Date date = new java.sql.Date(datePicker.getDate().getTime());
+            java.sql.Time time = new java.sql.Time( ((Date)timeSpinner.getValue()).getTime());
+            String p = price.getInput();
+            int intP;
+
+
+            if(UtilityMethods.haveNullOrEmpty(streamURL, p)){
+                return;
+            }
+
+
+            try {
+                intP = Integer.parseInt(p);
+            }catch (NumberFormatException exception) {
+                price.enableError("Please enter a valid price");
+                return;
+            }
+
+            if(!isValidURL(streamURL)) {
+                streamUrl.enableError("Please enter a valid URL (ex.https://...)");
+                return;
+            }
+
+          adminControllerObserver.addLiveSet(new LiveSet(UtilityMethods.generateRandomID(), "Open", intP, date, time, imagePath, streamURL, performers.get(performersDropDown.choiceIndex()).getPerformerID()));
+        });
+
+        cancel.addActionListener( e -> dispose());
         return panel;
+    }
+
+
+    private JPanel editLiveSetPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(Color.white);
+
+        // Add components for the "Edit Liveset" panel here
+
+
+        return panel;
+    }
+
+
+
+    private String uploadImage() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setDialogTitle("Choose Image");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("JPEG Images", "jpg", "jpeg"));
+
+        int returnValue = fileChooser.showOpenDialog(this);
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            return saveImage(selectedFile);
+        }
+
+        return "";
+    }
+
+    private String saveImage(File imageFile) {
+        Path targetPath = null;
+        try {
+            Path sourcePath = imageFile.toPath();
+            targetPath = Paths.get("resources/images/", imageFile.getName());
+            Files.copy(sourcePath, targetPath);
+        } catch (IOException ignored) {
+            targetPath = Paths.get("resources/images/", imageFile.getName());
+        }
+        return targetPath.toString();
+    }
+
+    private String getDate(Date date) {
+
+        if(date == null) return "";
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd");
+        return dateFormat.format(date);
+    }
+
+
+
+
+
+    private String getPerformerIdByName(String performerName) {
+        for (Performer performer : this.performers) {
+            if (performer.getPerformerName().equals(performerName)) {
+                return performer.getPerformerID();
+            }
+        }
+        return null;
     }
 
     /**
@@ -204,42 +286,5 @@ public class LiveSetDialog extends JDialog {
     private boolean isValidURL(String url) {
         String regex = "^(http(s)?://)?([\\w-]+\\.)+[\\w-]+(/[\\w- ./?%&=]*)?$";
         return url.matches(regex);
-    }
-    private JPanel editLiveSetPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(Color.white);
-
-        // Add components for the "Edit Liveset" panel here
-
-
-        return panel;
-    }
-
-    private void handleThumbnailUpload() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setDialogTitle("Choose Thumbnail");
-        fileChooser.setFileFilter(new FileNameExtensionFilter("JPEG Images", "jpg", "jpeg"));
-        fileChooser.setFileFilter(new FileNameExtensionFilter("PNG Images", "png"));
-        int userSelection = fileChooser.showOpenDialog(this);
-
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            thumbnailPath = selectedFile.getAbsolutePath();
-
-            ImageIcon thumbnailIcon = new ImageIcon(thumbnailPath);
-            Image scaledImage = thumbnailIcon.getImage().getScaledInstance(600, 300, Image.SCALE_SMOOTH);
-            thumbnailPreview.setIcon(new ImageIcon(scaledImage));
-        }
-    }
-
-    private String getPerformerIdByName(String performerName) {
-        for (Performer performer : this.performer) {
-            if (performer.getPerformerName().equals(performerName)) {
-                return performer.getPerformerID();
-            }
-        }
-        return null;
     }
 }

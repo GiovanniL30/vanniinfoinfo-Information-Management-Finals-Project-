@@ -13,22 +13,24 @@ public class DropDown extends JPanel {
     public DropDown(Dimension dimension, String title, String[] contents) {
 
         setBackground(Color.white);
-        setPreferredSize(dimension);
-        setLayout(new GridLayout(2, 1));
+       // setPreferredSize(dimension);
+        setLayout(new BorderLayout());
 
 
         comboBox.setFont(FontFactory.newPoppinsDefault(13));
+        comboBox.setPreferredSize(dimension);
 
 
         for (String s : contents) {
             comboBox.addItem(s);
         }
         comboBox.setSelectedItem(0);
+        comboBox.setSelectedIndex(0);
 
         JLabel label = new JLabel(title);
 
-        add(label);
-        add(comboBox);
+        add(label, BorderLayout.NORTH);
+        add(comboBox, BorderLayout.CENTER);
 
     }
 
@@ -36,6 +38,9 @@ public class DropDown extends JPanel {
        return Objects.requireNonNull(comboBox.getSelectedItem()).toString();
     }
 
+    public int choiceIndex() {
+        return comboBox.getSelectedIndex();
+    }
 
 
 }

@@ -3,9 +3,9 @@ package shared.model;
 import shared.referenceClasses.*;
 import shared.utilityClasses.UtilityMethods;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -18,7 +18,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/seanhehe", "root", "");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanniinfoinfo", "root", "password");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -77,25 +77,34 @@ public class Database {
     }
     public static boolean addLiveSet(LiveSet liveSet) {
         ensureConnection();
-        String query = "INSERT INTO liveset(liveSetID, status, date, time, thumbnail, streamLinkURL, performerID, price)" + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO liveset(liveSetID, status, date, time, thumbnail, streamLinkURL, performerID, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, liveSet.getLiveSetID());
             preparedStatement.setString(2, liveSet.getStatus());
             preparedStatement.setDate(3, liveSet.getDate());
             preparedStatement.setTime(4, liveSet.getTime());
-            preparedStatement.setString(5, liveSet.getThumbnail());
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            try (InputStream fis = new FileInputStream(liveSet.getThumbnail())) {
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                preparedStatement.setBinaryStream(5, new ByteArrayInputStream(outputStream.toByteArray()));
+            }
+
             preparedStatement.setString(6, liveSet.getStreamLinkURL());
             preparedStatement.setString(7, liveSet.getPerformerID());
             preparedStatement.setInt(8, liveSet.getPrice());
             int rowsAffected = preparedStatement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                return true;
-            } else {
-                return false;
-            }
+            return rowsAffected > 0;
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

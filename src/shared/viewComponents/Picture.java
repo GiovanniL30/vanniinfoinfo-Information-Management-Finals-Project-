@@ -16,11 +16,7 @@ public class Picture extends JPanel {
         this.height = height;
         ImageIcon icon = new ImageIcon(filePath);
 
-        // Check if the image dimensions are valid
-        if(icon.getIconHeight() < 0 || icon.getIconWidth() < 0){
-            // If invalid, load a default image (imageNotAvailable.png) instead
-            icon = new ImageIcon("src/main/resources/images/bookImages/imageNotAvailable.png");
-        }
+
         // Scale the image to the specified dimensions
         Image image = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
         // Set the size of the panel to match the image dimensions

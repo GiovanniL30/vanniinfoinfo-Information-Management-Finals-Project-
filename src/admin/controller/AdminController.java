@@ -105,6 +105,8 @@ public class AdminController implements AdminControllerObserver{
 
     @Override
     public void addLiveSet(LiveSet liveSet) {
+
+        System.out.println(liveSet);
         if (Database.addLiveSet(liveSet)) {
             changeFrame(AdminPanel.LIVE_SET);
             JOptionPane.showMessageDialog(adminMainFrame, "Added LiveSet successfully");
