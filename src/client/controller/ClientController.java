@@ -18,6 +18,10 @@ import shared.referenceClasses.User;
 import shared.viewComponents.Loading;
 
 import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -193,7 +197,11 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
         if(user != null && user.getUserID().equals(loggedInAccount.getUserID())) {
             accessGigDialog.dispose();
-            JOptionPane.showMessageDialog(clientMainFrame, "success");
+            try {
+                Desktop.getDesktop().browse(new URI(liveSet.getStreamLinkURL()));
+            } catch (IOException | URISyntaxException e) {
+                JOptionPane.showMessageDialog(clientMainFrame, "The link on this live set is broken");
+            }
             return;
         }
 
@@ -201,7 +209,11 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
        if(response.isSuccess()){
            accessGigDialog.dispose();
-           JOptionPane.showMessageDialog(clientMainFrame, "success");
+           try {
+               Desktop.getDesktop().browse(new URI(liveSet.getStreamLinkURL()));
+           } catch (IOException | URISyntaxException e) {
+              JOptionPane.showMessageDialog(clientMainFrame, "The link on this live set is broken");
+           }
        }else {
            JOptionPane.showMessageDialog(clientMainFrame, response.getPayload());
        }
