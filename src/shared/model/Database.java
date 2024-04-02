@@ -527,7 +527,7 @@ public class Database {
 
         ensureConnection();
 
-        String query = "UPDATE ticket SET userID = ? WHERE (ticketID = ?)";
+        String query = "UPDATE ticket SET status = 'Used', userID = ? WHERE (ticketID = ?)";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
