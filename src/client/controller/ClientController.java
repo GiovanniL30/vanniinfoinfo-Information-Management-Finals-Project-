@@ -72,7 +72,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
                         new SwingWorker<LinkedList<Purchased>, Void>() {
                             @Override
                             protected LinkedList<Purchased> doInBackground() {
-                                return Database.getMyPurchases(loggedInAccount.getUserID());
+                                return Database.getMyPurchases(loggedInAccount.getUserID()).getPayload();
                             }
 
                             @Override
@@ -109,7 +109,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
     @Override
     public void openLiveSet(LiveSet liveSet) {
-       LinkedList<Performer> performers =  Database.getPerformers();
+       LinkedList<Performer> performers = Database.getPerformers().getPayload();
        Optional<Performer> performer = performers.stream().filter(p -> p.getPerformerID().equals(liveSet.getPerformerID())).findAny();
        performer.ifPresent(value -> clientMainFrame.getHomeView().getLiveSetPane().openLiveSet(liveSet, value));
     }
@@ -141,7 +141,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
         new SwingWorker<Optional<User>, Void>() {
             @Override
             protected Optional<User> doInBackground() {
-                return Database.logIn(userName, password);
+                return Database.logIn(userName, password).getPayload();
             }
 
             @Override
@@ -191,7 +191,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
     @Override
     public void accessLiveSet(LiveSet liveSet, String ticketId) {
 
-        User user = Database.getTicketUser(ticketId, loggedInAccount.getUserID());
+        User user = Database.getTicketUser(ticketId, loggedInAccount.getUserID()).getPayload();
 
         System.out.println(user);
 
@@ -233,7 +233,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
     @Override
     public LinkedList<LiveSet> getLiveSet() {
-        return Database.getLiveSets();
+        return Database.getLiveSets().getPayload();
     }
 
     public void setClientMainView(ClientMainFrame clientMainFrame) {
