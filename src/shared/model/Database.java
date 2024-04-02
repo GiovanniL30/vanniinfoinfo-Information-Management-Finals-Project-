@@ -18,7 +18,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanniinfoinfo", "root", "password");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/cas", "root", "password");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -251,7 +251,7 @@ public class Database {
 
         LinkedList<Purchased> purchasedLinkedList = new LinkedList<>();
 
-        String query = "SELECT purchased.date, purchased.time, performer.performerName, liveset.price, liveset.thumbnail, ticket.ticketID, ticket.status, liveset.livesetID" +
+        String query = "SELECT purchased.date, purchased.time, performer.performerName, liveset.price, liveset.thumbnail, ticket.ticketID, ticket.status, liveset.livesetID, concat(user.firstName, user.lastName)" +
                 " FROM purchased" +
                 " INNER JOIN user ON purchased.buyerID = user.userID" +
                 " INNER JOIN ticket ON purchased.ticketID = ticket.ticketID" +
@@ -274,8 +274,9 @@ public class Database {
                 String liveSetThumbnail = getImage(resultSet.getString(8), resultSet.getBlob(5));
                 String ticketId = resultSet.getString(6);
                 String ticketStatus = resultSet.getString(7);
+                String userName = resultSet.getString(9);
 
-                purchasedLinkedList.add(new Purchased(date, time, performerName, liveSetPrice, liveSetThumbnail, ticketId, ticketStatus));
+                purchasedLinkedList.add(new Purchased(date, time, performerName, liveSetPrice, liveSetThumbnail, ticketId, ticketStatus, userName));
             }
 
         } catch (SQLException e) {
