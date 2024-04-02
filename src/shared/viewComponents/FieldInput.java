@@ -71,16 +71,43 @@ public class FieldInput extends JPanel {
             public void keyTyped(KeyEvent e) {
 
 
+                if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {
+                    return;
+                }
+                if(getInput() != null) {
+
+                    if(getInput().length() > 20) {
+                        enableError("Please enter a maximum length of " + maxInput);
+
+                    }
+
+                }
+
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
 
+                if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {
+                    return;
+                }
+                if(getInput() != null) {
+
+                    if(getInput().length() > 20) {
+                        enableError("Please enter a maximum length of " + maxInput);
+
+                    }
+
+                }
 
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
+
+                if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {
+                    return;
+                }
 
                 if(getInput() != null) {
 
