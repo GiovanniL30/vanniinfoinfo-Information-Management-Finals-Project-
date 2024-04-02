@@ -18,7 +18,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanni", "root", "");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanniinfoinfo", "root", "password");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -65,9 +65,12 @@ public class Database {
             statement.setString(1, ticketId);
             statement.setString(2, userId);
             ResultSet resultSet = statement.executeQuery();
-            Optional<User> user = toUser(resultSet);
-            if(user.isPresent()) {
-                return user.get();
+
+            if(resultSet.next()) {
+                Optional<User> user = toUser(resultSet);
+                if(user.isPresent()) {
+                    return user.get();
+                }
             }
 
         } catch (SQLException e) {
@@ -75,8 +78,10 @@ public class Database {
         }
         return null;
     }
+
     public static boolean addLiveSet(LiveSet liveSet) {
         ensureConnection();
+
         String query = "INSERT INTO liveset(liveSetID, status, date, time, thumbnail, streamLinkURL, performerID, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -112,6 +117,7 @@ public class Database {
     public static boolean addPerformer(Performer performer) {
 
         ensureConnection();
+
         String query = "INSERT INTO performer(performerID, performerName, genre, performerType, description, performerStatus)" + " VALUES (?, ?, ?, ?, ?, ?)";
         try{
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -153,6 +159,26 @@ public class Database {
 
         return false;
     }
+
+    public static Response<String> accessLiveSet(String ticketId, String userId, String liveSetBeingAccessedID) {
+
+        if(isTicketUsed(ticketId)) {
+            return new Response<>("The ticket was already used", false);
+        }
+
+       Optional<Ticket> temp =  getTickets().stream().filter(ticket -> ticket.getTicketID().equals(ticketId) && ticket.getLiveSetID().equals(liveSetBeingAccessedID)).findFirst();
+       if(temp.isEmpty()) {
+            return new Response<>("The ticket entered was not for this live set", false);
+       }
+
+       if(updateTicketUser(ticketId, userId) && addLastWatched(userId, liveSetBeingAccessedID)) {
+           return new Response<>("Success", true);
+       }else {
+           return new Response<>("Having error accessing the liveset", false);
+       }
+    }
+
+
 
     public static boolean havePurchased(String userID, String liveSetID) {
 
@@ -473,6 +499,64 @@ public class Database {
         }
 
         return Optional.empty();
+    }
+
+    private static boolean isTicketUsed(String ticketID) {
+        ensureConnection();
+
+        String query = "SELECT isnull(userID) FROM ticket where ticketID = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, ticketID);
+            ResultSet set = preparedStatement.executeQuery();
+
+            if(set.next()){
+                return set.getInt(1) == 0;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+
+        return false;
+    }
+
+    private static boolean updateTicketUser(String ticketID, String userID) {
+
+        ensureConnection();
+
+        String query = "UPDATE ticket SET userID = ? WHERE (ticketID = ?)";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, userID);
+            statement.setString(2, ticketID);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+
+        return false;
+    }
+
+    private static boolean addLastWatched(String userId, String liveSetId) {
+
+        ensureConnection();
+
+        String query = "INSERT INTO lastwatched (lastWatchedID, userID, liveSetID) VALUES (?,? ,? )";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, UtilityMethods.generateRandomID());
+            statement.setString(2, userId);
+            statement.setString(3, liveSetId);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+
+        return false;
     }
 
 }

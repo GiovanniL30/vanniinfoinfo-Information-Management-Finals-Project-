@@ -6,6 +6,7 @@ import client.view.components.AccessGigDialog;
 import client.view.components.TicketsPanel;
 import client.view.panels.HomeView;
 import shared.controller.LoginController;
+import shared.model.Response;
 import shared.referenceClasses.Purchased;
 import shared.viewComponents.LoginView;
 import client.view.panels.PaymentView;
@@ -27,6 +28,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
     private Loading loading;
     private User loggedInAccount = new User("asc", "asc", "asc", "acs", "asc", "cas", 1, "asc", true, "asc");
 
+    private  AccessGigDialog accessGigDialog;
 
     private ClientMainFrame clientMainFrame;
 
@@ -185,11 +187,30 @@ public class ClientController implements ClientControllerObserver, LoginControll
     @Override
     public void accessLiveSet(LiveSet liveSet, String ticketId) {
 
+        User user = Database.getTicketUser(ticketId, loggedInAccount.getUserID());
+
+        System.out.println(user);
+
+        if(user != null && user.getUserID().equals(loggedInAccount.getUserID())) {
+            accessGigDialog.dispose();
+            JOptionPane.showMessageDialog(clientMainFrame, "success");
+            return;
+        }
+
+       Response<String> response =  Database.accessLiveSet(ticketId, loggedInAccount.getUserID(),liveSet.getLiveSetID());
+
+       if(response.isSuccess()){
+           accessGigDialog.dispose();
+           JOptionPane.showMessageDialog(clientMainFrame, "success");
+       }else {
+           JOptionPane.showMessageDialog(clientMainFrame, response.getPayload());
+       }
+
     }
 
     @Override
     public void openAccess(LiveSet liveSet) {
-        AccessGigDialog accessGigDialog = new AccessGigDialog(clientMainFrame, liveSet, this);
+        accessGigDialog = new AccessGigDialog(clientMainFrame, liveSet, this);
         accessGigDialog.setVisible(true);
     }
 
