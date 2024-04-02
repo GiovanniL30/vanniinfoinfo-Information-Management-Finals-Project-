@@ -1,7 +1,7 @@
 package shared.viewComponents;
 
-import client.controller.ClientControllerObserver;
 import client.view.utility.ClientViews;
+import shared.controller.LoginController;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
 import shared.utilityClasses.UtilityMethods;
@@ -12,11 +12,12 @@ import java.awt.*;
 public class LoginView extends JPanel {
 
     private FilledButton loginButton;
-    private ClientControllerObserver clientControllerObserver;
+    private LoginController loginController;
     private boolean isAdmin;
+    private Button signUpButton;
 
-    public LoginView(ClientControllerObserver clientControllerObserver, boolean isAdmin) {
-        this.clientControllerObserver = clientControllerObserver;
+    public LoginView(LoginController loginController, boolean isAdmin) {
+        this.loginController = loginController;
         this.isAdmin = isAdmin;
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -32,7 +33,7 @@ public class LoginView extends JPanel {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.white);
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20,0 ));
-        Button signUpButton = new Button("Sign up", new Dimension(200, 50) , FontFactory.newPoppinsDefault(12));
+        signUpButton = new Button("Sign up", new Dimension(200, 50) , FontFactory.newPoppinsDefault(12));
 
         if(isAdmin){
             loginButton = new FilledButton("Login", new Dimension(420, 50) ,FontFactory.newPoppinsDefault(12), ColorFactory.red(), Color.white);
@@ -52,8 +53,6 @@ public class LoginView extends JPanel {
         constraints.gridy = 2;
         add(buttonPanel, constraints);
 
-        signUpButton.addActionListener(e -> clientControllerObserver.changeFrame(ClientViews.SIGN_UP));
-
     }
 
     private JPanel fieldInputs(){
@@ -61,8 +60,8 @@ public class LoginView extends JPanel {
         JPanel fieldInputPanel = new JPanel();
         fieldInputPanel.setLayout(new BoxLayout(fieldInputPanel, BoxLayout.Y_AXIS));
 
-        FieldInput userName = new FieldInput("User Name", new Dimension(420, 60), 40, 1, false);
-        FieldInput password = new FieldInput("Password", new Dimension(420, 60), 40, 1, true);
+        FieldInput userName = new FieldInput("User Name", new Dimension(420, 60), 20, 1, false);
+        FieldInput password = new FieldInput("Password", new Dimension(420, 60), 20, 1, true);
 
         fieldInputPanel.add(userName);
         fieldInputPanel.add(password);
@@ -76,15 +75,14 @@ public class LoginView extends JPanel {
                 return;
             }
 
-            if(isAdmin) {
 
-            }else {
-                clientControllerObserver.logIn(name, pass);
-            }
-
-
+            loginController.logIn(name, pass);
         });
         return fieldInputPanel;
     }
 
+
+    public Button getSignUpButton() {
+        return signUpButton;
+    }
 }

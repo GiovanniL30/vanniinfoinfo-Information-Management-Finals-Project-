@@ -6,15 +6,20 @@ import admin.view.panel.EditPerformerPanel;
 import admin.view.panel.LiveSetPanel;
 import admin.view.panel.PerformerPanel;
 import admin.view.utility.AdminPanel;
+import client.view.utility.ClientViews;
+import shared.controller.LoginController;
 import shared.model.Database;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
+import shared.referenceClasses.User;
 import shared.viewComponents.Loading;
 
 import javax.swing.*;
 import java.util.LinkedList;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
-public class AdminController implements AdminControllerObserver{
+public class AdminController implements AdminControllerObserver, LoginController {
 
     private AdminMainFrame adminMainFrame;
     private Loading loading;
@@ -125,4 +130,39 @@ public class AdminController implements AdminControllerObserver{
         this.adminMainFrame = adminMainFrame;
         loading = new Loading(adminMainFrame);
     }
+
+    @Override
+    public void logIn(String userName, String password) {
+        new SwingWorker<Optional<User>, Void>() {
+            @Override
+            protected Optional<User> doInBackground() {
+                return Database.logIn(userName, password);
+            }
+
+            @Override
+            protected void done() {
+                loading.setVisible(false);
+                try {
+                    Optional<User> user = get();
+                    if(user.isPresent()) {
+
+                        if(!user.get().getUserType().equals("Admin")) {
+                            JOptionPane.showMessageDialog(adminMainFrame, "Invalid Credentials");
+                            return;
+                        }
+
+                       changeFrame(AdminPanel.HOME);
+                        JOptionPane.showMessageDialog(adminMainFrame, "Log in Success");
+                    }else {
+                        JOptionPane.showMessageDialog(adminMainFrame, "Invalid Credentials");
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }.execute();
+
+        loading.setVisible(true);
+    }
+
 }

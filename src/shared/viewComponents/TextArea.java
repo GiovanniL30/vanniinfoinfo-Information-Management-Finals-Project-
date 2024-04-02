@@ -1,6 +1,5 @@
 package shared.viewComponents;
 
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 import javax.swing.*;
 import java.awt.*;

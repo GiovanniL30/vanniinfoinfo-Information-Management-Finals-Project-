@@ -5,6 +5,7 @@ import client.view.utility.ClientViews;
 import client.view.components.AccessGigDialog;
 import client.view.components.TicketsPanel;
 import client.view.panels.HomeView;
+import shared.controller.LoginController;
 import shared.referenceClasses.Purchased;
 import shared.viewComponents.LoginView;
 import client.view.panels.PaymentView;
@@ -20,7 +21,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-public class ClientController implements ClientControllerObserver{
+public class ClientController implements ClientControllerObserver, LoginController {
 
 
     private Loading loading;
@@ -48,7 +49,9 @@ public class ClientController implements ClientControllerObserver{
                     }
                     case LOGIN -> {
                         clientMainFrame.getContentPane().remove(1);
-                        clientMainFrame.setLoginView(new LoginView(ClientController.this, false));
+                        LoginView loginView = new LoginView(ClientController.this, false);
+                        clientMainFrame.setLoginView(loginView);
+                        loginView.getSignUpButton().addActionListener(e -> changeFrame(ClientViews.SIGN_UP));
                         clientMainFrame.getContentPane().add(clientMainFrame.getLoginView(), 1);
                     }
                     case HOME, LIVE_SETS -> {
