@@ -57,7 +57,7 @@ public class AddPerformer extends JPanel {
         JPanel dropDowns = new JPanel(new FlowLayout(FlowLayout.LEFT));
         dropDowns.setBackground(Color.WHITE);
         DropDown performerType = new DropDown(new Dimension(355, 60), "Performer Type", performer.getPerformerType().equals("Band") ? new String[] {"Band", "Solo"}:new String[] {"Solo", "Band"});
-        DropDown genre = new DropDown(new Dimension(355, 60), "Genre", Stream.concat(Arrays.stream(new String[]{performer.getGenre()}),Arrays.stream(UtilityMethods.getGenres())).toArray(String[]::new));
+        DropDown genre = new DropDown(new Dimension(355, 60), "Genre", UtilityMethods.populateGenres(adminControllerObserver.getGenres()));
         dropDowns.add(genre);
         dropDowns.add(performerType);
 

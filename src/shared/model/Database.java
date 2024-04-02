@@ -18,7 +18,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanni", "root", "");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanniinfofo", "root", "");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -439,6 +439,33 @@ public class Database {
 
 
         return new Response<>(performers, true);
+    }
+
+    public static Response<LinkedList<Genre>> getGenres() {
+        ensureConnection();
+
+        LinkedList<Genre> genres = new LinkedList<>();
+
+        String query = "SELECT * FROM genre";
+
+        try {
+            Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while(resultSet.next()) {
+
+                int genreID = Integer.parseInt(resultSet.getString(1));
+                String genreName = resultSet.getString(2);
+
+                genres.add(new Genre(genreID, genreName));
+            }
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+            return new Response<>(new LinkedList<>(), false);
+        }
+
+
+        return new Response<>(genres, true);
     }
 
 

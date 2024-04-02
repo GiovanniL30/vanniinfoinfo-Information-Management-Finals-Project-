@@ -1,5 +1,7 @@
 package shared.utilityClasses;
 
+import shared.referenceClasses.Genre;
+
 import java.sql.Time;
 import java.time.LocalDate;
 import java.sql.Date;
@@ -58,6 +60,15 @@ public class UtilityMethods {
                 "Metal", "Folk", "Punk", "Indie", "Alternative",
                 "Funk", "Soul", "Gospel", "Techno", "Dance"
         };
+    }
+
+    public static String[] populateGenres(LinkedList<Genre> genres){
+        String[] contents = new String[genres.size()];
+        int index = 0;
+        for (Genre genre : genres){
+            contents[index++] = genre.getGenreName();
+        }
+        return contents;
     }
 
 

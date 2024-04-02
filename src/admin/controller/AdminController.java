@@ -9,6 +9,7 @@ import admin.view.utility.AdminPanel;
 import client.view.utility.ClientViews;
 import shared.controller.LoginController;
 import shared.model.Database;
+import shared.referenceClasses.Genre;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.referenceClasses.User;
@@ -133,6 +134,10 @@ public class AdminController implements AdminControllerObserver, LoginController
 
     public LinkedList<Performer> getPerformers() {
         return Database.getPerformers().getPayload();
+    }
+
+    public LinkedList<Genre> getGenres() {
+        return Database.getGenres().getPayload();
     }
 
 
