@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Optional;
 
 
 public class LiveSetDialog extends JDialog {
@@ -273,5 +274,27 @@ public class LiveSetDialog extends JDialog {
     private boolean isValidURL(String url) {
         String regex = "^(http(s)?://)?([\\w-]+\\.)+[\\w-]+(/[\\w- ./?%&=]*)?$";
         return url.matches(regex);
+    }
+
+    private Optional<Date> getDate(String dateInput) {
+
+        String[] date = dateInput.split("-");
+
+        if(date.length != 3) {
+            return Optional.empty();
+        }
+
+        try {
+            int year =  Integer.parseInt(date[0]);
+            int month = Integer.parseInt(date[1]);
+            int day = Integer.parseInt(date[2]);
+
+            return Optional.of(new java.sql.Date(year, month, day));
+        }catch (NumberFormatException exception) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid integer date number");
+        }
+
+        return null;
+
     }
 }
