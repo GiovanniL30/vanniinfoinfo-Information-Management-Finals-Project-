@@ -18,7 +18,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/updatedvaniinfofo", "root", "");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanniinfofo", "root", "");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -110,6 +110,42 @@ public class Database {
             throw new RuntimeException(e);
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean editLiveSet(LiveSet liveSet) {
+        ensureConnection();
+        String query = "UPDATE liveset SET status=?, date=?, time=?, thumbnail=?, streamLinkURL=?, performerID=?, price=? WHERE liveSetID=?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, liveSet.getStatus());
+            preparedStatement.setDate(2, liveSet.getDate());
+            preparedStatement.setTime(3, liveSet.getTime());
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            try (InputStream fis = new FileInputStream(liveSet.getThumbnail())) {
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                preparedStatement.setBinaryStream(4, new ByteArrayInputStream(outputStream.toByteArray()));
+            } catch (IOException e) {
+                // In case thumbnail is not updated, handle it here.
+                System.err.println("Error reading file: " + e.getMessage());
+                preparedStatement.setBytes(4, null); // Set thumbnail to null in case of error
+            }
+
+            preparedStatement.setString(5, liveSet.getStreamLinkURL());
+            preparedStatement.setString(6, liveSet.getPerformerID());
+            preparedStatement.setInt(7, liveSet.getPrice());
+            preparedStatement.setString(8, liveSet.getLiveSetID());
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -405,6 +441,33 @@ public class Database {
         return new Response<>(performers, true);
     }
 
+    public static Response<LinkedList<Genre>> getGenres() {
+        ensureConnection();
+
+        LinkedList<Genre> genres = new LinkedList<>();
+
+        String query = "SELECT * FROM genre";
+
+        try {
+            Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while(resultSet.next()) {
+
+                int genreID = Integer.parseInt(resultSet.getString(1));
+                String genreName = resultSet.getString(2);
+
+                genres.add(new Genre(genreID, genreName));
+            }
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+            return new Response<>(new LinkedList<>(), false);
+        }
+
+
+        return new Response<>(genres, true);
+    }
+
 
 
     public static Response<LinkedList<Ticket>> getTickets() {
@@ -557,38 +620,6 @@ public class Database {
         }
 
         return false;
-    }
-
-    public static Response<LinkedList<Performer>> searchPerformers(String searchTerm) {
-        ensureConnection();
-
-        LinkedList<Performer> matchingPerformers = new LinkedList<>();
-
-        String query = "SELECT * FROM performer WHERE performerName LIKE ?";
-
-        try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, "%" + searchTerm + "%");
-
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                String performerID = resultSet.getString(1);
-                String performerName = resultSet.getString(2);
-                String genre = resultSet.getString(3);
-                String performerType = resultSet.getString(4);
-                String description = resultSet.getString(5);
-                String performerStatus = resultSet.getString(6);
-
-                matchingPerformers.add(new Performer(performerID, performerName, genre, performerType, description, performerStatus));
-            }
-
-            return new Response<>(matchingPerformers, true);
-
-        } catch (SQLException e) {
-            System.err.println("Having error executing query " + query);
-            return new Response<>(new LinkedList<>(), false);
-        }
     }
 
 }

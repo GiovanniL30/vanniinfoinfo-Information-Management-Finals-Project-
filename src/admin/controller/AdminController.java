@@ -9,6 +9,7 @@ import admin.view.utility.AdminPanel;
 import client.view.utility.ClientViews;
 import shared.controller.LoginController;
 import shared.model.Database;
+import shared.referenceClasses.Genre;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.referenceClasses.User;
@@ -120,8 +121,23 @@ public class AdminController implements AdminControllerObserver, LoginController
         }
     }
 
+    @Override
+    public void editLiveSet(LiveSet liveSet) {
+        System.out.println(liveSet);
+        if (Database.editLiveSet(liveSet)) {
+            changeFrame(AdminPanel.LIVE_SET);
+            JOptionPane.showMessageDialog(adminMainFrame, "Edited LiveSet successfully");
+        } else {
+            JOptionPane.showMessageDialog(adminMainFrame, "Having error editing the LiveSet");
+        }
+    }
+
     public LinkedList<Performer> getPerformers() {
         return Database.getPerformers().getPayload();
+    }
+
+    public LinkedList<Genre> getGenres() {
+        return Database.getGenres().getPayload();
     }
 
 

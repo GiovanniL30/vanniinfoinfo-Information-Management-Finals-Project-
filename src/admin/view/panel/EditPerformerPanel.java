@@ -57,7 +57,7 @@ public class EditPerformerPanel extends JPanel {
 
         JPanel dropDowns = new JPanel(new FlowLayout(FlowLayout.CENTER));
         dropDowns.setBackground(Color.WHITE);
-        DropDown genre = new DropDown(new Dimension(355, 60), "Genre", Stream.concat(Arrays.stream(new String[]{performer.getGenre()}),Arrays.stream(UtilityMethods.getGenres())).toArray(String[]::new));
+        DropDown genre = new DropDown(new Dimension(355, 60), "Genre", UtilityMethods.populateGenres(adminControllerObserver.getGenres()));
         DropDown performerStatus = new DropDown(new Dimension(355, 60), "Performer Status", performer.getPerformerStatus().equals("Active") ? new String[]{"Active", "Inactive"} : new String[] {"Inactive", "Active"});
         DropDown performerType = new DropDown(new Dimension(355, 60), "Performer Type", performer.getPerformerType().equals("Band") ? new String[] {"Band", "Solo"}:new String[] {"Solo", "Band"});
         dropDowns.add(genre);
