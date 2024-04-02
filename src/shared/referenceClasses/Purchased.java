@@ -12,8 +12,9 @@ public class Purchased {
    private String liveSetThumbnail;
    private String ticketId;
    private String ticketStatus;
+   private String userName;
 
-    public Purchased(Date date, Time time, String performerName, int liveSetPrice, String liveSetThumbnail, String ticketId, String ticketStatus) {
+    public Purchased(Date date, Time time, String performerName, int liveSetPrice, String liveSetThumbnail, String ticketId, String ticketStatus, String userName) {
         this.date = date;
         this.time = time;
         this.performerName = performerName;
@@ -21,6 +22,7 @@ public class Purchased {
         this.liveSetThumbnail = liveSetThumbnail;
         this.ticketId = ticketId;
         this.ticketStatus = ticketStatus;
+        this.userName = userName;
     }
 
     public Date getDate() {
@@ -77,6 +79,10 @@ public class Purchased {
 
     public void setTicketStatus(String ticketStatus) {
         this.ticketStatus = ticketStatus;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 
     @Override

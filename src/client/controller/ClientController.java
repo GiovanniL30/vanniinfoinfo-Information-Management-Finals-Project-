@@ -6,6 +6,7 @@ import client.view.components.AccessGigDialog;
 import client.view.components.TicketsPanel;
 import client.view.panels.HomeView;
 import shared.controller.LoginController;
+import shared.model.Response;
 import shared.referenceClasses.Purchased;
 import shared.viewComponents.LoginView;
 import client.view.panels.PaymentView;
@@ -17,6 +18,10 @@ import shared.referenceClasses.User;
 import shared.viewComponents.Loading;
 
 import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -27,6 +32,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
     private Loading loading;
     private User loggedInAccount = new User("asc", "asc", "asc", "acs", "asc", "cas", 1, "asc", true, "asc");
 
+    private  AccessGigDialog accessGigDialog;
 
     private ClientMainFrame clientMainFrame;
 
@@ -185,11 +191,38 @@ public class ClientController implements ClientControllerObserver, LoginControll
     @Override
     public void accessLiveSet(LiveSet liveSet, String ticketId) {
 
+        User user = Database.getTicketUser(ticketId, loggedInAccount.getUserID());
+
+        System.out.println(user);
+
+        if(user != null && user.getUserID().equals(loggedInAccount.getUserID())) {
+            accessGigDialog.dispose();
+            try {
+                Desktop.getDesktop().browse(new URI(liveSet.getStreamLinkURL()));
+            } catch (IOException | URISyntaxException e) {
+                JOptionPane.showMessageDialog(clientMainFrame, "The link on this live set is broken");
+            }
+            return;
+        }
+
+       Response<String> response =  Database.accessLiveSet(ticketId, loggedInAccount.getUserID(),liveSet.getLiveSetID());
+
+       if(response.isSuccess()){
+           accessGigDialog.dispose();
+           try {
+               Desktop.getDesktop().browse(new URI(liveSet.getStreamLinkURL()));
+           } catch (IOException | URISyntaxException e) {
+              JOptionPane.showMessageDialog(clientMainFrame, "The link on this live set is broken");
+           }
+       }else {
+           JOptionPane.showMessageDialog(clientMainFrame, response.getPayload());
+       }
+
     }
 
     @Override
     public void openAccess(LiveSet liveSet) {
-        AccessGigDialog accessGigDialog = new AccessGigDialog(clientMainFrame, liveSet, this);
+        accessGigDialog = new AccessGigDialog(clientMainFrame, liveSet, this);
         accessGigDialog.setVisible(true);
     }
 
