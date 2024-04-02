@@ -1,8 +1,11 @@
 package shared.viewComponents;
 
+import admin.view.utility.AdminSearchBar;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -18,6 +21,7 @@ public class FieldInput extends JPanel {
     private final int maxInput;
     private final int minInput;
     private final boolean isPasswordField;
+    private ActionListener actionListener;
 
     /**
      * Constructs an object of type FieldInput with the specified field title, dimension, input constraints, and field type
@@ -87,6 +91,12 @@ public class FieldInput extends JPanel {
 
                 }
 
+            }
+
+            public void addActionListener(ActionListener listener) {
+                actionListener = listener;
+                textField.addActionListener(listener);
+                passwordField.addActionListener(listener);
             }
 
             @Override

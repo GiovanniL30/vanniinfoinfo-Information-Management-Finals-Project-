@@ -19,6 +19,7 @@ public class PerformerPanel extends JPanel {
     private AdminSearchBar adminSearchBar;
     private AdminControllerObserver adminControllerObserver;
     private JPanel scrollPaneHolder = new JPanel();
+    private LinkedList<Performer> allPerformers;
 
     public PerformerPanel(LinkedList<Performer> performers, AdminControllerObserver adminControllerObserver) {
         this.adminControllerObserver = adminControllerObserver;
@@ -51,6 +52,7 @@ public class PerformerPanel extends JPanel {
     }
 
     public void populatePerformers(LinkedList<Performer> performers) {
+        allPerformers = performers;
 
         new SwingWorker<>() {
             @Override

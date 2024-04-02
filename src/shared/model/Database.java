@@ -18,7 +18,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanni", "root", "");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/updatedvaniinfofo", "root", "");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -557,6 +557,38 @@ public class Database {
         }
 
         return false;
+    }
+
+    public static Response<LinkedList<Performer>> searchPerformers(String searchTerm) {
+        ensureConnection();
+
+        LinkedList<Performer> matchingPerformers = new LinkedList<>();
+
+        String query = "SELECT * FROM performer WHERE performerName LIKE ?";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, "%" + searchTerm + "%");
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String performerID = resultSet.getString(1);
+                String performerName = resultSet.getString(2);
+                String genre = resultSet.getString(3);
+                String performerType = resultSet.getString(4);
+                String description = resultSet.getString(5);
+                String performerStatus = resultSet.getString(6);
+
+                matchingPerformers.add(new Performer(performerID, performerName, genre, performerType, description, performerStatus));
+            }
+
+            return new Response<>(matchingPerformers, true);
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+            return new Response<>(new LinkedList<>(), false);
+        }
     }
 
 }

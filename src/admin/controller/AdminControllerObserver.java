@@ -11,4 +11,5 @@ public interface AdminControllerObserver {
     void updatePerformer(Performer performer);
     void addPerformer(Performer performer);
     void addLiveSet(LiveSet liveSet);
+    void searchPerformers(String searchTerm);
 }

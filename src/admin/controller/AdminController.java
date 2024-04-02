@@ -165,4 +165,11 @@ public class AdminController implements AdminControllerObserver, LoginController
         loading.setVisible(true);
     }
 
+    @Override
+    public void searchPerformers(String searchTerm) {
+        LinkedList<Performer> searchResults = Database.searchPerformers(searchTerm).getPayload();
+        adminMainFrame.getPerformerPanel().populatePerformers(searchResults);
+    }
+
+
 }

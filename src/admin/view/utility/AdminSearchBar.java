@@ -2,6 +2,7 @@ package admin.view.utility;
 
 import admin.controller.AdminControllerObserver;
 import admin.view.AdminMainFrame;
+import shared.referenceClasses.Performer;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
 import shared.viewComponents.Button;
@@ -11,6 +12,9 @@ import shared.viewComponents.IconButton;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.LinkedList;
 
 public class AdminSearchBar extends JPanel {
 
@@ -18,6 +22,7 @@ public class AdminSearchBar extends JPanel {
 
     private AdminControllerObserver adminControllerObserver;
     private FilledButton add;
+    private FieldInput searchField;
 
     public AdminSearchBar(AdminPanel adminPanel, AdminControllerObserver adminControllerObserver) {
         this.adminPanel = adminPanel;
@@ -43,7 +48,9 @@ public class AdminSearchBar extends JPanel {
         constraints.insets = new Insets(0, 40, 0, 0);
         buttonsPanel.add(add, constraints);
 
-        FieldInput search = new FieldInput("", new Dimension(600, 50), 40, 1 ,false);
+        //FieldInput search = new FieldInput("", new Dimension(600, 50), 40, 1 ,false);
+
+        searchField = new FieldInput("", new Dimension(600, 50), 40, 1, false);
 
 
         JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -59,14 +66,21 @@ public class AdminSearchBar extends JPanel {
         }
 
         centerPanel.add(buttonsPanel, BorderLayout.WEST);
-        centerPanel.add(search, BorderLayout.EAST);
+        centerPanel.add(searchField, BorderLayout.EAST);
 
         add(labelPanel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);
 
         back.addActionListener( e -> adminControllerObserver.changeFrame(AdminPanel.HOME));
 
+
+        searchField.getTextField().addActionListener(e -> {
+            String searchTerm = searchField.getInput().toLowerCase();
+            adminControllerObserver.searchPerformers(searchTerm);
+        });
+
     }
+
 
     public Button getAddButton() {
         return add;
