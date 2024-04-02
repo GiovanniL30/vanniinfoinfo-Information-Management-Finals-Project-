@@ -43,7 +43,7 @@ public class AdminController implements AdminControllerObserver, LoginController
 
                     }case LIVE_SET -> {
 
-                        LiveSetPanel liveSetPanel = new LiveSetPanel(Database.getLiveSets(), Database.getPerformers(),AdminController.this);
+                        LiveSetPanel liveSetPanel = new LiveSetPanel(Database.getLiveSets().getPayload(), Database.getPerformers().getPayload(),AdminController.this);
                         adminMainFrame.setLiveSetPanel(liveSetPanel);
                         adminMainFrame.getContentPane().add(liveSetPanel, 1);
                     }
@@ -121,7 +121,7 @@ public class AdminController implements AdminControllerObserver, LoginController
     }
 
     public LinkedList<Performer> getPerformers() {
-        return Database.getPerformers();
+        return Database.getPerformers().getPayload();
     }
 
 
@@ -136,7 +136,7 @@ public class AdminController implements AdminControllerObserver, LoginController
         new SwingWorker<Optional<User>, Void>() {
             @Override
             protected Optional<User> doInBackground() {
-                return Database.logIn(userName, password);
+                return Database.logIn(userName, password).getPayload();
             }
 
             @Override
