@@ -1,6 +1,7 @@
 package shared.viewComponents;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -66,6 +67,8 @@ public class FieldInput extends JPanel {
         errorMessage.setVisible(false);
         add(errorMessage, constraints);
 
+
+        removeError();
         textField.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -78,7 +81,8 @@ public class FieldInput extends JPanel {
 
                     if(getInput().length() > 20) {
                         enableError("Please enter a maximum length of " + maxInput);
-
+                    }else {
+                        removeError();
                     }
 
                 }
@@ -95,7 +99,8 @@ public class FieldInput extends JPanel {
 
                     if(getInput().length() > 20) {
                         enableError("Please enter a maximum length of " + maxInput);
-
+                    }else {
+                        removeError();
                     }
 
                 }
@@ -113,7 +118,66 @@ public class FieldInput extends JPanel {
 
                     if(getInput().length() > 20) {
                         enableError("Please enter a maximum length of " + maxInput);
+                    }else {
+                        removeError();
+                    }
 
+                }
+
+            }
+        });
+
+        passwordField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+
+                if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {
+                    return;
+                }
+                if(getInput() != null) {
+
+                    if(getInput().length() > 20) {
+                        enableError("Please enter a maximum length of " + maxInput);
+                    }else {
+                        removeError();
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+                if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {
+                    return;
+                }
+                if(getInput() != null) {
+
+                    if(getInput().length() > 20) {
+                        enableError("Please enter a maximum length of " + maxInput);
+                    }else {
+                        removeError();
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+                if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {
+                    return;
+                }
+
+                if(getInput() != null) {
+
+                    if(getInput().length() > 20) {
+                        enableError("Please enter a maximum length of " + maxInput);
+                    }else {
+                        removeError();
                     }
 
                 }
@@ -173,7 +237,8 @@ public class FieldInput extends JPanel {
      * @param message the error message to be displayed
      */
     public void enableError(String message) {
-
+        textField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.RED), new EmptyBorder(0, 10, 0, 10) ));
+        passwordField.setBorder(BorderFactory.createCompoundBorder( BorderFactory.createLineBorder(Color.RED), new EmptyBorder(0, 10, 0, 10)));
         errorMessage.setText(message);
         errorMessage.setVisible(true);
     } // end of enableError method
@@ -182,7 +247,8 @@ public class FieldInput extends JPanel {
      * Removes error display and restores the input field's appearance.
      */
     public void removeError() {
-
+        textField.setBorder(BorderFactory.createCompoundBorder( BorderFactory.createLineBorder(Color.BLACK), new EmptyBorder(0, 10, 0, 10)));
+        passwordField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), new EmptyBorder(0, 10, 0, 10) ));
         errorMessage.setVisible(false);
     } // end of removeError method
 
