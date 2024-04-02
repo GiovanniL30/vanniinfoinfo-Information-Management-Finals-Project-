@@ -16,18 +16,17 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-public class EditPerformerPanel extends JPanel {
+public class AddPerformer extends JPanel {
     private Performer performer;
     private AdminControllerObserver adminControllerObserver;
 
-    public EditPerformerPanel(Performer performer, AdminControllerObserver adminControllerObserver) {
 
+    public AddPerformer(Performer performer, AdminControllerObserver adminControllerObserver) {
         this.adminControllerObserver = adminControllerObserver;
         this.performer = performer;
 
         setBackground(Color.white);
         setLayout(new BorderLayout(0, 20));
-
 
         add(northPanel(), BorderLayout.NORTH);
         add(centerPanel(), BorderLayout.CENTER);
@@ -37,7 +36,7 @@ public class EditPerformerPanel extends JPanel {
         JPanel n = new JPanel(new FlowLayout(FlowLayout.CENTER));
         n.setBackground(Color.WHITE);
 
-        JLabel label = new JLabel("EDIT PERFORMER");
+        JLabel label = new JLabel("Register Performer");
         label.setFont(FontFactory.newPoppinsBold(16));
         n.add(label);
         return n;
@@ -49,60 +48,54 @@ public class EditPerformerPanel extends JPanel {
         panel.setBackground(Color.white);
 
         FieldInput performerName = new FieldInput("Performer", new Dimension(AdminMainFrame.WIDTH - 125, 60), 40, 1, false);
-        performerName.getTextField().setText(performer.getPerformerName());
+        performerName.getTextField().setText("");
 
         JPanel performerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         performerPanel.setBackground(Color.white);
         performerPanel.add(performerName);
 
-        JPanel dropDowns = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel dropDowns = new JPanel(new FlowLayout(FlowLayout.LEFT));
         dropDowns.setBackground(Color.WHITE);
-        DropDown genre = new DropDown(new Dimension(355, 60), "Genre", Stream.concat(Arrays.stream(new String[]{performer.getGenre()}),Arrays.stream(UtilityMethods.getGenres())).toArray(String[]::new));
-        DropDown performerStatus = new DropDown(new Dimension(355, 60), "Performer Status", performer.getPerformerStatus().equals("Active") ? new String[]{"Active", "Inactive"} : new String[] {"Inactive", "Active"});
         DropDown performerType = new DropDown(new Dimension(355, 60), "Performer Type", performer.getPerformerType().equals("Band") ? new String[] {"Band", "Solo"}:new String[] {"Solo", "Band"});
+        DropDown genre = new DropDown(new Dimension(355, 60), "Genre", Stream.concat(Arrays.stream(new String[]{performer.getGenre()}),Arrays.stream(UtilityMethods.getGenres())).toArray(String[]::new));
         dropDowns.add(genre);
-        dropDowns.add(performerStatus);
         dropDowns.add(performerType);
+
 
         TextArea description = new TextArea(new Dimension(AdminMainFrame.WIDTH - 60, 200), "Description", performer.getDescription());
 
         panel.add(performerPanel);
         panel.add(dropDowns);
-
-        panel.add(Box.createVerticalStrut(30));
         panel.add(description);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
         buttonPanel.setBackground(Color.white);
         Button cancel = new Button("CANCEL", new Dimension(537, 50), FontFactory.newPoppinsBold(14));
-        FilledButton save = new FilledButton("SAVE", new Dimension(537, 50), FontFactory.newPoppinsBold(14), ColorFactory.red(), Color.WHITE);
+        FilledButton register = new FilledButton("REGISTER", new Dimension(537, 50), FontFactory.newPoppinsBold(14), ColorFactory.red(), Color.WHITE);
         buttonPanel.add(cancel);
-        buttonPanel.add(save);
+        buttonPanel.add(register);
 
         panel.add(Box.createVerticalStrut(30));
         panel.add(buttonPanel);
 
         cancel.addActionListener(e -> adminControllerObserver.changeFrame(AdminPanel.PERFORMER));
 
-        save.addActionListener(e -> {
+        register.addActionListener(e -> {
 
             String newName = performerName.getInput();
             String newDescription = description.getText();
             String newGenre = genre.getChoice();
-            String newStatus = performerStatus.getChoice();
             String newType = performerType.getChoice();
 
             if(UtilityMethods.haveNullOrEmpty(newName, newDescription)) {
                 return;
             }
 
-            Performer updatedPerformer = new Performer(performer.getPerformerID(), newName, newGenre, newType, newDescription, newStatus);
-            adminControllerObserver.updatePerformer(updatedPerformer);
+            Performer newPerformer = new Performer(UtilityMethods.generateRandomID(), newName, newGenre, newType, newDescription, "Active");
+            adminControllerObserver.addPerformer(newPerformer);
         });
 
         return panel;
     }
-
-
-
 }

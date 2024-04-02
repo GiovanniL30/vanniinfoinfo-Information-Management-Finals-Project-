@@ -21,7 +21,7 @@ public class ClickableText extends JButton {
         setBorderPainted(false); // Disable border painting
         setOpaque(false); // Make the button transparent
 
-        setSize(new Dimension(width, height)); // Set size
+        setPreferredSize(new Dimension(width, height)); // Set size
         setFont(font); // Set font
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // Set cursor to hand when hovering over the button
     } // end of constructor

@@ -17,6 +17,7 @@ public class AdminSearchBar extends JPanel {
     private AdminPanel adminPanel;
 
     private AdminControllerObserver adminControllerObserver;
+    private FilledButton add;
 
     public AdminSearchBar(AdminPanel adminPanel, AdminControllerObserver adminControllerObserver) {
         this.adminPanel = adminPanel;
@@ -36,7 +37,7 @@ public class AdminSearchBar extends JPanel {
         constraints.gridx = 0;
 
         IconButton back = new IconButton("resources/images/back.png", 40, 40);
-        FilledButton add = new FilledButton("ADD", new Dimension(120, 50), FontFactory.newPoppinsBold(13), ColorFactory.red(), Color.WHITE);
+        add = new FilledButton("ADD", new Dimension(120, 50), FontFactory.newPoppinsBold(13), ColorFactory.red(), Color.WHITE);
         buttonsPanel.add(back, constraints);
         constraints.gridx = 1;
         constraints.insets = new Insets(0, 40, 0, 0);
@@ -65,5 +66,9 @@ public class AdminSearchBar extends JPanel {
 
         back.addActionListener( e -> adminControllerObserver.changeFrame(AdminPanel.HOME));
 
+    }
+
+    public Button getAddButton() {
+        return add;
     }
 }

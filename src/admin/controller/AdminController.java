@@ -7,6 +7,7 @@ import admin.view.panel.LiveSetPanel;
 import admin.view.panel.PerformerPanel;
 import admin.view.utility.AdminPanel;
 import shared.model.Database;
+import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.viewComponents.Loading;
 
@@ -37,7 +38,7 @@ public class AdminController implements AdminControllerObserver{
 
                     }case LIVE_SET -> {
 
-                        LiveSetPanel liveSetPanel = new LiveSetPanel(AdminController.this);
+                        LiveSetPanel liveSetPanel = new LiveSetPanel(Database.getLiveSets(), Database.getPerformers(),AdminController.this);
                         adminMainFrame.setLiveSetPanel(liveSetPanel);
                         adminMainFrame.getContentPane().add(liveSetPanel, 1);
                     }
@@ -81,6 +82,16 @@ public class AdminController implements AdminControllerObserver{
     }
 
     @Override
+    public void addPerformer(Performer performer) {
+        if(Database.addPerformer(performer)) {
+            changeFrame(AdminPanel.PERFORMER);
+            JOptionPane.showMessageDialog(adminMainFrame, "Added Performer successfully");
+        }else {
+            JOptionPane.showMessageDialog(adminMainFrame, "Having error adding the performer");
+        }
+    }
+
+    @Override
     public void updatePerformer(Performer performer) {
 
         if(Database.updatePerformer(performer)) {
@@ -90,6 +101,18 @@ public class AdminController implements AdminControllerObserver{
             JOptionPane.showMessageDialog(adminMainFrame, "Having error updating the performer");
         }
 
+    }
+
+    @Override
+    public void addLiveSet(LiveSet liveSet) {
+
+        System.out.println(liveSet);
+        if (Database.addLiveSet(liveSet)) {
+            changeFrame(AdminPanel.LIVE_SET);
+            JOptionPane.showMessageDialog(adminMainFrame, "Added LiveSet successfully");
+        } else {
+            JOptionPane.showMessageDialog(adminMainFrame, "Having error adding the LiveSet");
+        }
     }
 
     public LinkedList<Performer> getPerformers() {
