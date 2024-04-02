@@ -1,12 +1,13 @@
 package admin.view;
 
-import admin.controller.AdminControllerObserver;
+import admin.controller.AdminController;
 import admin.view.components.AdminHeader;
 import admin.view.panel.AdminHomePanel;
 import admin.view.panel.EditPerformerPanel;
 import admin.view.panel.LiveSetPanel;
 import admin.view.panel.PerformerPanel;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
+import shared.viewComponents.LoginView;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -16,7 +17,7 @@ public class AdminMainFrame extends JFrame {
     public static final int WIDTH = 1200;
     public static final int HEIGHT = 800;
     private JPanel mainLayout = new JPanel();
-    private AdminControllerObserver adminControllerObserver;
+    private AdminController adminController;
     private AdminHeader adminHeader = new AdminHeader();
 
     private EditPerformerPanel editPerformerPanel;
@@ -25,14 +26,14 @@ public class AdminMainFrame extends JFrame {
 
     private AdminHomePanel adminHomePanel;
 
-    public AdminMainFrame(AdminControllerObserver adminControllerObserver)  {
-      this.adminControllerObserver = adminControllerObserver;
+    public AdminMainFrame(AdminController adminController)  {
+      this.adminController = this.adminController;
       initializeFrame();
 
-      adminHomePanel = new AdminHomePanel(this.adminControllerObserver);
+      adminHomePanel = new AdminHomePanel(this.adminController);
 
       getContentPane().add(adminHeader, BorderLayout.NORTH);
-      getContentPane().add(adminHomePanel, BorderLayout.CENTER);
+      getContentPane().add(new LoginView(adminController, true), BorderLayout.CENTER);
     }
 
     private void initializeFrame() {

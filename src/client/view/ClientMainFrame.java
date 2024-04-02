@@ -4,6 +4,7 @@ import client.controller.ClientController;
 import client.controller.ClientControllerObserver;
 import client.view.components.ClientHeader;
 import client.view.panels.HomeView;
+import client.view.utility.ClientViews;
 import shared.viewComponents.LoginView;
 import client.view.panels.SignUpView;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
@@ -29,6 +30,7 @@ public class ClientMainFrame extends JFrame {
         initializeFrame();
         getContentPane().add(clientHeader, BorderLayout.NORTH);
         loginView = new LoginView(clientControllerObserver, false);
+        loginView.getSignUpButton().addActionListener(e -> this.clientControllerObserver.changeFrame(ClientViews.SIGN_UP));
         getContentPane().add(loginView, BorderLayout.CENTER);
     }
 

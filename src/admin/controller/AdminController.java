@@ -6,6 +6,7 @@ import admin.view.panel.EditPerformerPanel;
 import admin.view.panel.LiveSetPanel;
 import admin.view.panel.PerformerPanel;
 import admin.view.utility.AdminPanel;
+import shared.controller.LoginController;
 import shared.model.Database;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
@@ -14,7 +15,7 @@ import shared.viewComponents.Loading;
 import javax.swing.*;
 import java.util.LinkedList;
 
-public class AdminController implements AdminControllerObserver{
+public class AdminController implements AdminControllerObserver, LoginController {
 
     private AdminMainFrame adminMainFrame;
     private Loading loading;
@@ -125,4 +126,10 @@ public class AdminController implements AdminControllerObserver{
         this.adminMainFrame = adminMainFrame;
         loading = new Loading(adminMainFrame);
     }
+
+    @Override
+    public void logIn(String userName, String password) {
+        
+    }
+
 }
