@@ -60,8 +60,8 @@ public class LoginView extends JPanel {
         JPanel fieldInputPanel = new JPanel();
         fieldInputPanel.setLayout(new BoxLayout(fieldInputPanel, BoxLayout.Y_AXIS));
 
-        FieldInput userName = new FieldInput("User Name", new Dimension(420, 60), 40, 1, false);
-        FieldInput password = new FieldInput("Password", new Dimension(420, 60), 40, 1, true);
+        FieldInput userName = new FieldInput("User Name", new Dimension(420, 60), 20, 1, false);
+        FieldInput password = new FieldInput("Password", new Dimension(420, 60), 20, 1, true);
 
         fieldInputPanel.add(userName);
         fieldInputPanel.add(password);
@@ -80,6 +80,7 @@ public class LoginView extends JPanel {
         });
         return fieldInputPanel;
     }
+
 
     public Button getSignUpButton() {
         return signUpButton;

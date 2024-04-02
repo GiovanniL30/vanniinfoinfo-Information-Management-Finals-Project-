@@ -2,6 +2,8 @@ package shared.viewComponents;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 /**
  * A custom JPanel class for user input fields, supporting both text and password fields
@@ -63,6 +65,34 @@ public class FieldInput extends JPanel {
         errorMessage.setForeground(Color.RED);
         errorMessage.setVisible(false);
         add(errorMessage, constraints);
+
+        textField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+                if(getInput() != null) {
+
+                    if(getInput().length() > 20) {
+                        enableError("Please enter a maximum length of " + maxInput);
+
+                    }
+
+                }
+
+            }
+        });
     }
 
     /**
