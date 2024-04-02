@@ -1,7 +1,5 @@
 package shared.viewComponents;
 
-import admin.view.utility.AdminSearchBar;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -91,12 +89,6 @@ public class FieldInput extends JPanel {
 
                 }
 
-            }
-
-            public void addActionListener(ActionListener listener) {
-                actionListener = listener;
-                textField.addActionListener(listener);
-                passwordField.addActionListener(listener);
             }
 
             @Override
