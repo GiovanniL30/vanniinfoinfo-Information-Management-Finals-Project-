@@ -82,7 +82,7 @@ public class TicketsPanel extends JPanel {
             JLabel ticketNumber = new JLabel("Ticket Number: " + purchased.getTicketId());
             ticketNumber.setFont(FontFactory.newPoppinsBold(15));
             ticketNumber.setHorizontalAlignment(BoxLayout.LINE_AXIS);
-            JLabel status = new JLabel(purchased.getUserName() == null ? "NOT USED" : "USED BY: " + purchased.getUserName());
+            JLabel status = new JLabel(purchased.getTicketStatus() == null ? "NOT USED" : "USED BY: " + purchased.getUserName());
             status.setHorizontalAlignment(BoxLayout.LINE_AXIS);
             status.setFont(FontFactory.newPoppinsBold(15));
             ticketInformationPanel.add(status);
