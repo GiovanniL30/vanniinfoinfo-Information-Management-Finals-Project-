@@ -7,7 +7,6 @@ import client.view.panels.HomeView;
 import client.view.utility.ClientViews;
 import shared.viewComponents.LoginView;
 import client.view.panels.SignUpView;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -35,18 +34,7 @@ public class ClientMainFrame extends JFrame {
     }
 
     private void initializeFrame() {
-        try {
-            UIManager.setLookAndFeel(new FlatMacLightLaf());
-            UIManager.put("Button.arc", 10);
-            UIManager.put("TextComponent.arc", 5);
-            UIManager.put("ScrollBar.width", 10);
-            UIManager.put("ScrollBar.thumbArc", 3);
-            UIManager.put("ScrollBar.thumbInsets", new Insets(2, 2, 2, 2));
 
-        } catch (Exception ex) {
-            System.err.println("Failed to initialize LaF");
-            System.exit(0);
-        }
 
         setSize(new Dimension(WIDTH, HEIGHT));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

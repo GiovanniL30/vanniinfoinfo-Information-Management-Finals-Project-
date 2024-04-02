@@ -17,7 +17,7 @@ public class LoginView extends JPanel {
     private Button signUpButton;
 
     public LoginView(LoginController loginController, boolean isAdmin) {
-        this.loginController = this.loginController;
+        this.loginController = loginController;
         this.isAdmin = isAdmin;
 
         GridBagConstraints constraints = new GridBagConstraints();

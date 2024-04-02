@@ -18,7 +18,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanniinfoinfo", "root", "");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanni", "root", "");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());

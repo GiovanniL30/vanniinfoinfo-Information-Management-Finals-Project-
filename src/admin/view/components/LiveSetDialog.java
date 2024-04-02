@@ -2,8 +2,6 @@ package admin.view.components;
 
 import admin.controller.AdminControllerObserver;
 import admin.view.utility.LiveSetDialogType;
-import com.formdev.flatlaf.swingx.ui.FlatDatePickerUI;
-import org.jdesktop.swingx.JXDatePicker;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.utilityClasses.ColorFactory;
@@ -33,7 +31,6 @@ public class LiveSetDialog extends JDialog {
     private AdminControllerObserver adminControllerObserver;
     private LiveSet liveSet;
     private Picture thumbnailPreview;
-    private JXDatePicker datePicker;
     private  JSpinner timeSpinner;
     private LiveSetDialogType liveSetDialogType;
     private String imagePath = "";
@@ -101,14 +98,8 @@ public class LiveSetDialog extends JDialog {
         secondRow.setSize(new Dimension(500, 50));
         secondRow.setBackground(Color.white);
 
-        JPanel datePanel = new JPanel(new BorderLayout());
-        datePanel.setBackground(Color.white);
-        JLabel dateLabel = new JLabel("Date");
-        datePicker = new JXDatePicker();
-        datePicker.setUI(new FlatDatePickerUI());
-        datePicker.setPreferredSize(new Dimension(250, 50));
-        datePanel.add(dateLabel, BorderLayout.NORTH);
-        datePanel.add(datePicker, BorderLayout.CENTER);
+
+        FieldInput dateInput = new FieldInput("Date", new Dimension(300, 50), 10, 10, false);
 
         JPanel spinnerPanel = new JPanel(new BorderLayout());
         JLabel spinnerLabel = new JLabel("Time");
@@ -123,7 +114,7 @@ public class LiveSetDialog extends JDialog {
         spinnerPanel.add(spinnerLabel, BorderLayout.NORTH);
         spinnerPanel.add(timeSpinner, BorderLayout.CENTER);
 
-        secondRow.add(datePanel);
+        secondRow.add(dateInput);
         secondRow.add(spinnerPanel);
 
 
@@ -169,10 +160,6 @@ public class LiveSetDialog extends JDialog {
 
         add.addActionListener( e -> {
 
-            if(datePicker.getDate() == null) {
-                JOptionPane.showMessageDialog(null, "Date must not be null");
-                return;
-            }
 
             if(imagePath.isEmpty()){
                 JOptionPane.showMessageDialog(null, "Please Upload a Live Set Thumbnail");
@@ -180,13 +167,13 @@ public class LiveSetDialog extends JDialog {
             }
 
             String streamURL = streamUrl.getInput();
-            java.sql.Date date = new java.sql.Date(datePicker.getDate().getTime());
+            String date = dateInput.getInput();
             java.sql.Time time = new java.sql.Time( ((Date)timeSpinner.getValue()).getTime());
             String p = price.getInput();
             int intP;
 
 
-            if(UtilityMethods.haveNullOrEmpty(streamURL, p)){
+            if(UtilityMethods.haveNullOrEmpty(streamURL, p, date)){
                 return;
             }
 
@@ -203,7 +190,7 @@ public class LiveSetDialog extends JDialog {
                 return;
             }
 
-          adminControllerObserver.addLiveSet(new LiveSet(UtilityMethods.generateRandomID(), "Open", intP, date, time, imagePath, streamURL, performers.get(performersDropDown.choiceIndex()).getPerformerID()));
+          adminControllerObserver.addLiveSet(new LiveSet(UtilityMethods.generateRandomID(), "Open", intP, new java.sql.Date(Calendar.DATE), time, imagePath, streamURL, performers.get(performersDropDown.choiceIndex()).getPerformerID()));
         });
 
         cancel.addActionListener( e -> dispose());

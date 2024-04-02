@@ -6,7 +6,6 @@ import admin.view.panel.AdminHomePanel;
 import admin.view.panel.EditPerformerPanel;
 import admin.view.panel.LiveSetPanel;
 import admin.view.panel.PerformerPanel;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import shared.viewComponents.LoginView;
 
 import javax.swing.*;
@@ -27,7 +26,7 @@ public class AdminMainFrame extends JFrame {
     private AdminHomePanel adminHomePanel;
 
     public AdminMainFrame(AdminController adminController)  {
-      this.adminController = this.adminController;
+      this.adminController = adminController;
       initializeFrame();
 
       adminHomePanel = new AdminHomePanel(this.adminController);
@@ -37,19 +36,6 @@ public class AdminMainFrame extends JFrame {
     }
 
     private void initializeFrame() {
-        try {
-            UIManager.setLookAndFeel(new FlatMacLightLaf());
-            UIManager.put("Button.arc", 10);
-            UIManager.put("TextComponent.arc", 5);
-            UIManager.put("ScrollBar.width", 10);
-            UIManager.put("ScrollBar.thumbArc", 3);
-            UIManager.put("ScrollBar.thumbInsets", new Insets(2, 2, 2, 2));
-
-        } catch (Exception ex) {
-            System.err.println("Failed to initialize LaF");
-            System.exit(0);
-        }
-
         setSize(new Dimension(WIDTH, HEIGHT));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
