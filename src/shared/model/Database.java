@@ -648,7 +648,7 @@ public class Database {
             }
 
             if (matchingPerformers.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "No performer '" + searchTerm + "' found", "No Results", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "No performer '" + searchTerm + "' found", "No Results", JOptionPane.ERROR_MESSAGE);
             }
 
             return new Response<>(matchingPerformers, true);
