@@ -124,7 +124,7 @@ public class AdminController implements AdminControllerObserver, LoginController
     @Override
     public void editLiveSet(LiveSet liveSet) {
         System.out.println(liveSet);
-        if (Database.addLiveSet(liveSet)) {
+        if (Database.editLiveSet(liveSet)) {
             changeFrame(AdminPanel.LIVE_SET);
             JOptionPane.showMessageDialog(adminMainFrame, "Edited LiveSet successfully");
         } else {
