@@ -3,6 +3,7 @@ package shared.model;
 import shared.referenceClasses.*;
 import shared.utilityClasses.UtilityMethods;
 
+import javax.swing.*;
 import java.io.*;
 import java.sql.*;
 import java.util.Arrays;
@@ -644,6 +645,10 @@ public class Database {
                 String performerStatus = resultSet.getString(6);
 
                 matchingPerformers.add(new Performer(performerID, performerName, genre, performerType, description, performerStatus));
+            }
+
+            if (matchingPerformers.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "No performer '" + searchTerm + "' found", "No Results", JOptionPane.INFORMATION_MESSAGE);
             }
 
             return new Response<>(matchingPerformers, true);
