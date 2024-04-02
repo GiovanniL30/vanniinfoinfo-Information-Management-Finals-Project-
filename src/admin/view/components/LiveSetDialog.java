@@ -204,9 +204,106 @@ public class LiveSetDialog extends JDialog {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(Color.white);
 
-        // Add components for the "Edit Liveset" panel here
+        JPanel firstRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        firstRow.setBackground(Color.white);
+        DropDown performersDropDown = new DropDown(new Dimension(350, 50), "Performer", performers.stream().map(Performer::getPerformerName).toList().toArray(new String[0]));
+        FieldInput streamUrl = new FieldInput("Stream URL", new Dimension(350, 50), 200, 10, false);
 
+        firstRow.add(performersDropDown);
+        firstRow.add(streamUrl);
 
+        JPanel secondRow = new JPanel(new GridLayout(1, 2, 20, 0));
+        secondRow.setSize(new Dimension(500, 50));
+        secondRow.setBackground(Color.white);
+
+        FieldInput dateInput = new FieldInput("Date", new Dimension(300, 50), 10, 10, false);
+
+        JPanel spinnerPanel = new JPanel(new BorderLayout());
+        JLabel spinnerLabel = new JLabel("Time");
+        spinnerPanel.setBackground(Color.white);
+        SpinnerDateModel spinnerModel = new SpinnerDateModel();
+        spinnerModel.setCalendarField(Calendar.MINUTE);
+        timeSpinner = new JSpinner(spinnerModel);
+        JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm");
+        timeSpinner.setEditor(timeEditor);
+        timeEditor.enableInputMethods(false);
+        timeSpinner.setPreferredSize(new Dimension(250, 50));
+        spinnerPanel.add(spinnerLabel, BorderLayout.NORTH);
+        spinnerPanel.add(timeSpinner, BorderLayout.CENTER);
+
+        secondRow.add(dateInput);
+        secondRow.add(spinnerPanel);
+
+        JPanel thirdRow = new JPanel();
+        thirdRow.setPreferredSize(new Dimension(620, 300));
+        thirdRow.setLayout(null);
+        thirdRow.setBackground(Color.white);
+        Button uploadImageButton = new Button("Upload Thumbnail", new Dimension(300, 50), FontFactory.newPoppinsDefault(14));
+        uploadImageButton.setBounds(0, 0, 360, 50);
+        thumbnailPreview = new Picture("asc", 400, 300);
+        thumbnailPreview.setBounds(380, 0, 350, 300);
+        thirdRow.add(uploadImageButton);
+        thirdRow.add(thumbnailPreview);
+
+        JPanel lastRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
+        lastRow.setBackground(Color.white);
+        Button cancel = new Button("CANCEL", new Dimension(345, 50), FontFactory.newPoppinsDefault(14));
+        FilledButton save = new FilledButton("SAVE", new Dimension(345, 50), FontFactory.newPoppinsDefault(14), ColorFactory.red(), Color.white);
+        lastRow.add(cancel);
+        lastRow.add(save);
+
+        JPanel pricePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        pricePanel.setBackground(Color.white);
+        FieldInput price = new FieldInput("Price", new Dimension(690, 50), 20, 1, false);
+        pricePanel.add(price);
+
+        panel.add(firstRow);
+        panel.add(secondRow);
+        panel.add(Box.createVerticalStrut(30));
+        panel.add(thirdRow);
+        panel.add(pricePanel);
+        panel.add(lastRow);
+
+        uploadImageButton.addActionListener(e -> {
+            imagePath = uploadImage();
+
+            if (!imagePath.isEmpty()) {
+                thumbnailPreview.updatePicture(imagePath);
+            }
+        });
+
+        save.addActionListener(e -> {
+            if (imagePath.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Please Upload a Live Set Thumbnail");
+                return;
+            }
+
+            String streamURL = streamUrl.getInput();
+            String date = dateInput.getInput();
+            java.sql.Time time = new java.sql.Time(((Date) timeSpinner.getValue()).getTime());
+            String p = price.getInput();
+            int intP;
+
+            if (UtilityMethods.haveNullOrEmpty(streamURL, p, date)) {
+                return;
+            }
+
+            try {
+                intP = Integer.parseInt(p);
+            } catch (NumberFormatException exception) {
+                price.enableError("Please enter a valid price");
+                return;
+            }
+
+            if (!isValidURL(streamURL)) {
+                streamUrl.enableError("Please enter a valid URL (ex.https://...)");
+                return;
+            }
+
+            adminControllerObserver.editLiveSet(new LiveSet(liveSet.getLiveSetID(), "Open", intP, new java.sql.Date(Calendar.DATE), time, imagePath, streamURL, performers.get(performersDropDown.choiceIndex()).getPerformerID()));
+        });
+
+        cancel.addActionListener(e -> dispose());
         return panel;
     }
 

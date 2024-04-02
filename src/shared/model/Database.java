@@ -114,6 +114,42 @@ public class Database {
         }
     }
 
+    public static boolean editLiveSet(LiveSet liveSet) {
+        ensureConnection();
+        String query = "UPDATE liveset SET status=?, date=?, time=?, thumbnail=?, streamLinkURL=?, performerID=?, price=? WHERE liveSetID=?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, liveSet.getStatus());
+            preparedStatement.setDate(2, liveSet.getDate());
+            preparedStatement.setTime(3, liveSet.getTime());
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            try (InputStream fis = new FileInputStream(liveSet.getThumbnail())) {
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                preparedStatement.setBinaryStream(4, new ByteArrayInputStream(outputStream.toByteArray()));
+            } catch (IOException e) {
+                // In case thumbnail is not updated, handle it here.
+                System.err.println("Error reading file: " + e.getMessage());
+                preparedStatement.setBytes(4, null); // Set thumbnail to null in case of error
+            }
+
+            preparedStatement.setString(5, liveSet.getStreamLinkURL());
+            preparedStatement.setString(6, liveSet.getPerformerID());
+            preparedStatement.setInt(7, liveSet.getPrice());
+            preparedStatement.setString(8, liveSet.getLiveSetID());
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static boolean addPerformer(Performer performer) {
 
         ensureConnection();
