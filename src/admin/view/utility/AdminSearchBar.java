@@ -48,10 +48,7 @@ public class AdminSearchBar extends JPanel {
         constraints.insets = new Insets(0, 40, 0, 0);
         buttonsPanel.add(add, constraints);
 
-        //FieldInput search = new FieldInput("", new Dimension(600, 50), 40, 1 ,false);
-
-        searchField = new FieldInput("", new Dimension(600, 50), 40, 1, false);
-
+        searchField = new FieldInput("", new Dimension(600, 50), Integer.MAX_VALUE, 1, false);
 
         JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         labelPanel.setBackground(Color.WHITE);

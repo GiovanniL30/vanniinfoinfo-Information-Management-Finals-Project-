@@ -191,11 +191,11 @@ public class ClientController implements ClientControllerObserver, LoginControll
     @Override
     public void accessLiveSet(LiveSet liveSet, String ticketId) {
 
-        User user = Database.getTicketUser(ticketId, loggedInAccount.getUserID()).getPayload();
+        Response<User> userResponse = Database.getTicketUser(ticketId, loggedInAccount.getUserID());
 
-        System.out.println(user);
 
-        if(user != null && user.getUserID().equals(loggedInAccount.getUserID())) {
+
+        if(userResponse.isSuccess() && userResponse.getPayload().getUserID().equals(loggedInAccount.getUserID())) {
             accessGigDialog.dispose();
             try {
                 Desktop.getDesktop().browse(new URI(liveSet.getStreamLinkURL()));

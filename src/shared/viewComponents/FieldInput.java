@@ -75,10 +75,15 @@ public class FieldInput extends JPanel {
             @Override
             public void keyTyped(KeyEvent e) {
 
+                if(getInput() == null) {
+                    removeError();
+                    return;
+                }
 
                 if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {
                     return;
                 }
+
                 if(getInput() != null) {
 
                     if(getInput().length() > 20) {
@@ -93,6 +98,11 @@ public class FieldInput extends JPanel {
 
             @Override
             public void keyPressed(KeyEvent e) {
+
+                if(getInput() == null) {
+                    removeError();
+                    return;
+                }
 
                 if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {
                     return;
@@ -111,6 +121,12 @@ public class FieldInput extends JPanel {
 
             @Override
             public void keyReleased(KeyEvent e) {
+
+
+                if(getInput() == null) {
+                    removeError();
+                    return;
+                }
 
                 if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {
                     return;
@@ -132,6 +148,10 @@ public class FieldInput extends JPanel {
         passwordField.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
+
+                if(getInput() == null) {
+                    return;
+                }
 
 
                 if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {

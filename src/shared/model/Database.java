@@ -19,7 +19,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/updatedvaniinfofo", "root", "");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/cas", "root", "password");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -137,7 +137,7 @@ public class Database {
 
     public static boolean editLiveSet(LiveSet liveSet) {
         ensureConnection();
-        String query = "UPDATE liveset SET status=?, date=?, time=?, thumbnail=?, streamLinkURL=?, performerID=?, price=? WHERE liveSetID=?";
+        String query = "UPDATE liveset SET status=?, date=?, time=?, thumbnail=?, streamLinkURL=?, price=? WHERE liveSetID=?";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, liveSet.getStatus());
@@ -160,9 +160,8 @@ public class Database {
             }
 
             preparedStatement.setString(5, liveSet.getStreamLinkURL());
-            preparedStatement.setString(6, liveSet.getPerformerID());
-            preparedStatement.setInt(7, liveSet.getPrice());
-            preparedStatement.setString(8, liveSet.getLiveSetID());
+            preparedStatement.setInt(6, liveSet.getPrice());
+            preparedStatement.setString(7, liveSet.getLiveSetID());
 
             int rowsAffected = preparedStatement.executeUpdate();
             return rowsAffected > 0;

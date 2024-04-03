@@ -23,8 +23,11 @@ import java.util.LinkedList;
 public class LiveSetPanel extends JPanel {
     private AdminSearchBar adminSearchBar;
     private JPanel scrollPaneHolder = new JPanel();
-    AdminMainFrame adminMainFrame;
+    private AdminMainFrame adminMainFrame;
+    private static LinkedList<Performer> performers;
+
     public LiveSetPanel(LinkedList<LiveSet> liveSets, LinkedList<Performer> performers, AdminControllerObserver adminControllerObserver) {
+        LiveSetPanel.performers = performers;
         setBackground(Color.white);
 
         setLayout(new BorderLayout());
@@ -70,8 +73,7 @@ public class LiveSetPanel extends JPanel {
                     for(Performer performer : performers) {
 
                         if(liveSet.getPerformerID().equals(performer.getPerformerID())) {
-                            scrollPaneHolder.add(new LiveSetCard(liveSet, performer));
-                            scrollPaneHolder.add(new LiveSetCard(liveSet, performer));  scrollPaneHolder.add(new LiveSetCard(liveSet, performer));
+                           scrollPaneHolder.add(new LiveSetCard(liveSet, performer));
                             scrollPaneHolder.revalidate();
                             scrollPaneHolder.repaint();
                         }
@@ -119,7 +121,6 @@ public class LiveSetPanel extends JPanel {
 
     private static class LiveSetCard extends JPanel{
         AdminMainFrame adminMainFrame;
-        LinkedList<Performer> performers;
         AdminControllerObserver adminControllerObserver;
 
         public LiveSetCard(LiveSet liveSet, Performer performer) {

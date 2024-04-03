@@ -123,7 +123,7 @@ public class AdminController implements AdminControllerObserver, LoginController
 
     @Override
     public void editLiveSet(LiveSet liveSet) {
-        System.out.println(liveSet);
+
         if (Database.editLiveSet(liveSet)) {
             changeFrame(AdminPanel.LIVE_SET);
             JOptionPane.showMessageDialog(adminMainFrame, "Edited LiveSet successfully");
@@ -139,8 +139,6 @@ public class AdminController implements AdminControllerObserver, LoginController
     public LinkedList<Genre> getGenres() {
         return Database.getGenres().getPayload();
     }
-
-
 
     public void setAdminMainFrame(AdminMainFrame adminMainFrame) {
         this.adminMainFrame = adminMainFrame;
