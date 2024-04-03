@@ -666,9 +666,6 @@ public class Database {
                 matchingPerformers.add(new Performer(performerID, performerName, genre, performerType, description, performerStatus));
             }
 
-            if (matchingPerformers.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "No performer '" + searchTerm + "' found", "No Results", JOptionPane.ERROR_MESSAGE);
-            }
 
             return new Response<>(matchingPerformers, true);
 

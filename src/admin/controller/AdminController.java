@@ -6,7 +6,6 @@ import admin.view.panel.EditPerformerPanel;
 import admin.view.panel.LiveSetPanel;
 import admin.view.panel.PerformerPanel;
 import admin.view.utility.AdminPanel;
-import client.view.utility.ClientViews;
 import shared.controller.LoginController;
 import shared.model.Database;
 import shared.referenceClasses.Genre;
@@ -42,9 +41,10 @@ public class AdminController implements AdminControllerObserver, LoginController
                         adminMainFrame.setPerformerPanel(performerPanel);
                         adminMainFrame.getContentPane().add(performerPanel, 1);
 
-                    }case LIVE_SET -> {
+                    }
+                    case LIVE_SET -> {
 
-                        LiveSetPanel liveSetPanel = new LiveSetPanel(Database.getLiveSets().getPayload(), Database.getPerformers().getPayload(),AdminController.this);
+                        LiveSetPanel liveSetPanel = new LiveSetPanel(Database.getLiveSets().getPayload(), Database.getPerformers().getPayload(), AdminController.this);
                         adminMainFrame.setLiveSetPanel(liveSetPanel);
                         adminMainFrame.getContentPane().add(liveSetPanel, 1);
                     }
@@ -89,10 +89,10 @@ public class AdminController implements AdminControllerObserver, LoginController
 
     @Override
     public void addPerformer(Performer performer) {
-        if(Database.addPerformer(performer)) {
+        if (Database.addPerformer(performer)) {
             changeFrame(AdminPanel.PERFORMER);
             JOptionPane.showMessageDialog(adminMainFrame, "Added Performer successfully");
-        }else {
+        } else {
             JOptionPane.showMessageDialog(adminMainFrame, "Having error adding the performer");
         }
     }
@@ -100,10 +100,10 @@ public class AdminController implements AdminControllerObserver, LoginController
     @Override
     public void updatePerformer(Performer performer) {
 
-        if(Database.updatePerformer(performer)) {
+        if (Database.updatePerformer(performer)) {
             changeFrame(AdminPanel.PERFORMER);
             JOptionPane.showMessageDialog(adminMainFrame, "Updated Performer successfully");
-        }else {
+        } else {
             JOptionPane.showMessageDialog(adminMainFrame, "Having error updating the performer");
         }
 
@@ -158,16 +158,16 @@ public class AdminController implements AdminControllerObserver, LoginController
                 loading.setVisible(false);
                 try {
                     Optional<User> user = get();
-                    if(user.isPresent()) {
+                    if (user.isPresent()) {
 
-                        if(!user.get().getUserType().equals("Admin")) {
+                        if (!user.get().getUserType().equals("Admin")) {
                             JOptionPane.showMessageDialog(adminMainFrame, "Invalid Credentials");
                             return;
                         }
 
-                       changeFrame(AdminPanel.HOME);
+                        changeFrame(AdminPanel.HOME);
                         JOptionPane.showMessageDialog(adminMainFrame, "Log in Success");
-                    }else {
+                    } else {
                         JOptionPane.showMessageDialog(adminMainFrame, "Invalid Credentials");
                     }
                 } catch (InterruptedException | ExecutionException e) {
