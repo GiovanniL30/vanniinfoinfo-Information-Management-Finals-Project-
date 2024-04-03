@@ -227,6 +227,17 @@ public class ClientController implements ClientControllerObserver, LoginControll
     }
 
     @Override
+    public void signUp(User user) {
+        Response<String> response = Database.signUp(user);
+
+        if(response.isSuccess()) {
+            changeFrame(ClientViews.LOGIN);
+        }
+
+        JOptionPane.showMessageDialog(clientMainFrame, response.getPayload());
+    }
+
+    @Override
     public User getLoggedInAccount() {
         return loggedInAccount;
     }

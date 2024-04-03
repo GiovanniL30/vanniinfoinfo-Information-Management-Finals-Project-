@@ -30,18 +30,46 @@ public class Database {
         return false;
     }
 
-    public static Response<String> signUp(String firstName, String lastName, String userName, String email, String password) {
+    private static boolean userNameExist(String userName) {
+        ensureConnection();
+
+        String query = "SELECT userName FROM user WHERE userName = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, userName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+
+        return false;
+    }
+
+
+    public static Response<String> signUp(User user) {
+
+        if(userNameExist(user.getUserName())) {
+            return new Response<>("User name " + user.getUserName() + " already exist", false);
+        }
+
         ensureConnection();
     
-        String query = "INSERT INTO user(firstName, lastName, userName, email, password) VALUES (?,?,?,?,?)";
+        String query = "INSERT INTO user (userID, firstName, lastName,userName, email, password, watchedConsecShows, userStatus, haveEarnedLoyalty, userType) VALUES (?, ?, ?, ?, ?, ?, ?,?, ?, ?)";
     
         try {
             PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, firstName);
-            statement.setString(2, lastName);
-            statement.setString(3, userName);
-            statement.setString(4, email);
-            statement.setString(5, password);
+            statement.setString(1, user.getUserID());
+            statement.setString(2, user.getFirstName());
+            statement.setString(3, user.getLastName());
+            statement.setString(4, user.getUserName());
+            statement.setString(5, user.getEmail());
+            statement.setString(6, user.getPassword());
+            statement.setInt(7, user.getWatchedConsecutiveShows());
+            statement.setString(8, user.getUserStatus());
+            statement.setInt(9, user.isHaveEarnedLoyalty() ? 1 : 0);
+            statement.setString(10, user.getUserType());
             statement.execute();
             return new Response<>("User signed up successfully", true);
         } catch (SQLException e) {
