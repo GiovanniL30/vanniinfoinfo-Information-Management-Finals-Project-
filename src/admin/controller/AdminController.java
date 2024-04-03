@@ -204,4 +204,8 @@ public class AdminController implements AdminControllerObserver, LoginController
     }
 
 
+    public void searchLiveSetsAdmin(String searchTerm) {
+        adminMainFrame.getLiveSetPanel().searchLiveSetsAdmin(searchTerm);
+    }
+
 }

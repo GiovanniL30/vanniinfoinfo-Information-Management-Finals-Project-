@@ -6,6 +6,7 @@ import admin.view.components.LiveSetDialog;
 import admin.view.utility.AdminPanel;
 import admin.view.utility.AdminSearchBar;
 import admin.view.utility.LiveSetDialogType;
+import shared.model.Database;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
 import shared.utilityClasses.ColorFactory;
@@ -150,5 +151,17 @@ public class LiveSetPanel extends JPanel {
             editButton.addActionListener(e -> adminControllerObserver.openEditLiveSet(liveSet, performers));
         }
 
+    }
+
+    public void searchLiveSetsAdmin(String searchTerm) {
+        LinkedList<LiveSet> searchResults = Database.searchLiveSetsAdmin(searchTerm).getPayload();
+        clearLiveSet();
+        populateLiveSet(searchResults, performers);
+    }
+
+    private void clearLiveSet() {
+        scrollPaneHolder.removeAll();
+        scrollPaneHolder.revalidate();
+        scrollPaneHolder.repaint();
     }
 }
