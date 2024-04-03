@@ -19,7 +19,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/seanhehehe", "root", "");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/cas", "root", "password");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -708,11 +708,11 @@ public class Database {
 
         LinkedList<LiveSet> matchingLiveSet = new LinkedList<>();
 
-        String query = "SELECT ls.* FROM liveset ls LEFT OUTER JOIN performer p ON ls.performerID = p.performerID WHERE LOWER(p.performerName) = LOWER(?);";
+        String query = "SELECT ls.* FROM liveset ls LEFT OUTER JOIN performer p ON ls.performerID = p.performerID WHERE LOWER(p.performerName) LIKE LOWER(?)";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, searchTerm );
+            statement.setString(1, "%" + searchTerm + "%" );
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -721,7 +721,7 @@ public class Database {
                 String status = resultSet.getString(2);
                 Date date = resultSet.getDate(3);
                 Time time = resultSet.getTime(4);
-                String thumbnail = resultSet.getString(5);
+                String thumbnail = getImage(liveSetID, resultSet.getBlob(5)).getPayload();
                 String streamLinkUrl = resultSet.getString(6);
                 String performerID = resultSet.getString(7);
                 int price = resultSet.getInt(8);
