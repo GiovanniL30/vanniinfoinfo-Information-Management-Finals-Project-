@@ -7,14 +7,11 @@ import client.view.components.TicketsPanel;
 import client.view.panels.HomeView;
 import shared.controller.LoginController;
 import shared.model.Response;
-import shared.referenceClasses.Purchased;
+import shared.referenceClasses.*;
 import shared.viewComponents.LoginView;
 import client.view.panels.PaymentView;
 import client.view.panels.SignUpView;
 import shared.model.Database;
-import shared.referenceClasses.LiveSet;
-import shared.referenceClasses.Performer;
-import shared.referenceClasses.User;
 import shared.viewComponents.Loading;
 
 import javax.swing.*;
