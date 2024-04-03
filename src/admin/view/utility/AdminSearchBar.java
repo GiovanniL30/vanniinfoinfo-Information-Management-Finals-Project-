@@ -96,7 +96,12 @@ public class AdminSearchBar extends JPanel {
                     return;
                 }
 
-                adminControllerObserver.searchPerformers(searchField.getInput());
+                if(adminPanel.equals(AdminPanel.PERFORMER)) {
+                    adminControllerObserver.searchPerformers(searchField.getInput());
+                }else {
+
+                }
+
             }
 
             @Override
