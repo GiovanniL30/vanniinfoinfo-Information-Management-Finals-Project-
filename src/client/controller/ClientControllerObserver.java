@@ -15,6 +15,7 @@ public interface ClientControllerObserver {
     void purchaseTicket(String liveSetID);
     void accessLiveSet(LiveSet liveSet, String ticketId);
     void openAccess(LiveSet liveSet);
+    void signUp(User user);
     User getLoggedInAccount();
     LinkedList<LiveSet> getLiveSet();
     void searchLiveSets(String searchTerm);

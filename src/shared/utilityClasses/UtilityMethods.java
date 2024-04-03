@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class UtilityMethods {
 
@@ -53,13 +54,9 @@ public class UtilityMethods {
         return Time.valueOf(currentTime.format(formatter));
     }
 
-    public static String[] getGenres() {
-        return new String[] {
-                "Rock", "Pop", "Hip Hop", "Jazz", "Blues",
-                "Country", "Electronic", "Classical", "Reggae", "R&B",
-                "Metal", "Folk", "Punk", "Indie", "Alternative",
-                "Funk", "Soul", "Gospel", "Techno", "Dance"
-        };
+    public static boolean isEmailValid(String email) {
+        String regex = "\\b[A-Za-z0-9._%+-]+@gmail\\.com\\b";
+        return Pattern.matches(regex, email);
     }
 
     public static String[] populateGenres(LinkedList<Genre> genres){

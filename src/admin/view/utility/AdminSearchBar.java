@@ -14,6 +14,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.LinkedList;
 
 public class AdminSearchBar extends JPanel {
@@ -48,10 +50,7 @@ public class AdminSearchBar extends JPanel {
         constraints.insets = new Insets(0, 40, 0, 0);
         buttonsPanel.add(add, constraints);
 
-        //FieldInput search = new FieldInput("", new Dimension(600, 50), 40, 1 ,false);
-
-        searchField = new FieldInput("", new Dimension(600, 50), 40, 1, false);
-
+        searchField = new FieldInput("", new Dimension(600, 50), Integer.MAX_VALUE, 0, false);
 
         JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         labelPanel.setBackground(Color.WHITE);
@@ -73,10 +72,42 @@ public class AdminSearchBar extends JPanel {
 
         back.addActionListener( e -> adminControllerObserver.changeFrame(AdminPanel.HOME));
 
+        searchField.getTextField().addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
 
-        searchField.getTextField().addActionListener(e -> {
-            String searchTerm = searchField.getInput().toLowerCase();
-            adminControllerObserver.searchPerformers(searchTerm);
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+                if(e.getKeyCode() == 32) {
+
+                    if(searchField.getInput() != null && searchField.getInput().isEmpty()) {
+                        searchField.removeError();
+                        return;
+                    }
+
+                    return;
+                }
+
+                if(searchField.getInput() == null) {
+                    searchField.removeError();
+                    return;
+                }
+
+                if(adminPanel.equals(AdminPanel.PERFORMER)) {
+                    adminControllerObserver.searchPerformers(searchField.getInput());
+                }else {
+
+                }
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
         });
 
     }

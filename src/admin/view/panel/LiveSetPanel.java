@@ -23,8 +23,12 @@ import java.util.LinkedList;
 public class LiveSetPanel extends JPanel {
     private AdminSearchBar adminSearchBar;
     private JPanel scrollPaneHolder = new JPanel();
-    AdminMainFrame adminMainFrame;
+    private static LinkedList<Performer> performers;
+    private static AdminControllerObserver adminControllerObserver;
+
     public LiveSetPanel(LinkedList<LiveSet> liveSets, LinkedList<Performer> performers, AdminControllerObserver adminControllerObserver) {
+        LiveSetPanel.adminControllerObserver = adminControllerObserver;
+        LiveSetPanel.performers = performers;
         setBackground(Color.white);
 
         setLayout(new BorderLayout());
@@ -52,8 +56,7 @@ public class LiveSetPanel extends JPanel {
 
         adminSearchBar.getAddButton().addActionListener(e -> {
             LiveSet newLiveSet = new LiveSet("", "", 0, liveSets.element().getDate(), liveSets.element().getTime(), "", "", "");
-            LiveSetDialog addLivesetDialog = new LiveSetDialog(adminMainFrame, newLiveSet, performers, adminControllerObserver, LiveSetDialogType.ADD);
-            addLivesetDialog.setVisible(true);
+            adminControllerObserver.openAddLiveSet(newLiveSet, performers);
         });
 
     }
@@ -70,8 +73,7 @@ public class LiveSetPanel extends JPanel {
                     for(Performer performer : performers) {
 
                         if(liveSet.getPerformerID().equals(performer.getPerformerID())) {
-                            scrollPaneHolder.add(new LiveSetCard(liveSet, performer));
-                            scrollPaneHolder.add(new LiveSetCard(liveSet, performer));  scrollPaneHolder.add(new LiveSetCard(liveSet, performer));
+                           scrollPaneHolder.add(new LiveSetCard(liveSet, performer));
                             scrollPaneHolder.revalidate();
                             scrollPaneHolder.repaint();
                         }
@@ -118,9 +120,6 @@ public class LiveSetPanel extends JPanel {
 
 
     private static class LiveSetCard extends JPanel{
-        AdminMainFrame adminMainFrame;
-        LinkedList<Performer> performers;
-        AdminControllerObserver adminControllerObserver;
 
         public LiveSetCard(LiveSet liveSet, Performer performer) {
 
@@ -148,10 +147,7 @@ public class LiveSetPanel extends JPanel {
             add(status);
             add(editButton);
 
-            editButton.addActionListener(e -> {
-                LiveSetDialog editLivesetDialog = new LiveSetDialog(adminMainFrame, liveSet, performers, adminControllerObserver, LiveSetDialogType.EDIT);
-                editLivesetDialog.setVisible(true);
-            });
+            editButton.addActionListener(e -> adminControllerObserver.openEditLiveSet(liveSet, performers));
         }
 
     }

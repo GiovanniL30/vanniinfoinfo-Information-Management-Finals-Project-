@@ -41,5 +41,9 @@ public class DropDown extends JPanel {
         return comboBox.getSelectedIndex();
     }
 
+    public void enable(boolean e){
+        comboBox.setEnabled(e);
+    }
+
 
 }

@@ -33,6 +33,7 @@ public class AdminMainFrame extends JFrame {
 
       getContentPane().add(adminHeader, BorderLayout.NORTH);
       getContentPane().add(new LoginView(adminController, true), BorderLayout.CENTER);
+
     }
 
     private void initializeFrame() {

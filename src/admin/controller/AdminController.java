@@ -1,12 +1,13 @@
 package admin.controller;
 
 import admin.view.AdminMainFrame;
+import admin.view.components.LiveSetDialog;
 import admin.view.panel.AdminHomePanel;
 import admin.view.panel.EditPerformerPanel;
 import admin.view.panel.LiveSetPanel;
 import admin.view.panel.PerformerPanel;
 import admin.view.utility.AdminPanel;
-import client.view.utility.ClientViews;
+import admin.view.utility.LiveSetDialogType;
 import shared.controller.LoginController;
 import shared.model.Database;
 import shared.referenceClasses.Genre;
@@ -23,6 +24,7 @@ import java.util.concurrent.ExecutionException;
 public class AdminController implements AdminControllerObserver, LoginController {
 
     private AdminMainFrame adminMainFrame;
+    private LiveSetDialog liveSetDialog;
     private Loading loading;
 
     @Override
@@ -42,9 +44,10 @@ public class AdminController implements AdminControllerObserver, LoginController
                         adminMainFrame.setPerformerPanel(performerPanel);
                         adminMainFrame.getContentPane().add(performerPanel, 1);
 
-                    }case LIVE_SET -> {
+                    }
+                    case LIVE_SET -> {
 
-                        LiveSetPanel liveSetPanel = new LiveSetPanel(Database.getLiveSets().getPayload(), Database.getPerformers().getPayload(),AdminController.this);
+                        LiveSetPanel liveSetPanel = new LiveSetPanel(Database.getLiveSets().getPayload(), Database.getPerformers().getPayload(), AdminController.this);
                         adminMainFrame.setLiveSetPanel(liveSetPanel);
                         adminMainFrame.getContentPane().add(liveSetPanel, 1);
                     }
@@ -89,10 +92,10 @@ public class AdminController implements AdminControllerObserver, LoginController
 
     @Override
     public void addPerformer(Performer performer) {
-        if(Database.addPerformer(performer)) {
+        if (Database.addPerformer(performer)) {
             changeFrame(AdminPanel.PERFORMER);
             JOptionPane.showMessageDialog(adminMainFrame, "Added Performer successfully");
-        }else {
+        } else {
             JOptionPane.showMessageDialog(adminMainFrame, "Having error adding the performer");
         }
     }
@@ -100,10 +103,10 @@ public class AdminController implements AdminControllerObserver, LoginController
     @Override
     public void updatePerformer(Performer performer) {
 
-        if(Database.updatePerformer(performer)) {
+        if (Database.updatePerformer(performer)) {
             changeFrame(AdminPanel.PERFORMER);
             JOptionPane.showMessageDialog(adminMainFrame, "Updated Performer successfully");
-        }else {
+        } else {
             JOptionPane.showMessageDialog(adminMainFrame, "Having error updating the performer");
         }
 
@@ -112,24 +115,39 @@ public class AdminController implements AdminControllerObserver, LoginController
     @Override
     public void addLiveSet(LiveSet liveSet) {
 
-        System.out.println(liveSet);
         if (Database.addLiveSet(liveSet)) {
             changeFrame(AdminPanel.LIVE_SET);
+            liveSetDialog.dispose();
             JOptionPane.showMessageDialog(adminMainFrame, "Added LiveSet successfully");
         } else {
             JOptionPane.showMessageDialog(adminMainFrame, "Having error adding the LiveSet");
         }
+
     }
 
     @Override
     public void editLiveSet(LiveSet liveSet) {
-        System.out.println(liveSet);
+
         if (Database.editLiveSet(liveSet)) {
             changeFrame(AdminPanel.LIVE_SET);
+            liveSetDialog.dispose();
             JOptionPane.showMessageDialog(adminMainFrame, "Edited LiveSet successfully");
         } else {
             JOptionPane.showMessageDialog(adminMainFrame, "Having error editing the LiveSet");
         }
+
+    }
+
+    @Override
+    public void openEditLiveSet(LiveSet liveSet, LinkedList<Performer> performers) {
+        liveSetDialog = new LiveSetDialog(adminMainFrame, liveSet, performers, this, LiveSetDialogType.EDIT);
+        liveSetDialog.setVisible(true);
+    }
+
+    @Override
+    public void openAddLiveSet(LiveSet liveSet, LinkedList<Performer> performers) {
+        liveSetDialog = new LiveSetDialog(adminMainFrame, liveSet, performers, this, LiveSetDialogType.ADD);
+        liveSetDialog.setVisible(true);
     }
 
     public LinkedList<Performer> getPerformers() {
@@ -139,8 +157,6 @@ public class AdminController implements AdminControllerObserver, LoginController
     public LinkedList<Genre> getGenres() {
         return Database.getGenres().getPayload();
     }
-
-
 
     public void setAdminMainFrame(AdminMainFrame adminMainFrame) {
         this.adminMainFrame = adminMainFrame;
@@ -160,16 +176,16 @@ public class AdminController implements AdminControllerObserver, LoginController
                 loading.setVisible(false);
                 try {
                     Optional<User> user = get();
-                    if(user.isPresent()) {
+                    if (user.isPresent()) {
 
-                        if(!user.get().getUserType().equals("Admin")) {
+                        if (!user.get().getUserType().equals("Admin")) {
                             JOptionPane.showMessageDialog(adminMainFrame, "Invalid Credentials");
                             return;
                         }
 
-                       changeFrame(AdminPanel.HOME);
+                        changeFrame(AdminPanel.HOME);
                         JOptionPane.showMessageDialog(adminMainFrame, "Log in Success");
-                    }else {
+                    } else {
                         JOptionPane.showMessageDialog(adminMainFrame, "Invalid Credentials");
                     }
                 } catch (InterruptedException | ExecutionException e) {
