@@ -19,7 +19,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/cas", "root", "password");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/seanhehehe", "root", "");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -703,4 +703,38 @@ public class Database {
         }
     }
 
+    public static Response<LinkedList<LiveSet>> searchLiveSets(String searchTerm) {
+        ensureConnection();
+
+        LinkedList<LiveSet> matchingLiveSet = new LinkedList<>();
+
+        String query = "SELECT ls.* FROM liveset ls LEFT OUTER JOIN performer p ON ls.performerID = p.performerID WHERE LOWER(p.performerName) = LOWER(?);";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, searchTerm );
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String liveSetID = resultSet.getString(1);
+                String status = resultSet.getString(2);
+                Date date = resultSet.getDate(3);
+                Time time = resultSet.getTime(4);
+                String thumbnail = resultSet.getString(5);
+                String streamLinkUrl = resultSet.getString(6);
+                String performerID = resultSet.getString(7);
+                int price = resultSet.getInt(8);
+
+                matchingLiveSet.add(new LiveSet(liveSetID, status, price, date, time, thumbnail, streamLinkUrl, performerID));
+            }
+
+
+            return new Response<>(matchingLiveSet, true);
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+            return new Response<>(new LinkedList<>(), false);
+        }
+    }
 }
