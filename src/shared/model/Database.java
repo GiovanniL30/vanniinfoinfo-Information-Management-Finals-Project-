@@ -30,6 +30,26 @@ public class Database {
         return false;
     }
 
+    public static Response<String> signUp(String firstName, String lastName, String userName, String email, String password) {
+        ensureConnection();
+    
+        String query = "INSERT INTO user(firstName, lastName, userName, email, password) VALUES (?,?,?,?,?)";
+    
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, firstName);
+            statement.setString(2, lastName);
+            statement.setString(3, userName);
+            statement.setString(4, email);
+            statement.setString(5, password);
+            statement.execute();
+            return new Response<>("User signed up successfully", true);
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+    
+        return new Response<>("Error occurred while signing up user", false);
+    }
     public static Response<Optional<User>> logIn(String giveUserName, String givenPassword) {
 
         ensureConnection();
