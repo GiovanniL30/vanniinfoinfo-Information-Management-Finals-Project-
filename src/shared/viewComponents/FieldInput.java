@@ -217,8 +217,9 @@ public class FieldInput extends JPanel {
     } // end of getInput method
 
     private String removeSpaces(String input) {
-        return input.replaceAll("\\s", "");
+        return input.trim().replaceAll("\\s+", " ");
     }
+
 
     /**
      * Validate user input and return true if the input is within the specified length range.
