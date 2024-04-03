@@ -1,11 +1,13 @@
 package admin.controller;
 
 import admin.view.AdminMainFrame;
+import admin.view.components.LiveSetDialog;
 import admin.view.panel.AdminHomePanel;
 import admin.view.panel.EditPerformerPanel;
 import admin.view.panel.LiveSetPanel;
 import admin.view.panel.PerformerPanel;
 import admin.view.utility.AdminPanel;
+import admin.view.utility.LiveSetDialogType;
 import shared.controller.LoginController;
 import shared.model.Database;
 import shared.referenceClasses.Genre;
@@ -22,6 +24,7 @@ import java.util.concurrent.ExecutionException;
 public class AdminController implements AdminControllerObserver, LoginController {
 
     private AdminMainFrame adminMainFrame;
+    private LiveSetDialog liveSetDialog;
     private Loading loading;
 
     @Override
@@ -112,13 +115,14 @@ public class AdminController implements AdminControllerObserver, LoginController
     @Override
     public void addLiveSet(LiveSet liveSet) {
 
-        System.out.println(liveSet);
         if (Database.addLiveSet(liveSet)) {
             changeFrame(AdminPanel.LIVE_SET);
+            liveSetDialog.dispose();
             JOptionPane.showMessageDialog(adminMainFrame, "Added LiveSet successfully");
         } else {
             JOptionPane.showMessageDialog(adminMainFrame, "Having error adding the LiveSet");
         }
+
     }
 
     @Override
@@ -126,10 +130,24 @@ public class AdminController implements AdminControllerObserver, LoginController
 
         if (Database.editLiveSet(liveSet)) {
             changeFrame(AdminPanel.LIVE_SET);
+            liveSetDialog.dispose();
             JOptionPane.showMessageDialog(adminMainFrame, "Edited LiveSet successfully");
         } else {
             JOptionPane.showMessageDialog(adminMainFrame, "Having error editing the LiveSet");
         }
+
+    }
+
+    @Override
+    public void openEditLiveSet(LiveSet liveSet, LinkedList<Performer> performers) {
+        liveSetDialog = new LiveSetDialog(adminMainFrame, liveSet, performers, this, LiveSetDialogType.EDIT);
+        liveSetDialog.setVisible(true);
+    }
+
+    @Override
+    public void openAddLiveSet(LiveSet liveSet, LinkedList<Performer> performers) {
+        liveSetDialog = new LiveSetDialog(adminMainFrame, liveSet, performers, this, LiveSetDialogType.ADD);
+        liveSetDialog.setVisible(true);
     }
 
     public LinkedList<Performer> getPerformers() {

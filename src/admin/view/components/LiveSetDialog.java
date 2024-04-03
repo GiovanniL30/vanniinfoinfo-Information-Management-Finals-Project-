@@ -131,7 +131,10 @@ public class LiveSetDialog extends JDialog {
         uploadImageButton.setBounds(0, 0, 360, 50);
         thumbnailPreview = new Picture("asc", 400, 300);
         thumbnailPreview.setBounds(380, 0, 350, 300);
-        if (isEdit()) thumbnailPreview.updatePicture(liveSet.getThumbnail());
+        if (isEdit()) {
+            imagePath = liveSet.getThumbnail();
+            thumbnailPreview.updatePicture(liveSet.getThumbnail());
+        }
         thirdRow.add(uploadImageButton);
         thirdRow.add(thumbnailPreview);
 
@@ -139,7 +142,7 @@ public class LiveSetDialog extends JDialog {
         JPanel lastRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
         lastRow.setBackground(Color.white);
         Button cancel = new Button("CANCEL", new Dimension(345, 50), FontFactory.newPoppinsDefault(14));
-        FilledButton add = new FilledButton("ADD", new Dimension(345, 50), FontFactory.newPoppinsDefault(14), ColorFactory.red(), Color.white);
+        FilledButton add = new FilledButton(isEdit() ? "SAVE CHANGES": "ADD", new Dimension(345, 50), FontFactory.newPoppinsDefault(14), ColorFactory.red(), Color.white);
         lastRow.add(cancel);
         lastRow.add(add);
 
