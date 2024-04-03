@@ -240,4 +240,10 @@ public class ClientController implements ClientControllerObserver, LoginControll
         this.clientMainFrame = clientMainFrame;
         loading = new Loading(clientMainFrame);
     }
+
+    @Override
+    public void searchLiveSets(String searchTerm) {
+        LinkedList<LiveSet> searchResults = Database.searchLiveSets(searchTerm).getPayload();
+        clientMainFrame.getHomeView().getLiveSetPane().populateView(searchResults);
+    }
 }

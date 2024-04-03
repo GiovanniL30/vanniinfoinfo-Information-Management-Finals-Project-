@@ -3,8 +3,10 @@ package client.view.components;
 import client.controller.ClientControllerObserver;
 import client.view.ClientMainFrame;
 import client.view.utility.ClientViews;
+import client.view.utility.SearchBar;
 import shared.utilityClasses.FontFactory;
 import shared.viewComponents.ClickableText;
+import shared.viewComponents.FieldInput;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,10 +17,9 @@ public class ViewLiveSetSubHeader extends JPanel {
     private final ClickableText liveSets = new ClickableText("Live Sets", 100, 50, FontFactory.newPoppinsBold(14));
     private final ClickableText myTickets = new ClickableText("My Tickets", 100, 50, FontFactory.newPoppinsBold(14));
     private final ClickableText logout = new ClickableText("Logout", 100, 50, FontFactory.newPoppinsBold(14));
-
     private final ClientControllerObserver clientControllerObserver;
     private LinkedList<ClickableText> clickableTexts = new LinkedList<>();
-
+    private final SearchBar searchBar = new SearchBar(new Dimension(500, 50));
     public ViewLiveSetSubHeader(ClientControllerObserver clientControllerObserver) {
         this.clientControllerObserver = clientControllerObserver;
 
@@ -26,6 +27,7 @@ public class ViewLiveSetSubHeader extends JPanel {
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(ClientMainFrame.WIDTH, 50));
 
+        add(searchBar);
         add(liveSets);
         add(myTickets);
         add(logout);
@@ -37,6 +39,10 @@ public class ViewLiveSetSubHeader extends JPanel {
 
         liveSets.addActionListener(e-> clientControllerObserver.changeFrame(ClientViews.HOME));
         myTickets.addActionListener(e-> clientControllerObserver.changeFrame(ClientViews.MY_TICKETS));
+        searchBar.getSearchButton().addActionListener(e -> {
+            String searchTerm = searchBar.getSearchField().getText().toLowerCase();
+            clientControllerObserver.searchLiveSets(searchTerm);
+        });
     }
 
     public void setCurrentButton(ClickableText currentButton) {

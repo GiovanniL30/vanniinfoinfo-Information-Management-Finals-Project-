@@ -17,5 +17,5 @@ public interface ClientControllerObserver {
     void openAccess(LiveSet liveSet);
     User getLoggedInAccount();
     LinkedList<LiveSet> getLiveSet();
-
+    void searchLiveSets(String searchTerm);
 }
