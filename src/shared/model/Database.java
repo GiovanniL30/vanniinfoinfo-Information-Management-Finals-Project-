@@ -19,7 +19,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/seanhehehe", "root", "");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/cas", "root", "password");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -28,6 +28,57 @@ public class Database {
         }
 
         return false;
+    }
+
+    public static String getPerformerName(String liveSetId) {
+        ensureConnection();
+
+        String p = "Performer Name";
+
+        String query = "SELECT performer.performerName FROM performer " +
+                "INNER JOIN liveset ON liveset.performerID = performer.performerID " +
+                "WHERE liveset.liveSetID = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, liveSetId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()) {
+                p = resultSet.getString(1);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+
+        return p;
+    }
+    public static LinkedList<User> getLiveSetPurchasers(String liveSetId){
+
+        ensureConnection();
+        LinkedList<User> users = new LinkedList<>();
+
+       String query = "SELECT user.* " +
+               "FROM user " +
+               "INNER JOIN purchased ON purchased.buyerID = user.userID " +
+               "INNER JOIN ticket ON ticket.ticketID = purchased.ticketID " +
+               "WHERE ticket.liveSetID = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, liveSetId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()) {
+                Optional<User> user =  toUser(resultSet).getPayload();
+                user.ifPresent(users::add);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+
+        return users;
     }
 
     private static boolean userNameExist(String userName) {
@@ -335,7 +386,7 @@ public class Database {
 
         LinkedList<Purchased> purchasedLinkedList = new LinkedList<>();
 
-        String query = "SELECT purchased.date, purchased.time, performer.performerName, liveset.price, liveset.thumbnail, ticket.ticketID, ticket.status, liveset.livesetID, concat(user.firstName, user.lastName)" +
+        String query = "SELECT purchased.date, purchased.time, performer.performerName, liveset.price, liveset.thumbnail, ticket.ticketID, ticket.status, liveset.livesetID, concat(user.firstName, user.lastName), liveset.status" +
                 " FROM purchased" +
                 " INNER JOIN user ON purchased.buyerID = user.userID" +
                 " INNER JOIN ticket ON purchased.ticketID = ticket.ticketID" +
@@ -359,8 +410,9 @@ public class Database {
                 String ticketId = resultSet.getString(6);
                 String ticketStatus = resultSet.getString(7);
                 String userName = resultSet.getString(9);
+                String status = resultSet.getString(10);
 
-                purchasedLinkedList.add(new Purchased(date, time, performerName, liveSetPrice, liveSetThumbnail, ticketId, ticketStatus, userName));
+                purchasedLinkedList.add(new Purchased(date, time, performerName, liveSetPrice, liveSetThumbnail, ticketId, ticketStatus, userName, status));
             }
 
         } catch (SQLException e) {

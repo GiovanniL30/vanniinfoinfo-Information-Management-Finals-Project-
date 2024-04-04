@@ -21,4 +21,6 @@ public interface ClientControllerObserver {
     void searchLiveSets(String searchTerm);
     void sortByName(String condition);
     void sortByDate(String condition);
+    void logOut();
+    String getPerformerName(String liveSetId);
 }

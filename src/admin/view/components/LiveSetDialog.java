@@ -20,10 +20,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.time.MonthDay;
+import java.time.Year;
+import java.util.*;
 
 
 public class LiveSetDialog extends JDialog {
@@ -148,9 +147,14 @@ public class LiveSetDialog extends JDialog {
 
         JPanel pricePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pricePanel.setBackground(Color.white);
-        FieldInput price = new FieldInput("Price", new Dimension(690, 50), 20, 1, false);
+        FieldInput price = new FieldInput("Price", new Dimension( isEdit() ? 350: 700, 50), 20, 1, false);
         if (isEdit()) price.getTextField().setText(liveSet.getPrice() + "");
         pricePanel.add(price);
+
+        DropDown statusDropdown = new DropDown(new Dimension(350, 50), "Status", liveSet.getStatus().equals("Open") ? new String[]{"Open", "Canceled"} : new String[]{"Canceled", "Open"});
+        if(isEdit()) {
+            pricePanel.add(statusDropdown);
+        }
 
         panel.add(firstRow);
         panel.add(secondRow);
@@ -200,11 +204,19 @@ public class LiveSetDialog extends JDialog {
                 return;
             }
 
-            if (isEdit()) {
-                adminControllerObserver.editLiveSet(new LiveSet(liveSet.getLiveSetID(), "Open", intP, new java.sql.Date(Calendar.DATE), time, imagePath, streamURL, liveSet.getPerformerID()));
-            } else {
-                adminControllerObserver.addLiveSet(new LiveSet(UtilityMethods.generateRandomID(), "Open", intP, new java.sql.Date(Calendar.DATE), time, imagePath, streamURL, performers.get(performersDropDown.choiceIndex()).getPerformerID()));
+            Optional<java.sql.Date> optionalDate = getDate(date);
+
+            if(optionalDate.isEmpty()) {
+                dateInput.enableError("Please enter a valid date (format. YYYY-MM-DD)");
+                return;
             }
+
+            if (isEdit()) {
+                adminControllerObserver.editLiveSet(new LiveSet(liveSet.getLiveSetID(), statusDropdown.getChoice(), intP, optionalDate.get(), time, imagePath, streamURL, liveSet.getPerformerID()));
+            } else {
+                adminControllerObserver.addLiveSet(new LiveSet(UtilityMethods.generateRandomID(), "Open", intP, optionalDate.get(), time, imagePath, streamURL, performers.get(performersDropDown.choiceIndex()).getPerformerID()));
+            }
+
         });
 
         cancel.addActionListener(e -> dispose());
@@ -240,23 +252,8 @@ public class LiveSetDialog extends JDialog {
         return targetPath.toString();
     }
 
-    private String getDate(Date date) {
-
-        if (date == null) return "";
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd");
-        return dateFormat.format(date);
-    }
 
 
-    private String getPerformerIdByName(String performerName) {
-        for (Performer performer : this.performers) {
-            if (performer.getPerformerName().equals(performerName)) {
-                return performer.getPerformerID();
-            }
-        }
-        return null;
-    }
 
     /**
      * The method will send an error if
@@ -274,7 +271,7 @@ public class LiveSetDialog extends JDialog {
         return url.matches(regex);
     }
 
-    private Optional<Date> getDate(String dateInput) {
+    private Optional<java.sql.Date> getDate(String dateInput) {
 
         String[] date = dateInput.split("-");
 
@@ -287,13 +284,23 @@ public class LiveSetDialog extends JDialog {
             int month = Integer.parseInt(date[1]);
             int day = Integer.parseInt(date[2]);
 
-            return Optional.of(new java.sql.Date(year, month, day));
+            try {
+                Year tempYear = Year.of(year);
+                if( tempYear.isValidMonthDay(MonthDay.of(month, day))) {
+                    GregorianCalendar c = new GregorianCalendar(year, month, day);
+                    return Optional.of(new java.sql.Date(c.getTime().getTime()));
+                }else {
+                    return Optional.empty();
+                }
+            }catch (Exception e) {
+                return Optional.empty();
+            }
+
         } catch (NumberFormatException exception) {
             JOptionPane.showMessageDialog(null, "Please enter a valid integer date number");
         }
 
-        return null;
-
+        return Optional.empty();
     }
 
     private boolean isEdit() {

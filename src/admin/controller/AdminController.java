@@ -150,6 +150,22 @@ public class AdminController implements AdminControllerObserver, LoginController
         liveSetDialog.setVisible(true);
     }
 
+    @Override
+    public void showLiveSetBuyer(LiveSet liveSet) {
+        LinkedList<User> users = Database.getLiveSetPurchasers(liveSet.getLiveSetID());
+
+        StringBuilder messageBuilder = new StringBuilder();
+        messageBuilder.append("Total Buyer: ").append(users.size()).append("\n");
+
+        int i =1;
+        for (User user : users) {
+            messageBuilder.append(i++).append(". ").append(user.getFirstName()).append(" ").append(user.getLastName()).append(" (").append(user.getUserName()).append(")").append("\n");
+        }
+
+        JOptionPane.showMessageDialog(adminMainFrame, messageBuilder.toString());
+    }
+
+
     public LinkedList<Performer> getPerformers() {
         return Database.getPerformers().getPayload();
     }

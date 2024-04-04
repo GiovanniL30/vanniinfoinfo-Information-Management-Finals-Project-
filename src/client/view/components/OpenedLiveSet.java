@@ -61,13 +61,13 @@ public class OpenedLiveSet extends JPanel {
 
     private JPanel buttonPanel() {
 
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 50));
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
         buttons.setBorder(new EmptyBorder(0, 0, 0,120));
         buttons.setBackground(Color.WHITE);
 
-        Button accessGig = new Button("ACCESS GIG", new Dimension(530, 60), FontFactory.newPoppinsBold(14));
+        Button accessGig = new Button("ACCESS GIG", new Dimension(505, 60), FontFactory.newPoppinsBold(14));
         accessGig.setForeground(ColorFactory.red());
-        FilledButton purchaseTicket = new FilledButton("PURCHASE TICKET", new Dimension(530, 60), FontFactory.newPoppinsBold(14), ColorFactory.red(), Color.WHITE);
+        FilledButton purchaseTicket = new FilledButton("PURCHASE TICKET", new Dimension(560, 60), FontFactory.newPoppinsBold(14), ColorFactory.red(), Color.WHITE);
 
         buttons.add(accessGig);
         buttons.add(purchaseTicket);

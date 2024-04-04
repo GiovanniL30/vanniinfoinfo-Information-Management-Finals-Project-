@@ -13,8 +13,9 @@ public class Purchased {
    private String ticketId;
    private String ticketStatus;
    private String userName;
+   private String liveSetStatus;
 
-    public Purchased(Date date, Time time, String performerName, int liveSetPrice, String liveSetThumbnail, String ticketId, String ticketStatus, String userName) {
+    public Purchased(Date date, Time time, String performerName, int liveSetPrice, String liveSetThumbnail, String ticketId, String ticketStatus, String userName, String liveSetStatus) {
         this.date = date;
         this.time = time;
         this.performerName = performerName;
@@ -23,6 +24,7 @@ public class Purchased {
         this.ticketId = ticketId;
         this.ticketStatus = ticketStatus;
         this.userName = userName;
+        this.liveSetStatus = liveSetStatus;
     }
 
     public Date getDate() {
@@ -83,6 +85,18 @@ public class Purchased {
 
     public String getUserName() {
         return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getLiveSetStatus() {
+        return liveSetStatus;
+    }
+
+    public void setLiveSetStatus(String liveSetStatus) {
+        this.liveSetStatus = liveSetStatus;
     }
 
     @Override

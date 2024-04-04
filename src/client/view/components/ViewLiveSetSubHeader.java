@@ -21,6 +21,7 @@ public class ViewLiveSetSubHeader extends JPanel {
     private LinkedList<ClickableText> clickableTexts = new LinkedList<>();
     private ClickableText currentButton;
     private final SearchBar searchBar = new SearchBar(new Dimension(700, 40));
+    private boolean haveSearched = false;
     public ViewLiveSetSubHeader(ClientControllerObserver clientControllerObserver) {
         this.clientControllerObserver = clientControllerObserver;
 
@@ -42,6 +43,7 @@ public class ViewLiveSetSubHeader extends JPanel {
         setCurrentButton(liveSets);
 
 
+        logout.addActionListener(e -> clientControllerObserver.logOut());
         liveSets.addActionListener(e-> clientControllerObserver.changeFrame(ClientViews.HOME));
         myTickets.addActionListener(e -> {
             clientControllerObserver.changeFrame(ClientViews.MY_TICKETS);
@@ -51,11 +53,14 @@ public class ViewLiveSetSubHeader extends JPanel {
 
         searchBar.getSearchButton().addActionListener(e -> {
             String searchTerm = searchBar.getSearchField().getText().toLowerCase();
+            if(searchTerm.isEmpty()) return;
             clientControllerObserver.searchLiveSets(searchTerm);
             searchBar.hideDropDown();
+            haveSearched = true;
         });
 
         searchBar.getClearButton().addActionListener(e -> {
+            if(!haveSearched) return;
             searchBar.getSearchField().setText("");
             searchBar.showDropDown();
             clientControllerObserver.changeFrame(ClientViews.HOME);
@@ -79,6 +84,7 @@ public class ViewLiveSetSubHeader extends JPanel {
                 default:
                     break;
             }
+            haveSearched = true;
         });
     }
 

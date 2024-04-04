@@ -187,6 +187,10 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
     @Override
     public void accessLiveSet(LiveSet liveSet, String ticketId) {
+        if(!liveSet.getStatus().equals("Open")){
+            JOptionPane.showMessageDialog(clientMainFrame, "Sorry the live set have been canceled");
+            return;
+        }
 
         Response<User> userResponse = Database.getTicketUser(ticketId, loggedInAccount.getUserID());
 
@@ -263,5 +267,17 @@ public class ClientController implements ClientControllerObserver, LoginControll
     public void sortByDate(String condition) {
         LinkedList<LiveSet> sortResults = Database.sortByDate(condition).getPayload();
         clientMainFrame.getHomeView().getLiveSetPane().populateView(sortResults);
+    }
+
+    @Override
+    public void logOut() {
+        loggedInAccount = null;
+        changeFrame(ClientViews.LOGIN);
+        JOptionPane.showMessageDialog(clientMainFrame, "Logged Out");
+    }
+
+    @Override
+    public String getPerformerName(String liveSetId) {
+        return Database.getPerformerName(liveSetId);
     }
 }
