@@ -42,15 +42,18 @@ public class ViewLiveSetSubHeader extends JPanel {
         myTickets.addActionListener(e -> {
             clientControllerObserver.changeFrame(ClientViews.MY_TICKETS);
             removeSearchBar();
+            searchBar.hideDropDown();
         });
 
         searchBar.getSearchButton().addActionListener(e -> {
             String searchTerm = searchBar.getSearchField().getText().toLowerCase();
             clientControllerObserver.searchLiveSets(searchTerm);
+            searchBar.hideDropDown();
         });
 
         searchBar.getClearButton().addActionListener(e -> {
             searchBar.getSearchField().setText("");
+            searchBar.showDropDown();
             clientControllerObserver.changeFrame(ClientViews.HOME);
         });
     }

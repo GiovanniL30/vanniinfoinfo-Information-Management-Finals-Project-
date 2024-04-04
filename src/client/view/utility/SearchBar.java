@@ -4,21 +4,22 @@ import shared.viewComponents.Button;
 import shared.viewComponents.DropDown;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class SearchBar extends JPanel {
     private JTextField searchField;
     private Button searchButton;
     private Button clearButton;
-    private DropDown sortDropDown;
+    private SortDropDown sortDropDown;
 
     public SearchBar(Dimension dimension) {
         setLayout(new BorderLayout());
         setPreferredSize(dimension);
 
         searchField = new JTextField();
-        searchButton = new Button("Search", new Dimension(100, 50), FontFactory.newPoppinsDefault(18));
-        clearButton = new Button("X", new Dimension(50, 50), FontFactory.newPoppinsDefault(18));
+        searchButton = new Button("Search", new Dimension(100, 48), FontFactory.newPoppinsDefault(18));
+        clearButton = new Button("X", new Dimension(50, 48), FontFactory.newPoppinsDefault(18));
 
         searchButton.setBackground(Color.red);
         searchButton.setForeground(Color.WHITE);
@@ -26,10 +27,13 @@ public class SearchBar extends JPanel {
         clearButton.setBackground(Color.red);
         clearButton.setForeground(Color.WHITE);
 
-        sortDropDown = new SortDropDown(new Dimension(120, 50));
+        sortDropDown = new SortDropDown(new Dimension(120, 48));
+        sortDropDown.setVisible(true);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 3));
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, -5));
+        buttonPanel.setBorder(new EmptyBorder(0, 0, 0, 10));
+        buttonPanel.setBackground(Color.white);
         buttonPanel.add(searchButton);
         buttonPanel.add(clearButton);
         buttonPanel.add(sortDropDown);
@@ -50,7 +54,13 @@ public class SearchBar extends JPanel {
         return clearButton;
     }
 
-    public DropDown getSortDropDown() {
+    public SortDropDown getSortDropDown() {
         return sortDropDown;
+    }
+    public void showDropDown() {
+        sortDropDown.setVisible(true);
+    }
+    public void hideDropDown() {
+        sortDropDown.setVisible(false);
     }
 }
