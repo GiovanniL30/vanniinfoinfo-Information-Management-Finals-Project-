@@ -19,7 +19,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/seanhehehe", "root", "");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/gig", "root", "");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -693,10 +693,53 @@ public class Database {
 
                 matchingPerformers.add(new Performer(performerID, performerName, genre, performerType, description, performerStatus));
             }
-
-
+            
             return new Response<>(matchingPerformers, true);
 
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+            return new Response<>(new LinkedList<>(), false);
+        }
+    }
+
+    public static Response<LinkedList<LiveSet>> searchLiveSetsAdmin(String searchTerm) {
+        ensureConnection();
+
+        LinkedList<LiveSet> matchingLiveSet = new LinkedList<>();
+
+        String query = "SELECT ls.* FROM liveset ls " +
+                "LEFT OUTER JOIN performer p ON ls.performerID = p.performerID " +
+                "WHERE LOWER(ls.liveSetID) LIKE LOWER(?) " +
+                "OR LOWER(p.performerName) LIKE LOWER(?) " +
+                "OR ls.date LIKE ? " +
+                "OR ls.time LIKE ? " +
+                "OR LOWER(ls.status) LIKE LOWER(?)";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            String likeParam = "%" + searchTerm + "%";
+            statement.setString(1, likeParam);
+            statement.setString(2, likeParam);
+            statement.setString(3, likeParam);
+            statement.setString(4, likeParam);
+            statement.setString(5, likeParam);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String liveSetID = resultSet.getString(1);
+                String status = resultSet.getString(2);
+                Date date = resultSet.getDate(3);
+                Time time = resultSet.getTime(4);
+                String thumbnail = getImage(liveSetID, resultSet.getBlob(5)).getPayload();
+                String streamLinkUrl = resultSet.getString(6);
+                String performerID = resultSet.getString(7);
+                int price = resultSet.getInt(8);
+
+                matchingLiveSet.add(new LiveSet(liveSetID, status, price, date, time, thumbnail, streamLinkUrl, performerID));
+            }
+
+            return new Response<>(matchingLiveSet, true);
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
             return new Response<>(new LinkedList<>(), false);
