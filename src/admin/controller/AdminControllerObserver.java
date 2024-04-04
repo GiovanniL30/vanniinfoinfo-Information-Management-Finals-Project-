@@ -19,4 +19,6 @@ public interface AdminControllerObserver {
     void openAddLiveSet(LiveSet liveSet, LinkedList<Performer> performers);
     LinkedList<Genre> getGenres();
     void searchPerformers(String searchTerm);
+    void searchLiveSetsAdmin(String searchTerm);
+
 }

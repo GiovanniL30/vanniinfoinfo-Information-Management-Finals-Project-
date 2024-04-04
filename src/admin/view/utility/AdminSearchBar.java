@@ -99,7 +99,7 @@ public class AdminSearchBar extends JPanel {
                 if(adminPanel.equals(AdminPanel.PERFORMER)) {
                     adminControllerObserver.searchPerformers(searchField.getInput());
                 }else {
-
+                    adminControllerObserver.searchLiveSetsAdmin(searchField.getInput());
                 }
 
             }
