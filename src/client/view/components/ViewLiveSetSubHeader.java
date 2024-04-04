@@ -39,6 +39,7 @@ public class ViewLiveSetSubHeader extends JPanel {
         setCurrentButton(liveSets);
 
 
+        logout.addActionListener(e -> clientControllerObserver.logOut());
         liveSets.addActionListener(e-> clientControllerObserver.changeFrame(ClientViews.HOME));
         myTickets.addActionListener(e -> {
             clientControllerObserver.changeFrame(ClientViews.MY_TICKETS);

@@ -268,4 +268,16 @@ public class ClientController implements ClientControllerObserver, LoginControll
         LinkedList<LiveSet> sortResults = Database.sortByDate(condition).getPayload();
         clientMainFrame.getHomeView().getLiveSetPane().populateView(sortResults);
     }
+
+    @Override
+    public void logOut() {
+        loggedInAccount = null;
+        changeFrame(ClientViews.LOGIN);
+        JOptionPane.showMessageDialog(clientMainFrame, "Logged Out");
+    }
+
+    @Override
+    public String getPerformerName(String liveSetId) {
+        return Database.getPerformerName(liveSetId);
+    }
 }

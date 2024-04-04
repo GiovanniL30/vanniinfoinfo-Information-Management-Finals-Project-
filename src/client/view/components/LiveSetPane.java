@@ -4,6 +4,8 @@ import client.controller.ClientControllerObserver;
 import client.view.ClientMainFrame;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
+import shared.utilityClasses.FontFactory;
+import shared.utilityClasses.UtilityMethods;
 import shared.viewComponents.IconButton;
 
 import javax.swing.*;
@@ -27,7 +29,7 @@ public class LiveSetPane extends JPanel {
         holder.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         scrollPane = new JScrollPane(holder);
-        scrollPane.setPreferredSize(new Dimension(ClientMainFrame.WIDTH, 600));
+        scrollPane.setPreferredSize(new Dimension(ClientMainFrame.WIDTH , 600));
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
@@ -50,10 +52,21 @@ public class LiveSetPane extends JPanel {
 
                 for (LiveSet liveSet : liveSets) {
                     if(!liveSet.getStatus().equals("Open")) continue;
-                    JPanel panel = new JPanel();
-                    IconButton liveSetImage = new IconButton(liveSet.getThumbnail(), 400, 400);
+                    JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+                    panel.setBackground(Color.white);
+                    panel.setPreferredSize(new Dimension(400, 450));
+                    IconButton liveSetImage = new IconButton(liveSet.getThumbnail(), 500, 400);
                     liveSetImage.addActionListener(e -> clientControllerObserver.openLiveSet(liveSet));
+                    JLabel performerName = new JLabel(clientControllerObserver.getPerformerName(liveSet.getLiveSetID()));
+                    performerName.setFont(FontFactory.newPoppinsBold(16));
+
+                    JLabel schedule = new JLabel(UtilityMethods.formatDate(liveSet.getDate()));
+                    schedule.setFont(FontFactory.newPoppinsDefault(16));
+
                     panel.add(liveSetImage);
+                    panel.add(performerName);
+                    panel.add(schedule);
+
                     holder.add(panel);
                     holder.revalidate();
                     holder.repaint();

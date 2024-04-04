@@ -30,6 +30,30 @@ public class Database {
         return false;
     }
 
+    public static String getPerformerName(String liveSetId) {
+        ensureConnection();
+
+        String p = "Performer Name";
+
+        String query = "SELECT performer.performerName FROM performer " +
+                "INNER JOIN liveset ON liveset.performerID = performer.performerID " +
+                "WHERE liveset.liveSetID = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, liveSetId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()) {
+                p = resultSet.getString(1);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+
+        return p;
+    }
     public static LinkedList<User> getLiveSetPurchasers(String liveSetId){
 
         ensureConnection();
