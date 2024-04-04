@@ -14,6 +14,7 @@ import shared.utilityClasses.FontFactory;
 import shared.utilityClasses.UtilityMethods;
 import shared.viewComponents.Button;
 import shared.viewComponents.ClickableText;
+import shared.viewComponents.FieldInput;
 import shared.viewComponents.FilledButton;
 
 import javax.swing.*;
@@ -138,6 +139,7 @@ public class LiveSetPanel extends JPanel {
             Button time = new Button(UtilityMethods.formatTime(liveSet.getTime()), new Dimension(150, 50), FontFactory.newPoppinsDefault(14));
             Button status = new Button(liveSet.getStatus(), new Dimension(100, 50), FontFactory.newPoppinsDefault(14));
             FilledButton editButton = new FilledButton("EDIT", new Dimension(95, 50), FontFactory.newPoppinsBold(14), ColorFactory.red(), Color.white);
+            Button view = new Button("Purchases", new Dimension(95, 50), FontFactory.newPoppinsBold(14));
 
             liveSetID.setEnabled(false);
             performerName.setEnabled(false);
@@ -151,6 +153,7 @@ public class LiveSetPanel extends JPanel {
             add(time);
             add(status);
             add(editButton);
+            add(view);
 
             editButton.addActionListener(e -> adminControllerObserver.openEditLiveSet(liveSet, performers));
         }

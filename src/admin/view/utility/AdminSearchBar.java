@@ -77,32 +77,37 @@ public class AdminSearchBar extends JPanel {
             public void keyTyped(KeyEvent e) {
 
             }
-
             @Override
             public void keyPressed(KeyEvent e) {
 
-                if(e.getKeyCode() == 32) {
+                if (!Character.isLetterOrDigit(e.getKeyChar())) {
+                    if(!(e.getKeyCode() == KeyEvent.VK_BACK_SPACE)) return;
+                }
 
-                    if(searchField.getInput() != null && searchField.getInput().isEmpty()) {
+                if (e.isAltDown() || e.isShiftDown() || e.isControlDown()) {
+                    return;
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+
+                    if (searchField.getInput() != null && searchField.getInput().isEmpty()) {
                         searchField.removeError();
-                        return;
                     }
-
                     return;
                 }
 
-                if(searchField.getInput() == null) {
+
+                if (searchField.getInput() != null) {
                     searchField.removeError();
-                    return;
-                }
 
-                if(adminPanel.equals(AdminPanel.PERFORMER)) {
-                    adminControllerObserver.searchPerformers(searchField.getInput());
-                }else {
-                    adminControllerObserver.searchLiveSetsAdmin(searchField.getInput());
+                    if (adminPanel.equals(AdminPanel.PERFORMER)) {
+                        adminControllerObserver.searchPerformers(searchField.getInput());
+                    } else {
+                        adminControllerObserver.searchLiveSetsAdmin(searchField.getInput());
+                    }
                 }
-
             }
+
 
             @Override
             public void keyReleased(KeyEvent e) {
