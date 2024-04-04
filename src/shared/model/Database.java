@@ -780,4 +780,70 @@ public class Database {
             return new Response<>(new LinkedList<>(), false);
         }
     }
+
+    public static Response<LinkedList<LiveSet>> sortByName(String condition) {
+        ensureConnection();
+
+        LinkedList<LiveSet> sortLiveSet = new LinkedList<>();
+
+        String query = "SELECT ls.* FROM liveset ls LEFT OUTER JOIN performer p ON ls.performerID = p.performerID ORDER BY p.performerName " + condition;
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String liveSetID = resultSet.getString(1);
+                String status = resultSet.getString(2);
+                Date date = resultSet.getDate(3);
+                Time time = resultSet.getTime(4);
+                String thumbnail = getImage(liveSetID, resultSet.getBlob(5)).getPayload();
+                String streamLinkUrl = resultSet.getString(6);
+                String performerID = resultSet.getString(7);
+                int price = resultSet.getInt(8);
+
+                sortLiveSet.add(new LiveSet(liveSetID, status, price, date, time, thumbnail, streamLinkUrl, performerID));
+            }
+
+
+            return new Response<>(sortLiveSet, true);
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+            return new Response<>(new LinkedList<>(), false);
+        }
+    }
+
+    public static Response<LinkedList<LiveSet>> sortByDate(String condition) {
+        ensureConnection();
+
+        LinkedList<LiveSet> sortLiveSet = new LinkedList<>();
+
+        String query = "SELECT ls.* FROM liveset ls ORDER BY ls.date " + condition;
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String liveSetID = resultSet.getString(1);
+                String status = resultSet.getString(2);
+                Date date = resultSet.getDate(3);
+                Time time = resultSet.getTime(4);
+                String thumbnail = getImage(liveSetID, resultSet.getBlob(5)).getPayload();
+                String streamLinkUrl = resultSet.getString(6);
+                String performerID = resultSet.getString(7);
+                int price = resultSet.getInt(8);
+
+                sortLiveSet.add(new LiveSet(liveSetID, status, price, date, time, thumbnail, streamLinkUrl, performerID));
+            }
+
+
+            return new Response<>(sortLiveSet, true);
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+            return new Response<>(new LinkedList<>(), false);
+        }
+    }
 }

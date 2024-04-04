@@ -254,4 +254,14 @@ public class ClientController implements ClientControllerObserver, LoginControll
         LinkedList<LiveSet> searchResults = Database.searchLiveSets(searchTerm).getPayload();
         clientMainFrame.getHomeView().getLiveSetPane().populateView(searchResults);
     }
+    @Override
+    public void sortByName(String condition) {
+        LinkedList<LiveSet> sortResults = Database.sortByName(condition).getPayload();
+        clientMainFrame.getHomeView().getLiveSetPane().populateView(sortResults);
+    }
+    @Override
+    public void sortByDate(String condition) {
+        LinkedList<LiveSet> sortResults = Database.sortByDate(condition).getPayload();
+        clientMainFrame.getHomeView().getLiveSetPane().populateView(sortResults);
+    }
 }

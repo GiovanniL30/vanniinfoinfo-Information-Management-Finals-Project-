@@ -19,4 +19,6 @@ public interface ClientControllerObserver {
     User getLoggedInAccount();
     LinkedList<LiveSet> getLiveSet();
     void searchLiveSets(String searchTerm);
+    void sortByName(String condition);
+    void sortByDate(String condition);
 }
