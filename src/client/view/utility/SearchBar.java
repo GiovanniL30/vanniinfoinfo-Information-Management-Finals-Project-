@@ -11,7 +11,7 @@ public class SearchBar extends JPanel {
     private JTextField searchField;
     private Button searchButton;
     private Button clearButton;
-    private SortDropDown sortDropDown;
+    private DropDown dropDown;
 
     public SearchBar(Dimension dimension) {
         setLayout(new BorderLayout());
@@ -27,8 +27,8 @@ public class SearchBar extends JPanel {
         clearButton.setBackground(Color.red);
         clearButton.setForeground(Color.WHITE);
 
-        sortDropDown = new SortDropDown(new Dimension(120, 48));
-        sortDropDown.setVisible(true);
+        dropDown = new DropDown(new Dimension(120, 48),"" ,new String[]{"Name ^", "Name v", "Date ^", "Date v"});
+        dropDown.setVisible(true);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, -5));
@@ -36,7 +36,7 @@ public class SearchBar extends JPanel {
         buttonPanel.setBackground(Color.white);
         buttonPanel.add(searchButton);
         buttonPanel.add(clearButton);
-        buttonPanel.add(sortDropDown);
+        buttonPanel.add(dropDown);
 
         add(searchField, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.EAST);
@@ -54,13 +54,13 @@ public class SearchBar extends JPanel {
         return clearButton;
     }
 
-    public SortDropDown getSortDropDown() {
-        return sortDropDown;
+    public DropDown getSortDropDown() {
+        return dropDown;
     }
     public void showDropDown() {
-        sortDropDown.setVisible(true);
+        dropDown.setVisible(true);
     }
     public void hideDropDown() {
-        sortDropDown.setVisible(false);
+        dropDown.setVisible(false);
     }
 }

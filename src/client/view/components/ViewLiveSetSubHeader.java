@@ -56,6 +56,26 @@ public class ViewLiveSetSubHeader extends JPanel {
             searchBar.showDropDown();
             clientControllerObserver.changeFrame(ClientViews.HOME);
         });
+        searchBar.getSortDropDown().addActionListener(e -> {
+            String selectedItem = searchBar.getSortDropDown().getChoice();
+
+            switch (selectedItem) {
+                case "Name ^":
+                    clientControllerObserver.sortByName("ASC");
+                    break;
+                case "Name v":
+                    clientControllerObserver.sortByName("DESC");
+                    break;
+                case "Date ^":
+                    clientControllerObserver.sortByDate("ASC");
+                    break;
+                case "Date v":
+                    clientControllerObserver.sortByDate("DESC");
+                    break;
+                default:
+                    break;
+            }
+        });
     }
 
     public void setCurrentButton(ClickableText currentButton) {
