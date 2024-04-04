@@ -19,7 +19,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/cas", "root", "password");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/seanhehehe", "root", "");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());

@@ -2,6 +2,7 @@ package client.view.utility;
 import shared.utilityClasses.FontFactory;
 import shared.viewComponents.Button;
 import shared.viewComponents.DropDown;
+import shared.viewComponents.IconButton;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -9,7 +10,7 @@ import java.awt.*;
 
 public class SearchBar extends JPanel {
     private JTextField searchField;
-    private Button searchButton;
+    private IconButton searchButton;
     private Button clearButton;
     private DropDown dropDown;
 
@@ -18,11 +19,10 @@ public class SearchBar extends JPanel {
         setPreferredSize(dimension);
 
         searchField = new JTextField();
-        searchButton = new Button("Search", new Dimension(85, 48), FontFactory.newPoppinsDefault(15));
+        searchButton = new IconButton("resources/images/searchIcon.png", 48, 48);
         clearButton = new Button("X", new Dimension(50, 48), FontFactory.newPoppinsDefault(15));
 
-        searchButton.setBackground(Color.red);
-        searchButton.setForeground(Color.WHITE);
+        searchButton.setFocusable(true);
 
         clearButton.setBackground(Color.red);
         clearButton.setForeground(Color.WHITE);
@@ -30,23 +30,27 @@ public class SearchBar extends JPanel {
         dropDown = new DropDown(new Dimension(120, 48),"" ,new String[]{"Name ^", "Name v", "Date ^", "Date v"});
         dropDown.setVisible(true);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, -5));
-        buttonPanel.setBorder(new EmptyBorder(0, 0, 0, 10));
-        buttonPanel.setBackground(Color.white);
+        JPanel searchBarPanel = new JPanel(new BorderLayout());
+        searchBarPanel.setBackground(Color.WHITE);
+
+        searchBarPanel.add(searchField, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, -5));
+        buttonPanel.setBackground(Color.WHITE);
         buttonPanel.add(searchButton);
         buttonPanel.add(clearButton);
-        buttonPanel.add(dropDown);
 
-        add(searchField, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.EAST);
+        searchBarPanel.add(buttonPanel, BorderLayout.EAST);
+
+        add(searchBarPanel, BorderLayout.CENTER);
+        add(dropDown, BorderLayout.EAST);
     }
 
     public JTextField getSearchField() {
         return searchField;
     }
 
-    public Button getSearchButton() {
+    public IconButton getSearchButton() {
         return searchButton;
     }
 
