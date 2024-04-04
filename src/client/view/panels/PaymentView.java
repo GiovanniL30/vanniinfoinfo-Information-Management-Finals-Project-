@@ -71,6 +71,10 @@ public class PaymentView extends JPanel {
             int choice = JOptionPane.showConfirmDialog(null, "Continue purchase?","Confirm Payment" ,JOptionPane.YES_NO_OPTION);
 
             if(choice == JOptionPane.YES_OPTION) {
+                if(!liveSet.getStatus().equals("Open")) {
+                    JOptionPane.showMessageDialog(null, "Sorry can't purchase ticket the live set have been canceled");
+                    return;
+                }
                 clientControllerObserver.purchaseTicket(liveSet.getLiveSetID());
             }
 

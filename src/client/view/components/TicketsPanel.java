@@ -45,6 +45,7 @@ public class TicketsPanel extends JPanel {
                     holder.repaint();
                 }
                 return null;
+
             }
         }.execute();
 
@@ -53,6 +54,8 @@ public class TicketsPanel extends JPanel {
     private static class PurchasedCard extends JPanel {
 
         public PurchasedCard(Purchased purchased) {
+            boolean isCanceled = !purchased.getLiveSetStatus().equals("Open");
+
             setLayout(new FlowLayout(FlowLayout.LEFT));
             setBorder(new EmptyBorder(0, 30, 0, 0));
 
@@ -60,7 +63,7 @@ public class TicketsPanel extends JPanel {
 
             JPanel purchaseInformationPanel = new JPanel();
             purchaseInformationPanel.setLayout(new BoxLayout(purchaseInformationPanel, BoxLayout.Y_AXIS));
-            purchaseInformationPanel.setPreferredSize(new Dimension(450, 150));
+            purchaseInformationPanel.setPreferredSize(new Dimension(450, 100));
             JLabel name = new JLabel(purchased.getPerformerName());
             name.setForeground(ColorFactory.red());
             name.setFont(FontFactory.newPoppinsBold(20));
@@ -82,9 +85,14 @@ public class TicketsPanel extends JPanel {
             JLabel ticketNumber = new JLabel("Ticket Number: " + purchased.getTicketId());
             ticketNumber.setFont(FontFactory.newPoppinsBold(15));
             ticketNumber.setHorizontalAlignment(BoxLayout.LINE_AXIS);
+            JLabel canceled = new JLabel("Live Set Cancelled".toUpperCase());
+            canceled.setFont(FontFactory.newPoppinsBold(18));
+            canceled.setForeground(ColorFactory.red());
+            canceled.setHorizontalAlignment(BoxLayout.LINE_AXIS);
             JLabel status = new JLabel(purchased.getTicketStatus() == null ? "NOT USED" : "USED BY: " + purchased.getUserName());
             status.setHorizontalAlignment(BoxLayout.LINE_AXIS);
             status.setFont(FontFactory.newPoppinsBold(15));
+            if(isCanceled) ticketInformationPanel.add(canceled);
             ticketInformationPanel.add(status);
             ticketInformationPanel.add(ticketNumber);
 

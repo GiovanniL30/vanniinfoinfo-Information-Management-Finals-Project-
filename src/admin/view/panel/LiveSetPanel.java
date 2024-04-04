@@ -19,7 +19,9 @@ import shared.viewComponents.FilledButton;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 public class LiveSetPanel extends JPanel {
     private AdminSearchBar adminSearchBar;
@@ -64,17 +66,19 @@ public class LiveSetPanel extends JPanel {
 
     public void populateLiveSet(LinkedList<LiveSet> liveSets, LinkedList<Performer> performers) {
 
+
         new SwingWorker<>() {
             @Override
             protected Object doInBackground() {
 
 
-                for(LiveSet liveSet : liveSets) {
+                for(LiveSet liveSet : liveSets.stream().sorted(Comparator.comparing(LiveSet::getStatus).reversed()).collect(Collectors.toCollection(LinkedList::new))) {
+
 
                     for(Performer performer : performers) {
 
                         if(liveSet.getPerformerID().equals(performer.getPerformerID())) {
-                           scrollPaneHolder.add(new LiveSetCard(liveSet, performer));
+                            scrollPaneHolder.add(new LiveSetCard(liveSet, performer));
                             scrollPaneHolder.revalidate();
                             scrollPaneHolder.repaint();
                         }

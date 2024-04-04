@@ -49,6 +49,7 @@ public class LiveSetPane extends JPanel {
                 holder.setLayout(new GridLayout(0, 2, 20, 20));
 
                 for (LiveSet liveSet : liveSets) {
+                    if(!liveSet.getStatus().equals("Open")) continue;
                     JPanel panel = new JPanel();
                     IconButton liveSetImage = new IconButton(liveSet.getThumbnail(), 400, 400);
                     liveSetImage.addActionListener(e -> clientControllerObserver.openLiveSet(liveSet));

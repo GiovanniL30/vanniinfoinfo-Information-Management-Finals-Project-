@@ -187,6 +187,10 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
     @Override
     public void accessLiveSet(LiveSet liveSet, String ticketId) {
+        if(!liveSet.getStatus().equals("Open")){
+            JOptionPane.showMessageDialog(clientMainFrame, "Sorry the live set have been canceled");
+            return;
+        }
 
         Response<User> userResponse = Database.getTicketUser(ticketId, loggedInAccount.getUserID());
 

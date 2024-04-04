@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.regex.Pattern;
 
 /**
  * A custom JPanel class for user input fields, supporting both text and password fields
