@@ -28,10 +28,14 @@ public class ViewLiveSetSubHeader extends JPanel {
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(ClientMainFrame.WIDTH, 50));
 
-        add(searchBar);
-        add(liveSets);
-        add(myTickets);
-        add(logout);
+        add(searchBar, BorderLayout.WEST);
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        buttonsPanel.setBackground(Color.WHITE);
+        buttonsPanel.add(liveSets);
+        buttonsPanel.add(myTickets);
+        buttonsPanel.add(logout);
+        add(buttonsPanel, BorderLayout.CENTER);
 
         clickableTexts.add(liveSets);
         clickableTexts.add(myTickets);

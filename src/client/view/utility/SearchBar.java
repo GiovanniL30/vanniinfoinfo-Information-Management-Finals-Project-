@@ -18,8 +18,8 @@ public class SearchBar extends JPanel {
         setPreferredSize(dimension);
 
         searchField = new JTextField();
-        searchButton = new Button("Search", new Dimension(100, 48), FontFactory.newPoppinsDefault(18));
-        clearButton = new Button("X", new Dimension(50, 48), FontFactory.newPoppinsDefault(18));
+        searchButton = new Button("Search", new Dimension(85, 48), FontFactory.newPoppinsDefault(15));
+        clearButton = new Button("X", new Dimension(50, 48), FontFactory.newPoppinsDefault(15));
 
         searchButton.setBackground(Color.red);
         searchButton.setForeground(Color.WHITE);
