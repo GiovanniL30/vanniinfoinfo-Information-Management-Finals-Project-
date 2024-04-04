@@ -693,8 +693,7 @@ public class Database {
 
                 matchingPerformers.add(new Performer(performerID, performerName, genre, performerType, description, performerStatus));
             }
-
-
+            
             return new Response<>(matchingPerformers, true);
 
         } catch (SQLException e) {
@@ -707,7 +706,6 @@ public class Database {
         ensureConnection();
 
         LinkedList<LiveSet> matchingLiveSet = new LinkedList<>();
-
 
         String query = "SELECT ls.* FROM liveset ls " +
                 "LEFT OUTER JOIN performer p ON ls.performerID = p.performerID " +
