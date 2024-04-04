@@ -172,6 +172,7 @@ public class LiveSetPanel extends JPanel {
             add(firstRow);
             add(lastRow);
 
+            view.addActionListener( e -> adminControllerObserver.showLiveSetBuyer(liveSet));
             editButton.addActionListener(e -> adminControllerObserver.openEditLiveSet(liveSet, performers));
         }
 

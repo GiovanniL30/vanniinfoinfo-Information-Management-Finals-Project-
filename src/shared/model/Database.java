@@ -30,6 +30,33 @@ public class Database {
         return false;
     }
 
+    public static LinkedList<User> getLiveSetPurchasers(String liveSetId){
+
+        ensureConnection();
+        LinkedList<User> users = new LinkedList<>();
+
+       String query = "SELECT user.* " +
+               "FROM user " +
+               "INNER JOIN purchased ON purchased.buyerID = user.userID " +
+               "INNER JOIN ticket ON ticket.ticketID = purchased.ticketID " +
+               "WHERE ticket.liveSetID = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, liveSetId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()) {
+                Optional<User> user =  toUser(resultSet).getPayload();
+                user.ifPresent(users::add);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+
+        return users;
+    }
+
     private static boolean userNameExist(String userName) {
         ensureConnection();
 
