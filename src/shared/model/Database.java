@@ -267,11 +267,8 @@ public class Database {
 
         ensureConnection();
 
-        LinkedList<String> genres = getGenres().getPayload().stream().map(Genre::getGenreName).collect(Collectors.toCollection(LinkedList::new));
-        int genreIndex = genres.indexOf(performer.getGenre()) + 1;
-
-        LinkedList<String> performerType = getPerformerTypes().stream().map(PerformerType::getTypeName).collect(Collectors.toCollection(LinkedList::new));
-        int performerTypeIndex = performerType.indexOf(performer.getPerformerType()) + 1;
+        int genreIndex = getGenres().getPayload().stream().filter(genre -> genre.getGenreName().equals(performer.getGenre())).findFirst().get().getGenreID();
+        int performerTypeIndex =  getPerformerTypes().stream().filter(performerType -> performerType.getTypeName().equals(performer.getPerformerType())).findFirst().get().getId();
 
         String query = "INSERT INTO performer(performerID, performerName, genre, performerType, description, performerStatus)" + " VALUES (?, ?, ?, ?, ?, ?)";
         try{
@@ -293,14 +290,8 @@ public class Database {
 
         ensureConnection();
 
-        LinkedList<String> genres = getGenres().getPayload().stream().map(Genre::getGenreName).collect(Collectors.toCollection(LinkedList::new));
-        int genreIndex = genres.indexOf(performer.getGenre()) + 1;
-
-
-        LinkedList<String> performerType = getPerformerTypes().stream().map(PerformerType::getTypeName).collect(Collectors.toCollection(LinkedList::new));
-        int performerTypeIndex = performerType.indexOf(performer.getPerformerType()) + 1;
-
-        System.out.println(genreIndex);
+        int genreIndex = getGenres().getPayload().stream().filter(genre -> genre.getGenreName().equals(performer.getGenre())).findFirst().get().getGenreID();
+        int performerTypeIndex =  getPerformerTypes().stream().filter(performerType -> performerType.getTypeName().equals(performer.getPerformerType())).findFirst().get().getId();
 
         String query = "UPDATE performer" +
                 " SET performerName = ?, genre = ? ,performerType = ? ,description = ? ,performerStatus = ?" +
@@ -328,11 +319,11 @@ public class Database {
 
         ensureConnection();
 
-        String query = "SELECT * FROM performerType";
+        String query = "SELECT * FROM performerType ORDER BY 1";
 
         LinkedList<PerformerType> performerTypes = new LinkedList<>();
         try {
-            Statement statement = connection.createStatement();
+            Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             ResultSet set = statement.executeQuery(query);
 
             while(set.next()) {
@@ -544,7 +535,7 @@ public class Database {
         String query = "SELECT * FROM loyaltycard";
 
         try {
-            Statement statement = connection.createStatement();
+            Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             ResultSet resultSet = statement.executeQuery(query);
 
             while(resultSet.next()) {
@@ -598,7 +589,8 @@ public class Database {
 
         LinkedList<Genre> genres = new LinkedList<>();
 
-        String query = "SELECT * FROM genre";
+
+        String query = "SELECT * FROM genre ORDER BY 1";
 
         try {
             Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -760,7 +752,7 @@ public class Database {
 
         ensureConnection();
 
-        String query = "INSERT INTO lastwatched (lastWatchedID, userID, liveSetID, date) VALUES (?,? ,?, ? )";
+        String query = "INSERT INTO lastwatched (lastWatchedID, userID, liveSetID) VALUES (?,? ,?, ? )";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -980,4 +972,5 @@ public class Database {
 
         return false;
     }
+
 }
