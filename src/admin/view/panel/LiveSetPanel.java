@@ -59,8 +59,7 @@ public class LiveSetPanel extends JPanel {
         add(centerPanel, BorderLayout.CENTER);
 
         adminSearchBar.getAddButton().addActionListener(e -> {
-            LiveSet newLiveSet = new LiveSet("", "", 0, liveSets.element().getDate(), liveSets.element().getTime(), "", "", "");
-            adminControllerObserver.openAddLiveSet(newLiveSet, performers);
+            adminControllerObserver.openAddLiveSet(null, performers);
         });
 
     }

@@ -158,9 +158,12 @@ public class LiveSetDialog extends JDialog {
         if (isEdit()) price.getTextField().setText(liveSet.getPrice() + "");
         pricePanel.add(price);
 
-        DropDown statusDropdown = new DropDown(new Dimension(350, 50), "Status", liveSet.getStatus().equals("Open") ? new String[]{"Open", "Canceled"} : new String[]{"Canceled", "Open"});
+        DropDown statusDropdown;
         if(isEdit()) {
+            statusDropdown = new DropDown(new Dimension(350, 50), "Status", liveSet.getStatus().equals("Open") ? new String[]{"Open", "Canceled"} : new String[]{"Canceled", "Open"});
             pricePanel.add(statusDropdown);
+        } else {
+            statusDropdown = null;
         }
 
         panel.add(firstRow);
@@ -179,6 +182,7 @@ public class LiveSetDialog extends JDialog {
             }
         });
 
+    
         add.addActionListener(e -> {
 
 
@@ -219,6 +223,7 @@ public class LiveSetDialog extends JDialog {
             }
 
             if (isEdit()) {
+                assert statusDropdown != null;
                 adminControllerObserver.editLiveSet(new LiveSet(liveSet.getLiveSetID(), statusDropdown.getChoice(), intP, optionalDate.get(), time, imagePath, streamURL, liveSet.getPerformerID()));
             } else {
                 adminControllerObserver.addLiveSet(performers.get(performersDropDown.choiceIndex()) ,new LiveSet(UtilityMethods.generateRandomID(), "Open", intP, optionalDate.get(), time, imagePath, streamURL, performers.get(performersDropDown.choiceIndex()).getPerformerID()));

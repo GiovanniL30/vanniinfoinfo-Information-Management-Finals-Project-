@@ -674,7 +674,7 @@ public class Database {
 
 
     private static Response<String> getImage(String liveSetID, Blob blob) {
-        String path = "resources/images/" + liveSetID + ".jpg";
+        String path = "resources/thumbnails/" + liveSetID + ".jpg";
 
         try (FileOutputStream fileOutputStream = new FileOutputStream(path)) {
             byte[] bytes = blob.getBytes(1, (int) blob.length());
