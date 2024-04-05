@@ -10,6 +10,7 @@ import admin.view.utility.AdminPanel;
 import admin.view.utility.LiveSetDialogType;
 import shared.controller.LoginController;
 import shared.model.Database;
+import shared.model.Response;
 import shared.referenceClasses.*;
 import shared.viewComponents.Loading;
 
@@ -110,14 +111,16 @@ public class AdminController implements AdminControllerObserver, LoginController
     }
 
     @Override
-    public void addLiveSet(LiveSet liveSet) {
+    public void addLiveSet(Performer performer, LiveSet liveSet) {
 
-        if (Database.addLiveSet(liveSet)) {
+        Response<String> response = Database.addLiveSet(performer, liveSet);
+
+        if (response.isSuccess()) {
             changeFrame(AdminPanel.LIVE_SET);
             liveSetDialog.dispose();
             JOptionPane.showMessageDialog(adminMainFrame, "Added LiveSet successfully");
         } else {
-            JOptionPane.showMessageDialog(adminMainFrame, "Having error adding the LiveSet");
+            liveSetDialog.getDateInput().enableError(response.getPayload());
         }
 
     }

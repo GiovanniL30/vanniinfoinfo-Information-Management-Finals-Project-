@@ -14,13 +14,14 @@ public interface AdminControllerObserver {
     void editPerformerFrame(Performer performer);
     void updatePerformer(Performer performer);
     void addPerformer(Performer performer);
-    void addLiveSet(LiveSet liveSet);
+    void addLiveSet(Performer performer, LiveSet liveSet);
     void editLiveSet(LiveSet liveSet);
     void openEditLiveSet(LiveSet liveSet, LinkedList<Performer> performers);
     void openAddLiveSet(LiveSet liveSet, LinkedList<Performer> performers);
     void showLiveSetBuyer(LiveSet liveSet);
     LinkedList<Genre> getGenres();
     LinkedList<PerformerType> getPerformerTypes();
+    LinkedList<Performer> getPerformers();
     void searchPerformers(String searchTerm);
     void searchLiveSetsAdmin(String searchTerm);
 

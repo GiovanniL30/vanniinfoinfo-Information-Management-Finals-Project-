@@ -5,6 +5,7 @@ import shared.utilityClasses.UtilityMethods;
 
 import java.io.*;
 import java.sql.*;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -159,8 +160,16 @@ public class Database {
         return new Response<>(new User("","","","","","",0,"",false,""), false);
     }
 
-    public static boolean addLiveSet(LiveSet liveSet) {
+    public static Response<String> addLiveSet(Performer performer, LiveSet liveSet) {
         ensureConnection();
+
+        if(liveSet.getDate().before(Calendar.getInstance().getTime())) {
+            return new Response<>("The given date is a past date", false);
+        }
+
+        if(performerConflictSchedule(performer, liveSet)) {
+            return new Response<>("Given date will have performer have a conflicting schedule date", false);
+        }
 
         String query = "INSERT INTO liveset(liveSetID, status, date, time, thumbnail, streamLinkURL, performerID, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
@@ -185,7 +194,7 @@ public class Database {
             preparedStatement.setString(7, liveSet.getPerformerID());
             preparedStatement.setInt(8, liveSet.getPrice());
             int rowsAffected = preparedStatement.executeUpdate();
-            return rowsAffected > 0;
+            return new Response<>("", rowsAffected > 0);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -193,6 +202,31 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
+
+    private static boolean performerConflictSchedule(Performer performer, LiveSet liveSet) {
+        ensureConnection();
+
+        System.out.println(liveSet.getDate());
+
+        String query = "SELECT count(*) FROM liveset " +
+                "INNER JOIN performer ON performer.performerID = liveset.performerID " +
+                "WHERE performer.performerID = ? AND liveset.date = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, performer.getPerformerID());
+            preparedStatement.setDate(2, liveSet.getDate());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
 
     public static boolean editLiveSet(LiveSet liveSet) {
         ensureConnection();
@@ -666,7 +700,7 @@ public class Database {
             String password = resultSet.getString(6);
             int watchedCons = resultSet.getInt(7);
             String userStatus = resultSet.getString(8);
-            boolean haveEarnedLoyalty = resultSet.getInt(9) == 1;
+            boolean haveEarnedLoyalty = resultSet.getString(9) != null;
             String userType = resultSet.getString(10);
             return new Response<>(Optional.of(new User(userId, firstName, lastName, userName, email, password, watchedCons, userStatus, haveEarnedLoyalty, userType)), true);
         } catch (SQLException e) {
@@ -675,6 +709,7 @@ public class Database {
 
         return new Response<>(Optional.empty(), false);
     }
+
 
     private static boolean isTicketUsed(String ticketID) {
         ensureConnection();
@@ -719,13 +754,14 @@ public class Database {
 
         ensureConnection();
 
-        String query = "INSERT INTO lastwatched (lastWatchedID, userID, liveSetID) VALUES (?,? ,? )";
+        String query = "INSERT INTO lastwatched (lastWatchedID, userID, liveSetID, date) VALUES (?,? ,?, ? )";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, UtilityMethods.generateRandomID());
             statement.setString(2, userId);
             statement.setString(3, liveSetId);
+            statement.setDate(4, new Date(Calendar.getInstance().getTime().getTime()));
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
