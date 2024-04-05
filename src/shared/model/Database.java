@@ -543,7 +543,7 @@ public class Database {
 
         LinkedList<Performer> performers = new LinkedList<>();
 
-        String query = "SELECT * FROM performer";
+        String query = "SELECT * FROM performer ORDER BY 6";
 
         try {
             Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -755,11 +755,20 @@ public class Database {
 
         LinkedList<Performer> matchingPerformers = new LinkedList<>();
 
-        String query = "SELECT * FROM performer WHERE performerName LIKE ?";
+        String query = "SELECT performer.* FROM performer " +
+                "INNER JOIN genre ON genre.genreID = performer.genre " +
+                "INNER JOIN performertype ON performertype.performerTypeID = performer.performerType "+
+                "WHERE performer.performerName LIKE ? " +
+                "OR performer.performerStatus LIKE ? " +
+                "OR genre.genreName LIKE ? " +
+                "OR performertype.pTypes LIKE ?";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, "%" + searchTerm + "%");
+            statement.setString(2, "%" + searchTerm + "%");
+            statement.setString(3, "%" + searchTerm + "%");
+            statement.setString(4, "%" + searchTerm + "%");
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -771,6 +780,7 @@ public class Database {
                 String description = resultSet.getString(5);
                 String performerStatus = resultSet.getString(6);
 
+
                 matchingPerformers.add(new Performer(performerID, performerName, genre, performerType, description, performerStatus));
             }
             
@@ -778,6 +788,7 @@ public class Database {
 
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
+            System.out.println("Cause: " + e.getMessage());
             return new Response<>(new LinkedList<>(), false);
         }
     }
