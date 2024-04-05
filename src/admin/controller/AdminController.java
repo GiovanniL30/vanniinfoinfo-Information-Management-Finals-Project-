@@ -10,10 +10,7 @@ import admin.view.utility.AdminPanel;
 import admin.view.utility.LiveSetDialogType;
 import shared.controller.LoginController;
 import shared.model.Database;
-import shared.referenceClasses.Genre;
-import shared.referenceClasses.LiveSet;
-import shared.referenceClasses.Performer;
-import shared.referenceClasses.User;
+import shared.referenceClasses.*;
 import shared.viewComponents.Loading;
 
 import javax.swing.*;
@@ -172,6 +169,11 @@ public class AdminController implements AdminControllerObserver, LoginController
 
     public LinkedList<Genre> getGenres() {
         return Database.getGenres().getPayload();
+    }
+
+    @Override
+    public LinkedList<PerformerType> getPerformerTypes() {
+        return Database.getPerformerTypes();
     }
 
     public void setAdminMainFrame(AdminMainFrame adminMainFrame) {

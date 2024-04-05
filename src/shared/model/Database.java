@@ -3,31 +3,27 @@ package shared.model;
 import shared.referenceClasses.*;
 import shared.utilityClasses.UtilityMethods;
 
-import javax.swing.*;
 import java.io.*;
 import java.sql.*;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Database {
 
     private static Connection connection;
 
-    private static boolean setConnection() {
+    private static void setConnection() {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/seanhehehe", "root", "");
-                return true;
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/gio", "root", "");
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
                 System.exit(0);
             }
         }
 
-        return false;
     }
 
     public static String getPerformerName(String liveSetId) {
@@ -273,15 +269,24 @@ public class Database {
 
         ensureConnection();
 
+        LinkedList<String> genres = getGenres().getPayload().stream().map(Genre::getGenreName).collect(Collectors.toCollection(LinkedList::new));
+        int genreIndex = genres.indexOf(performer.getGenre()) + 1;
+
+
+        LinkedList<String> performerType = getPerformerTypes().stream().map(PerformerType::getTypeName).collect(Collectors.toCollection(LinkedList::new));
+        int performerTypeIndex = performerType.indexOf(performer.getPerformerType()) + 1;
+
+        System.out.println(genreIndex);
+
         String query = "UPDATE performer" +
                 " SET performerName = ?, genre = ? ,performerType = ? ,description = ? ,performerStatus = ?" +
-                " WHERE (`performerID` = ?)";
+                " WHERE (performerID = ?)";
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, performer.getPerformerName());
-            preparedStatement.setString(2, performer.getGenre());
-            preparedStatement.setString(3, performer.getPerformerType());
+            preparedStatement.setInt(2, genreIndex);
+            preparedStatement.setInt(3, performerTypeIndex);
             preparedStatement.setString(4, performer.getDescription());
             preparedStatement.setString(5, performer.getPerformerStatus());
             preparedStatement.setString(6, performer.getPerformerID());
@@ -289,10 +294,33 @@ public class Database {
             return true;
 
         } catch (SQLException e) {
-            System.err.println("Having error executing query " + query);
+            System.err.println(e.getMessage());
         }
 
         return false;
+    }
+
+    public static LinkedList<PerformerType> getPerformerTypes() {
+
+        ensureConnection();
+
+        String query = "SELECT * FROM performerType";
+
+        LinkedList<PerformerType> performerTypes = new LinkedList<>();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet set = statement.executeQuery(query);
+
+            while(set.next()) {
+                performerTypes.add(new PerformerType(set.getInt(1), set.getString(2)));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Having error executing the query: " + query);
+            System.out.println("Cause: " + e.getMessage());
+        }
+
+        return performerTypes;
     }
 
     public static Response<String> accessLiveSet(String ticketId, String userId, String liveSetBeingAccessedID) {

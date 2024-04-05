@@ -85,11 +85,12 @@ public class LiveSetDialog extends JDialog {
 
         DropDown performersDropDown;
 
-        if (!isEdit()) {
+        if (isEdit()) {
             performersDropDown = new DropDown(new Dimension(350, 50), "Performer", performers.stream().map(Performer::getPerformerName).toList().toArray(new String[0]));
-        } else {
-            performersDropDown = new DropDown(new Dimension(350, 50), "Performer", performers.stream().filter(performer -> performer.getPerformerID().equals(liveSet.getPerformerID())).map(Performer::getPerformerName).toList().toArray(new String[0]));
             performersDropDown.enable(false);
+        } else {
+            performersDropDown = new DropDown(new Dimension(350, 50), "Performer", performers.stream().filter(performer -> performer.getPerformerStatus().equals("Active")).map(Performer::getPerformerName).toList().toArray(new String[0]));
+
         }
 
         FieldInput streamUrl = new FieldInput("Stream URL", new Dimension(350, 50), 200, 10, false);

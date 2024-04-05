@@ -4,6 +4,7 @@ import admin.controller.AdminControllerObserver;
 import admin.view.AdminMainFrame;
 import admin.view.utility.AdminPanel;
 import shared.referenceClasses.Performer;
+import shared.referenceClasses.PerformerType;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
 import shared.utilityClasses.UtilityMethods;
@@ -59,7 +60,7 @@ public class EditPerformerPanel extends JPanel {
         dropDowns.setBackground(Color.WHITE);
         DropDown genre = new DropDown(new Dimension(355, 60), "Genre", UtilityMethods.populateGenres(adminControllerObserver.getGenres()));
         DropDown performerStatus = new DropDown(new Dimension(355, 60), "Performer Status", performer.getPerformerStatus().equals("Active") ? new String[]{"Active", "Inactive"} : new String[] {"Inactive", "Active"});
-        DropDown performerType = new DropDown(new Dimension(355, 60), "Performer Type", performer.getPerformerType().equals("Band") ? new String[] {"Band", "Solo"}:new String[] {"Solo", "Band"});
+        DropDown performerType = new DropDown(new Dimension(355, 60), "Performer Type", adminControllerObserver.getPerformerTypes().stream().map(PerformerType::getTypeName).toList().toArray(new String[0]));
         dropDowns.add(genre);
         dropDowns.add(performerStatus);
         dropDowns.add(performerType);
@@ -88,9 +89,9 @@ public class EditPerformerPanel extends JPanel {
 
             String newName = performerName.getInput();
             String newDescription = description.getText();
-            String newGenre = genre.getChoice();
+            String newGenre = adminControllerObserver.getGenres().get(genre.choiceIndex()).getGenreName();
             String newStatus = performerStatus.getChoice();
-            String newType = performerType.getChoice();
+            String newType = adminControllerObserver.getPerformerTypes().get(performerType.choiceIndex()).getTypeName();
 
             if(UtilityMethods.haveNullOrEmpty(newName, newDescription)) {
                 return;

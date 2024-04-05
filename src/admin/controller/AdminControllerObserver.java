@@ -4,6 +4,7 @@ import admin.view.utility.AdminPanel;
 import shared.referenceClasses.Genre;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
+import shared.referenceClasses.PerformerType;
 
 import java.util.LinkedList;
 
@@ -19,6 +20,7 @@ public interface AdminControllerObserver {
     void openAddLiveSet(LiveSet liveSet, LinkedList<Performer> performers);
     void showLiveSetBuyer(LiveSet liveSet);
     LinkedList<Genre> getGenres();
+    LinkedList<PerformerType> getPerformerTypes();
     void searchPerformers(String searchTerm);
     void searchLiveSetsAdmin(String searchTerm);
 
