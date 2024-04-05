@@ -328,7 +328,7 @@ public class Database {
 
         ensureConnection();
 
-        String query = "SELECT * FROM performerType";
+        String query = "SELECT * FROM performerType ORDER BY 1";
 
         LinkedList<PerformerType> performerTypes = new LinkedList<>();
         try {
@@ -598,7 +598,7 @@ public class Database {
 
         LinkedList<Genre> genres = new LinkedList<>();
 
-        String query = "SELECT * FROM genre";
+        String query = "SELECT * FROM genre ORDER BY 1";
 
         try {
             Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
