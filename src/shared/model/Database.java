@@ -17,7 +17,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/gio", "root", "");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/cas", "root", "password");
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
                 System.exit(0);
@@ -77,23 +77,6 @@ public class Database {
         return users;
     }
 
-    private static boolean userNameExist(String userName) {
-        ensureConnection();
-
-        String query = "SELECT userName FROM user WHERE userName = ?";
-
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, userName);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            return resultSet.next();
-        } catch (SQLException e) {
-            System.err.println("Having error executing query " + query);
-        }
-
-        return false;
-    }
-
 
     public static Response<String> signUp(User user) {
 
@@ -125,6 +108,7 @@ public class Database {
     
         return new Response<>("Error occurred while signing up user", false);
     }
+
     public static Response<Optional<User>> logIn(String giveUserName, String givenPassword) {
 
         ensureConnection();
@@ -936,5 +920,22 @@ public class Database {
             System.err.println("Having error executing query " + query);
             return new Response<>(new LinkedList<>(), false);
         }
+    }
+
+    private static boolean userNameExist(String userName) {
+        ensureConnection();
+
+        String query = "SELECT userName FROM user WHERE userName = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, userName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+
+        return false;
     }
 }

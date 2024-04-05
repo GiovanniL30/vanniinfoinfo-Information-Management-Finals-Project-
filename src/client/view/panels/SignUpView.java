@@ -72,11 +72,6 @@ public class SignUpView extends JPanel {
                 return;
             }
 
-            System.out.println(fName);
-            System.out.println(lName);
-            System.out.println(uName);
-            System.out.println(p);
-
             if(uName.matches(".*\\s+.*") || p.matches(".*\\s+.*")) {
 
                 if(uName.matches(".*\\s+.*")) {
