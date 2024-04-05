@@ -7,14 +7,11 @@ import client.view.components.TicketsPanel;
 import client.view.panels.HomeView;
 import shared.controller.LoginController;
 import shared.model.Response;
-import shared.referenceClasses.Purchased;
+import shared.referenceClasses.*;
 import shared.viewComponents.LoginView;
 import client.view.panels.PaymentView;
 import client.view.panels.SignUpView;
 import shared.model.Database;
-import shared.referenceClasses.LiveSet;
-import shared.referenceClasses.Performer;
-import shared.referenceClasses.User;
 import shared.viewComponents.Loading;
 
 import javax.swing.*;
@@ -72,7 +69,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
                         new SwingWorker<LinkedList<Purchased>, Void>() {
                             @Override
                             protected LinkedList<Purchased> doInBackground() {
-                                return Database.getMyPurchases(loggedInAccount.getUserID());
+                                return Database.getMyPurchases(loggedInAccount.getUserID()).getPayload();
                             }
 
                             @Override
@@ -109,7 +106,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
     @Override
     public void openLiveSet(LiveSet liveSet) {
-       LinkedList<Performer> performers =  Database.getPerformers();
+       LinkedList<Performer> performers = Database.getPerformers().getPayload();
        Optional<Performer> performer = performers.stream().filter(p -> p.getPerformerID().equals(liveSet.getPerformerID())).findAny();
        performer.ifPresent(value -> clientMainFrame.getHomeView().getLiveSetPane().openLiveSet(liveSet, value));
     }
@@ -141,7 +138,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
         new SwingWorker<Optional<User>, Void>() {
             @Override
             protected Optional<User> doInBackground() {
-                return Database.logIn(userName, password);
+                return Database.logIn(userName, password).getPayload();
             }
 
             @Override
@@ -190,12 +187,16 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
     @Override
     public void accessLiveSet(LiveSet liveSet, String ticketId) {
+        if(!liveSet.getStatus().equals("Open")){
+            JOptionPane.showMessageDialog(clientMainFrame, "Sorry the live set have been canceled");
+            return;
+        }
 
-        User user = Database.getTicketUser(ticketId, loggedInAccount.getUserID());
+        Response<User> userResponse = Database.getTicketUser(ticketId, loggedInAccount.getUserID());
 
-        System.out.println(user);
 
-        if(user != null && user.getUserID().equals(loggedInAccount.getUserID())) {
+
+        if(userResponse.isSuccess() && userResponse.getPayload().getUserID().equals(loggedInAccount.getUserID())) {
             accessGigDialog.dispose();
             try {
                 Desktop.getDesktop().browse(new URI(liveSet.getStreamLinkURL()));
@@ -227,17 +228,56 @@ public class ClientController implements ClientControllerObserver, LoginControll
     }
 
     @Override
+    public void signUp(User user) {
+        Response<String> response = Database.signUp(user);
+
+        if(response.isSuccess()) {
+            changeFrame(ClientViews.LOGIN);
+        }
+
+        JOptionPane.showMessageDialog(clientMainFrame, response.getPayload());
+    }
+
+    @Override
     public User getLoggedInAccount() {
         return loggedInAccount;
     }
 
     @Override
     public LinkedList<LiveSet> getLiveSet() {
-        return Database.getLiveSets();
+        return Database.getLiveSets().getPayload();
     }
 
     public void setClientMainView(ClientMainFrame clientMainFrame) {
         this.clientMainFrame = clientMainFrame;
         loading = new Loading(clientMainFrame);
+    }
+
+    @Override
+    public void searchLiveSets(String searchTerm) {
+        LinkedList<LiveSet> searchResults = Database.searchLiveSets(searchTerm).getPayload();
+        clientMainFrame.getHomeView().getLiveSetPane().populateView(searchResults);
+    }
+    @Override
+    public void sortByName(String condition) {
+        LinkedList<LiveSet> sortResults = Database.sortByName(condition).getPayload();
+        clientMainFrame.getHomeView().getLiveSetPane().populateView(sortResults);
+    }
+    @Override
+    public void sortByDate(String condition) {
+        LinkedList<LiveSet> sortResults = Database.sortByDate(condition).getPayload();
+        clientMainFrame.getHomeView().getLiveSetPane().populateView(sortResults);
+    }
+
+    @Override
+    public void logOut() {
+        loggedInAccount = null;
+        changeFrame(ClientViews.LOGIN);
+        JOptionPane.showMessageDialog(clientMainFrame, "Logged Out");
+    }
+
+    @Override
+    public String getPerformerName(String liveSetId) {
+        return Database.getPerformerName(liveSetId);
     }
 }

@@ -4,6 +4,7 @@ import shared.utilityClasses.FontFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.Objects;
 
 public class DropDown extends JPanel {
@@ -39,6 +40,13 @@ public class DropDown extends JPanel {
 
     public int choiceIndex() {
         return comboBox.getSelectedIndex();
+    }
+
+    public void enable(boolean e){
+        comboBox.setEnabled(e);
+    }
+    public void addActionListener(ActionListener listener) {
+        comboBox.addActionListener(listener);
     }
 
 

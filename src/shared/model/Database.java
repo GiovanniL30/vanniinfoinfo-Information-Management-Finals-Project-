@@ -3,6 +3,7 @@ package shared.model;
 import shared.referenceClasses.*;
 import shared.utilityClasses.UtilityMethods;
 
+import javax.swing.*;
 import java.io.*;
 import java.sql.*;
 import java.util.Arrays;
@@ -18,7 +19,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/cas", "root", "password");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/seanhehehe", "root", "");
                 return true;
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -29,7 +30,106 @@ public class Database {
         return false;
     }
 
-    public static Optional<User> logIn(String giveUserName, String givenPassword) {
+    public static String getPerformerName(String liveSetId) {
+        ensureConnection();
+
+        String p = "Performer Name";
+
+        String query = "SELECT performer.performerName FROM performer " +
+                "INNER JOIN liveset ON liveset.performerID = performer.performerID " +
+                "WHERE liveset.liveSetID = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, liveSetId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()) {
+                p = resultSet.getString(1);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+
+        return p;
+    }
+    public static LinkedList<User> getLiveSetPurchasers(String liveSetId){
+
+        ensureConnection();
+        LinkedList<User> users = new LinkedList<>();
+
+       String query = "SELECT user.* " +
+               "FROM user " +
+               "INNER JOIN purchased ON purchased.buyerID = user.userID " +
+               "INNER JOIN ticket ON ticket.ticketID = purchased.ticketID " +
+               "WHERE ticket.liveSetID = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, liveSetId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()) {
+                Optional<User> user =  toUser(resultSet).getPayload();
+                user.ifPresent(users::add);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+
+        return users;
+    }
+
+    private static boolean userNameExist(String userName) {
+        ensureConnection();
+
+        String query = "SELECT userName FROM user WHERE userName = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, userName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+
+        return false;
+    }
+
+
+    public static Response<String> signUp(User user) {
+
+        if(userNameExist(user.getUserName())) {
+            return new Response<>("User name " + user.getUserName() + " already exist", false);
+        }
+
+        ensureConnection();
+    
+        String query = "INSERT INTO user (userID, firstName, lastName,userName, email, password, watchedConsecShows, userStatus, haveEarnedLoyalty, userType) VALUES (?, ?, ?, ?, ?, ?, ?,?, ?, ?)";
+    
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, user.getUserID());
+            statement.setString(2, user.getFirstName());
+            statement.setString(3, user.getLastName());
+            statement.setString(4, user.getUserName());
+            statement.setString(5, user.getEmail());
+            statement.setString(6, user.getPassword());
+            statement.setInt(7, user.getWatchedConsecutiveShows());
+            statement.setString(8, user.getUserStatus());
+            statement.setInt(9, user.isHaveEarnedLoyalty() ? 1 : 0);
+            statement.setString(10, user.getUserType());
+            statement.execute();
+            return new Response<>("User signed up successfully", true);
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+        }
+    
+        return new Response<>("Error occurred while signing up user", false);
+    }
+    public static Response<Optional<User>> logIn(String giveUserName, String givenPassword) {
 
         ensureConnection();
 
@@ -49,10 +149,10 @@ public class Database {
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
         }
-        return Optional.empty();
+        return new Response<>(Optional.empty(), false);
     }
 
-    public static User getTicketUser(String ticketId, String userId) {
+    public static Response<User> getTicketUser(String ticketId, String userId) {
 
         ensureConnection();
 
@@ -67,16 +167,16 @@ public class Database {
             ResultSet resultSet = statement.executeQuery();
 
             if(resultSet.next()) {
-                Optional<User> user = toUser(resultSet);
+                Optional<User> user = toUser(resultSet).getPayload();
                 if(user.isPresent()) {
-                    return user.get();
+                    return new Response<>(user.get(), true);
                 }
             }
 
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
         }
-        return null;
+        return new Response<>(new User("","","","","","",0,"",false,""), false);
     }
 
     public static boolean addLiveSet(LiveSet liveSet) {
@@ -110,6 +210,41 @@ public class Database {
             throw new RuntimeException(e);
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean editLiveSet(LiveSet liveSet) {
+        ensureConnection();
+        String query = "UPDATE liveset SET status=?, date=?, time=?, thumbnail=?, streamLinkURL=?, price=? WHERE liveSetID=?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, liveSet.getStatus());
+            preparedStatement.setDate(2, liveSet.getDate());
+            preparedStatement.setTime(3, liveSet.getTime());
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            try (InputStream fis = new FileInputStream(liveSet.getThumbnail())) {
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                preparedStatement.setBinaryStream(4, new ByteArrayInputStream(outputStream.toByteArray()));
+            } catch (IOException e) {
+                // In case thumbnail is not updated, handle it here.
+                System.err.println("Error reading file: " + e.getMessage());
+                preparedStatement.setBytes(4, null); // Set thumbnail to null in case of error
+            }
+
+            preparedStatement.setString(5, liveSet.getStreamLinkURL());
+            preparedStatement.setInt(6, liveSet.getPrice());
+            preparedStatement.setString(7, liveSet.getLiveSetID());
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -166,7 +301,7 @@ public class Database {
             return new Response<>("The ticket was already used", false);
         }
 
-       Optional<Ticket> temp =  getTickets().stream().filter(ticket -> ticket.getTicketID().equals(ticketId) && ticket.getLiveSetID().equals(liveSetBeingAccessedID)).findFirst();
+       Optional<Ticket> temp =  getTickets().getPayload().stream().filter(ticket -> ticket.getTicketID().equals(ticketId) && ticket.getLiveSetID().equals(liveSetBeingAccessedID)).findFirst();
        if(temp.isEmpty()) {
             return new Response<>("The ticket entered was not for this live set", false);
        }
@@ -210,7 +345,7 @@ public class Database {
     public static boolean addPurchase(String liveSetId, String buyerId) {
 
         String query = "INSERT INTO purchased (`purchasedID`, `date`, `time`, `buyerID`, `ticketID`) VALUES (?, ?,  ?, ?,  ?)";
-        String newTicket = createNewTicket(liveSetId);
+        String newTicket = createNewTicket(liveSetId).getPayload();
         String purchaseID = UtilityMethods.generateRandomID();
 
         try {
@@ -229,7 +364,7 @@ public class Database {
         return false;
     }
 
-    private static String createNewTicket(String liveSetID) {
+    private static Response<String> createNewTicket(String liveSetID) {
         ensureConnection();
         String ticketId = UtilityMethods.generateRandomID();
         String query = "INSERT INTO ticket (`ticketID`, `liveSetID`) VALUES (?, ?)";
@@ -243,15 +378,15 @@ public class Database {
             System.err.println("Having error executing query " + query);
         }
 
-        return ticketId;
+        return new Response<>(ticketId, true);
     }
 
-    public static LinkedList<Purchased> getMyPurchases(String userID) {
+    public static Response<LinkedList<Purchased>> getMyPurchases(String userID) {
         ensureConnection();
 
         LinkedList<Purchased> purchasedLinkedList = new LinkedList<>();
 
-        String query = "SELECT purchased.date, purchased.time, performer.performerName, liveset.price, liveset.thumbnail, ticket.ticketID, ticket.status, liveset.livesetID, concat(user.firstName, user.lastName)" +
+        String query = "SELECT purchased.date, purchased.time, performer.performerName, liveset.price, liveset.thumbnail, ticket.ticketID, ticket.status, liveset.livesetID, concat(user.firstName, user.lastName), liveset.status" +
                 " FROM purchased" +
                 " INNER JOIN user ON purchased.buyerID = user.userID" +
                 " INNER JOIN ticket ON purchased.ticketID = ticket.ticketID" +
@@ -271,22 +406,23 @@ public class Database {
                 Time time = resultSet.getTime(2);
                 String performerName = resultSet.getString(3);
                 int liveSetPrice = resultSet.getInt(4);
-                String liveSetThumbnail = getImage(resultSet.getString(8), resultSet.getBlob(5));
+                String liveSetThumbnail = getImage(resultSet.getString(8), resultSet.getBlob(5)).getPayload();
                 String ticketId = resultSet.getString(6);
                 String ticketStatus = resultSet.getString(7);
                 String userName = resultSet.getString(9);
+                String status = resultSet.getString(10);
 
-                purchasedLinkedList.add(new Purchased(date, time, performerName, liveSetPrice, liveSetThumbnail, ticketId, ticketStatus, userName));
+                purchasedLinkedList.add(new Purchased(date, time, performerName, liveSetPrice, liveSetThumbnail, ticketId, ticketStatus, userName, status));
             }
 
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
         }
 
-        return purchasedLinkedList;
+        return new Response<>(purchasedLinkedList, true);
     }
 
-    public static LinkedList<LiveSet> getLiveSets() {
+    public static Response<LinkedList<LiveSet>> getLiveSets() {
 
         ensureConnection();
 
@@ -303,7 +439,7 @@ public class Database {
                 String status = result.getString(2);
                 Date date = result.getDate(3);
                 Time time = result.getTime(4);
-                String thumbnail = getImage(liveSetID, result.getBlob(5));
+                String thumbnail = getImage(liveSetID, result.getBlob(5)).getPayload();
                 String streamLinkUrl = result.getString(6);
                 String performerID = result.getString(7);
                 int price = result.getInt(8);
@@ -312,15 +448,14 @@ public class Database {
             }
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-//            System.err.println("Having error executing query " + query);
-            return new LinkedList<>();
+           System.err.println("Having error executing query " + query);
+           return new Response<>(new LinkedList<>(), false);
         }
 
-        return liveSets;
+        return new Response<>(liveSets, true);
     }
 
-    public static LinkedList<LastWatched> getLastWatched() {
+    public static Response<LinkedList<LastWatched>> getLastWatched() {
 
         ensureConnection();
 
@@ -343,13 +478,13 @@ public class Database {
 
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
-            return new LinkedList<>();
+            return new Response<>(new LinkedList<>(), false);
         }
 
-        return lastWatched;
+        return new Response<>(lastWatched, true);
     }
 
-    public static LinkedList<LoyaltyCard> getLoyaltyCards() {
+    public static Response<LinkedList<LoyaltyCard>> getLoyaltyCards() {
         ensureConnection();
 
         LinkedList<LoyaltyCard> loyaltyCards = new LinkedList<>();
@@ -368,14 +503,14 @@ public class Database {
             }
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
-            return new LinkedList<>();
+            return new Response<>(new LinkedList<>(), false);
         }
 
 
-        return loyaltyCards;
+        return new Response<>(loyaltyCards, true);
     }
 
-    public static LinkedList<Performer> getPerformers() {
+    public static Response<LinkedList<Performer>> getPerformers() {
         ensureConnection();
 
         LinkedList<Performer> performers = new LinkedList<>();
@@ -399,16 +534,43 @@ public class Database {
             }
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
-            return new LinkedList<>();
+            return new Response<>(new LinkedList<>(), false);
         }
 
 
-        return performers;
+        return new Response<>(performers, true);
+    }
+
+    public static Response<LinkedList<Genre>> getGenres() {
+        ensureConnection();
+
+        LinkedList<Genre> genres = new LinkedList<>();
+
+        String query = "SELECT * FROM genre";
+
+        try {
+            Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while(resultSet.next()) {
+
+                int genreID = Integer.parseInt(resultSet.getString(1));
+                String genreName = resultSet.getString(2);
+
+                genres.add(new Genre(genreID, genreName));
+            }
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+            return new Response<>(new LinkedList<>(), false);
+        }
+
+
+        return new Response<>(genres, true);
     }
 
 
 
-    public static LinkedList<Ticket> getTickets() {
+    public static Response<LinkedList<Ticket>> getTickets() {
         ensureConnection();
 
         LinkedList<Ticket> tickets = new LinkedList<>();
@@ -431,14 +593,14 @@ public class Database {
 
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
-            return new LinkedList<>();
+            return new Response<>(new LinkedList<>(), false);
         }
 
 
-        return tickets;
+        return new Response<>(tickets, true);
     }
 
-    public static LinkedList<User> getUsers() {
+    public static Response<LinkedList<User>> getUsers() {
         ensureConnection();
 
         LinkedList<User> users = new LinkedList<>();
@@ -450,39 +612,39 @@ public class Database {
             ResultSet resultSet = statement.executeQuery(query);
 
             while(resultSet.next()) {
-                Optional<User> user = toUser(resultSet);
+                Optional<User> user = toUser(resultSet).getPayload();
                 user.ifPresent(users::add);
             }
 
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
-            return new LinkedList<>();
+            return new Response<>(new LinkedList<>(), false);
         }
 
 
-        return users;
+        return new Response<>(users, true);
     }
 
 
 
-    private static String getImage(String liveSetID, Blob blob) {
+    private static Response<String> getImage(String liveSetID, Blob blob) {
         String path = "resources/images/" + liveSetID + ".jpg";
 
         try (FileOutputStream fileOutputStream = new FileOutputStream(path)) {
             byte[] bytes = blob.getBytes(1, (int) blob.length());
             fileOutputStream.write(bytes);
-            return path;
+            return new Response<>(path, true);
         } catch (SQLException | IOException e) {
            System.err.println("Having error converting image  on: " + liveSetID);
         }
-        return "";
+        return new Response<>("", false);
     }
 
     private static void ensureConnection() {
       setConnection();
     }
 
-    private static Optional<User> toUser(ResultSet resultSet) {
+    private static Response<Optional<User>> toUser(ResultSet resultSet) {
         try {
             String userId = resultSet.getString(1);
             String firstName = resultSet.getString(2);
@@ -494,12 +656,12 @@ public class Database {
             String userStatus = resultSet.getString(8);
             boolean haveEarnedLoyalty = resultSet.getInt(9) == 1;
             String userType = resultSet.getString(10);
-            return Optional.of(new User(userId, firstName, lastName, userName, email, password, watchedCons, userStatus, haveEarnedLoyalty, userType));
+            return new Response<>(Optional.of(new User(userId, firstName, lastName, userName, email, password, watchedCons, userStatus, haveEarnedLoyalty, userType)), true);
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
 
-        return Optional.empty();
+        return new Response<>(Optional.empty(), false);
     }
 
     private static boolean isTicketUsed(String ticketID) {
@@ -560,4 +722,180 @@ public class Database {
         return false;
     }
 
+    public static Response<LinkedList<Performer>> searchPerformers(String searchTerm) {
+        ensureConnection();
+
+        LinkedList<Performer> matchingPerformers = new LinkedList<>();
+
+        String query = "SELECT * FROM performer WHERE performerName LIKE ?";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, "%" + searchTerm + "%");
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String performerID = resultSet.getString(1);
+                String performerName = resultSet.getString(2);
+                String genre = resultSet.getString(3);
+                String performerType = resultSet.getString(4);
+                String description = resultSet.getString(5);
+                String performerStatus = resultSet.getString(6);
+
+                matchingPerformers.add(new Performer(performerID, performerName, genre, performerType, description, performerStatus));
+            }
+            
+            return new Response<>(matchingPerformers, true);
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+            return new Response<>(new LinkedList<>(), false);
+        }
+    }
+
+    public static Response<LinkedList<LiveSet>> searchLiveSetsAdmin(String searchTerm) {
+        ensureConnection();
+
+        LinkedList<LiveSet> matchingLiveSet = new LinkedList<>();
+
+        String query = "SELECT ls.* FROM liveset ls " +
+                "LEFT OUTER JOIN performer p ON ls.performerID = p.performerID " +
+                "WHERE LOWER(ls.liveSetID) LIKE LOWER(?) " +
+                "OR LOWER(p.performerName) LIKE LOWER(?) " +
+                "OR ls.date LIKE ? " +
+                "OR ls.time LIKE ? " +
+                "OR LOWER(ls.status) LIKE LOWER(?)";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            String likeParam = "%" + searchTerm + "%";
+            statement.setString(1, likeParam);
+            statement.setString(2, likeParam);
+            statement.setString(3, likeParam);
+            statement.setString(4, likeParam);
+            statement.setString(5, likeParam);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String liveSetID = resultSet.getString(1);
+                String status = resultSet.getString(2);
+                Date date = resultSet.getDate(3);
+                Time time = resultSet.getTime(4);
+                String thumbnail = getImage(liveSetID, resultSet.getBlob(5)).getPayload();
+                String streamLinkUrl = resultSet.getString(6);
+                String performerID = resultSet.getString(7);
+                int price = resultSet.getInt(8);
+
+                matchingLiveSet.add(new LiveSet(liveSetID, status, price, date, time, thumbnail, streamLinkUrl, performerID));
+            }
+
+            return new Response<>(matchingLiveSet, true);
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+            return new Response<>(new LinkedList<>(), false);
+        }
+    }
+
+    public static Response<LinkedList<LiveSet>> searchLiveSets(String searchTerm) {
+        ensureConnection();
+
+        LinkedList<LiveSet> matchingLiveSet = new LinkedList<>();
+
+        String query = "SELECT ls.* FROM liveset ls LEFT OUTER JOIN performer p ON ls.performerID = p.performerID WHERE LOWER(p.performerName) LIKE LOWER(?)";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, "%" + searchTerm + "%" );
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String liveSetID = resultSet.getString(1);
+                String status = resultSet.getString(2);
+                Date date = resultSet.getDate(3);
+                Time time = resultSet.getTime(4);
+                String thumbnail = getImage(liveSetID, resultSet.getBlob(5)).getPayload();
+                String streamLinkUrl = resultSet.getString(6);
+                String performerID = resultSet.getString(7);
+                int price = resultSet.getInt(8);
+
+                matchingLiveSet.add(new LiveSet(liveSetID, status, price, date, time, thumbnail, streamLinkUrl, performerID));
+            }
+
+
+            return new Response<>(matchingLiveSet, true);
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+            return new Response<>(new LinkedList<>(), false);
+        }
+    }
+
+    public static Response<LinkedList<LiveSet>> sortByName(String condition) {
+        ensureConnection();
+
+        LinkedList<LiveSet> sortLiveSet = new LinkedList<>();
+
+        String query = "SELECT ls.* FROM liveset ls LEFT OUTER JOIN performer p ON ls.performerID = p.performerID ORDER BY p.performerName " + condition;
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String liveSetID = resultSet.getString(1);
+                String status = resultSet.getString(2);
+                Date date = resultSet.getDate(3);
+                Time time = resultSet.getTime(4);
+                String thumbnail = getImage(liveSetID, resultSet.getBlob(5)).getPayload();
+                String streamLinkUrl = resultSet.getString(6);
+                String performerID = resultSet.getString(7);
+                int price = resultSet.getInt(8);
+
+                sortLiveSet.add(new LiveSet(liveSetID, status, price, date, time, thumbnail, streamLinkUrl, performerID));
+            }
+
+
+            return new Response<>(sortLiveSet, true);
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+            return new Response<>(new LinkedList<>(), false);
+        }
+    }
+
+    public static Response<LinkedList<LiveSet>> sortByDate(String condition) {
+        ensureConnection();
+
+        LinkedList<LiveSet> sortLiveSet = new LinkedList<>();
+
+        String query = "SELECT ls.* FROM liveset ls ORDER BY ls.date " + condition;
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String liveSetID = resultSet.getString(1);
+                String status = resultSet.getString(2);
+                Date date = resultSet.getDate(3);
+                Time time = resultSet.getTime(4);
+                String thumbnail = getImage(liveSetID, resultSet.getBlob(5)).getPayload();
+                String streamLinkUrl = resultSet.getString(6);
+                String performerID = resultSet.getString(7);
+                int price = resultSet.getInt(8);
+
+                sortLiveSet.add(new LiveSet(liveSetID, status, price, date, time, thumbnail, streamLinkUrl, performerID));
+            }
+
+
+            return new Response<>(sortLiveSet, true);
+
+        } catch (SQLException e) {
+            System.err.println("Having error executing query " + query);
+            return new Response<>(new LinkedList<>(), false);
+        }
+    }
 }

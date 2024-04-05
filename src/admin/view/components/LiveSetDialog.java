@@ -7,8 +7,8 @@ import shared.referenceClasses.Performer;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
 import shared.utilityClasses.UtilityMethods;
-import shared.viewComponents.*;
 import shared.viewComponents.Button;
+import shared.viewComponents.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -20,20 +20,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.time.MonthDay;
+import java.time.Year;
+import java.util.*;
 
 
 public class LiveSetDialog extends JDialog {
 
-    private LinkedList<Performer> performers;
-    private AdminControllerObserver adminControllerObserver;
-    private LiveSet liveSet;
+    private final LinkedList<Performer> performers;
+    private final AdminControllerObserver adminControllerObserver;
+    private final LiveSet liveSet;
     private Picture thumbnailPreview;
-    private  JSpinner timeSpinner;
-    private LiveSetDialogType liveSetDialogType;
+    private JSpinner timeSpinner;
+    private final LiveSetDialogType liveSetDialogType;
     private String imagePath = "";
 
     public LiveSetDialog(JFrame frame, LiveSet liveSet, LinkedList<Performer> performers, AdminControllerObserver adminControllerObserver, LiveSetDialogType liveSetDialogType) {
@@ -69,19 +68,13 @@ public class LiveSetDialog extends JDialog {
     private JPanel centerPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        panel.setBorder(new EmptyBorder(10, 10 ,10, 10));
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
         panel.setBackground(Color.white);
-
-        if (liveSetDialogType == LiveSetDialogType.ADD) {
-            panel.add(addLiveSetPanel());
-        } else {
-            panel.add(editLiveSetPanel());
-        }
-
+        panel.add(liveSetPanel());
         return panel;
     }
 
-    private JPanel addLiveSetPanel() {
+    private JPanel liveSetPanel() {
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -89,9 +82,18 @@ public class LiveSetDialog extends JDialog {
 
         JPanel firstRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
         firstRow.setBackground(Color.white);
-        DropDown performersDropDown = new DropDown(new Dimension(350, 50), "Performer", performers.stream().map(Performer::getPerformerName).toList().toArray(new String[0]));
-        FieldInput streamUrl = new FieldInput("Stream URL", new Dimension(350, 50), 200, 10, false);
 
+        DropDown performersDropDown;
+
+        if (!isEdit()) {
+            performersDropDown = new DropDown(new Dimension(350, 50), "Performer", performers.stream().map(Performer::getPerformerName).toList().toArray(new String[0]));
+        } else {
+            performersDropDown = new DropDown(new Dimension(350, 50), "Performer", performers.stream().filter(performer -> performer.getPerformerID().equals(liveSet.getPerformerID())).map(Performer::getPerformerName).toList().toArray(new String[0]));
+            performersDropDown.enable(false);
+        }
+
+        FieldInput streamUrl = new FieldInput("Stream URL", new Dimension(350, 50), 200, 10, false);
+        if (isEdit()) streamUrl.getTextField().setText(liveSet.getStreamLinkURL());
         firstRow.add(performersDropDown);
         firstRow.add(streamUrl);
 
@@ -101,6 +103,7 @@ public class LiveSetDialog extends JDialog {
 
 
         FieldInput dateInput = new FieldInput("Date", new Dimension(300, 50), 10, 10, false);
+        if (isEdit()) dateInput.getTextField().setText(liveSet.getDate().toString());
 
         JPanel spinnerPanel = new JPanel(new BorderLayout());
         JLabel spinnerLabel = new JLabel("Time");
@@ -123,10 +126,14 @@ public class LiveSetDialog extends JDialog {
         thirdRow.setPreferredSize(new Dimension(620, 300));
         thirdRow.setLayout(null);
         thirdRow.setBackground(Color.white);
-        Button uploadImageButton = new Button("Upload Thumbnail", new Dimension(300, 50), FontFactory.newPoppinsDefault(14));
+        Button uploadImageButton = new Button(isEdit() ? "Change Thumbnail" : "Upload Thumbnail", new Dimension(300, 50), FontFactory.newPoppinsDefault(14));
         uploadImageButton.setBounds(0, 0, 360, 50);
         thumbnailPreview = new Picture("asc", 400, 300);
         thumbnailPreview.setBounds(380, 0, 350, 300);
+        if (isEdit()) {
+            imagePath = liveSet.getThumbnail();
+            thumbnailPreview.updatePicture(liveSet.getThumbnail());
+        }
         thirdRow.add(uploadImageButton);
         thirdRow.add(thumbnailPreview);
 
@@ -134,14 +141,20 @@ public class LiveSetDialog extends JDialog {
         JPanel lastRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
         lastRow.setBackground(Color.white);
         Button cancel = new Button("CANCEL", new Dimension(345, 50), FontFactory.newPoppinsDefault(14));
-        FilledButton add = new FilledButton("ADD", new Dimension(345, 50), FontFactory.newPoppinsDefault(14), ColorFactory.red(), Color.white);
+        FilledButton add = new FilledButton(isEdit() ? "SAVE CHANGES": "ADD", new Dimension(345, 50), FontFactory.newPoppinsDefault(14), ColorFactory.red(), Color.white);
         lastRow.add(cancel);
         lastRow.add(add);
 
         JPanel pricePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pricePanel.setBackground(Color.white);
-        FieldInput price = new FieldInput("Price", new Dimension(690, 50), 20, 1, false);
+        FieldInput price = new FieldInput("Price", new Dimension( isEdit() ? 350: 700, 50), 20, 1, false);
+        if (isEdit()) price.getTextField().setText(liveSet.getPrice() + "");
         pricePanel.add(price);
+
+        DropDown statusDropdown = new DropDown(new Dimension(350, 50), "Status", liveSet.getStatus().equals("Open") ? new String[]{"Open", "Canceled"} : new String[]{"Canceled", "Open"});
+        if(isEdit()) {
+            pricePanel.add(statusDropdown);
+        }
 
         panel.add(firstRow);
         panel.add(secondRow);
@@ -154,62 +167,61 @@ public class LiveSetDialog extends JDialog {
         uploadImageButton.addActionListener(e -> {
             imagePath = uploadImage();
 
-            if(!imagePath.isEmpty()) {
+            if (!imagePath.isEmpty()) {
                 thumbnailPreview.updatePicture(imagePath);
             }
         });
 
-        add.addActionListener( e -> {
+        add.addActionListener(e -> {
 
 
-            if(imagePath.isEmpty()){
+            if (imagePath.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Please Upload a Live Set Thumbnail");
                 return;
             }
 
             String streamURL = streamUrl.getInput();
             String date = dateInput.getInput();
-            java.sql.Time time = new java.sql.Time( ((Date)timeSpinner.getValue()).getTime());
+            java.sql.Time time = new java.sql.Time(((Date) timeSpinner.getValue()).getTime());
             String p = price.getInput();
             int intP;
 
 
-            if(UtilityMethods.haveNullOrEmpty(streamURL, p, date)){
+            if (UtilityMethods.haveNullOrEmpty(streamURL, p, date)) {
                 return;
             }
 
 
             try {
                 intP = Integer.parseInt(p);
-            }catch (NumberFormatException exception) {
+            } catch (NumberFormatException exception) {
                 price.enableError("Please enter a valid price");
                 return;
             }
 
-            if(!isValidURL(streamURL)) {
+            if (!isValidURL(streamURL)) {
                 streamUrl.enableError("Please enter a valid URL (ex.https://...)");
                 return;
             }
 
-          adminControllerObserver.addLiveSet(new LiveSet(UtilityMethods.generateRandomID(), "Open", intP, new java.sql.Date(Calendar.DATE), time, imagePath, streamURL, performers.get(performersDropDown.choiceIndex()).getPerformerID()));
+            Optional<java.sql.Date> optionalDate = getDate(date);
+
+            if(optionalDate.isEmpty()) {
+                dateInput.enableError("Please enter a valid date (format. YYYY-MM-DD)");
+                return;
+            }
+
+            if (isEdit()) {
+                adminControllerObserver.editLiveSet(new LiveSet(liveSet.getLiveSetID(), statusDropdown.getChoice(), intP, optionalDate.get(), time, imagePath, streamURL, liveSet.getPerformerID()));
+            } else {
+                adminControllerObserver.addLiveSet(new LiveSet(UtilityMethods.generateRandomID(), "Open", intP, optionalDate.get(), time, imagePath, streamURL, performers.get(performersDropDown.choiceIndex()).getPerformerID()));
+            }
+
         });
 
-        cancel.addActionListener( e -> dispose());
+        cancel.addActionListener(e -> dispose());
         return panel;
     }
-
-
-    private JPanel editLiveSetPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(Color.white);
-
-        // Add components for the "Edit Liveset" panel here
-
-
-        return panel;
-    }
-
 
 
     private String uploadImage() {
@@ -240,26 +252,8 @@ public class LiveSetDialog extends JDialog {
         return targetPath.toString();
     }
 
-    private String getDate(Date date) {
-
-        if(date == null) return "";
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd");
-        return dateFormat.format(date);
-    }
 
 
-
-
-
-    private String getPerformerIdByName(String performerName) {
-        for (Performer performer : this.performers) {
-            if (performer.getPerformerName().equals(performerName)) {
-                return performer.getPerformerID();
-            }
-        }
-        return null;
-    }
 
     /**
      * The method will send an error if
@@ -268,6 +262,7 @@ public class LiveSetDialog extends JDialog {
      * If newStreamURL contains characters that are not allowed in a URL (spaces or special characters).
      * If newStreamURL is missing the domain name or the top-level domain ("example.com" or "www.example.com").
      * If newStreamURL does not contain a valid path
+     *
      * @param url
      * @return
      */
@@ -276,25 +271,39 @@ public class LiveSetDialog extends JDialog {
         return url.matches(regex);
     }
 
-    private Optional<Date> getDate(String dateInput) {
+    private Optional<java.sql.Date> getDate(String dateInput) {
 
         String[] date = dateInput.split("-");
 
-        if(date.length != 3) {
+        if (date.length != 3) {
             return Optional.empty();
         }
 
         try {
-            int year =  Integer.parseInt(date[0]);
+            int year = Integer.parseInt(date[0]);
             int month = Integer.parseInt(date[1]);
             int day = Integer.parseInt(date[2]);
 
-            return Optional.of(new java.sql.Date(year, month, day));
-        }catch (NumberFormatException exception) {
+            try {
+                Year tempYear = Year.of(year);
+                if( tempYear.isValidMonthDay(MonthDay.of(month, day))) {
+                    GregorianCalendar c = new GregorianCalendar(year, month, day);
+                    return Optional.of(new java.sql.Date(c.getTime().getTime()));
+                }else {
+                    return Optional.empty();
+                }
+            }catch (Exception e) {
+                return Optional.empty();
+            }
+
+        } catch (NumberFormatException exception) {
             JOptionPane.showMessageDialog(null, "Please enter a valid integer date number");
         }
 
-        return null;
+        return Optional.empty();
+    }
 
+    private boolean isEdit() {
+        return liveSetDialogType.equals(LiveSetDialogType.EDIT);
     }
 }

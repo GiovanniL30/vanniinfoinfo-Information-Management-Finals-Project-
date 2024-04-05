@@ -3,8 +3,10 @@ package shared.viewComponents;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.regex.Pattern;
 
 /**
  * A custom JPanel class for user input fields, supporting both text and password fields
@@ -18,6 +20,9 @@ public class FieldInput extends JPanel {
     private final int maxInput;
     private final int minInput;
     private final boolean isPasswordField;
+    private ActionListener actionListener;
+    private  Dimension dimension;
+    private GridBagConstraints constraints;
 
     /**
      * Constructs an object of type FieldInput with the specified field title, dimension, input constraints, and field type
@@ -29,6 +34,7 @@ public class FieldInput extends JPanel {
      * @param isPasswordField true if the field is a password field, false otherwise
      */
     public FieldInput(String fieldTitle, Dimension dimension, int maxInput, int minInput, boolean isPasswordField) {
+        this.dimension = dimension;
         JLabel fieldLabel = new JLabel(fieldTitle); // Label for the input field
         this.errorMessage = new JLabel(); // Error message
         this.maxInput = maxInput; // Maximum number of characters allowed
@@ -40,7 +46,7 @@ public class FieldInput extends JPanel {
         setPreferredSize(new Dimension(dimension.width + 50, dimension.height + 50));
         setLayout(new GridBagLayout()); // Set layout to GridBagLayout
 
-        GridBagConstraints constraints = new GridBagConstraints(); // Constraints for the components
+        constraints = new GridBagConstraints(); // Constraints for the components
         constraints.gridy = 2;
         constraints.gridx = 1;
         constraints.anchor = GridBagConstraints.WEST;
@@ -48,11 +54,9 @@ public class FieldInput extends JPanel {
         // Add the appropriate input field based on the field type
         if (isPasswordField) {
             passwordField.setPreferredSize(dimension);
-
             add(passwordField, constraints);
         } else {
             textField.setPreferredSize(dimension);
-
             add(textField, constraints);
         } // end of if-else
 
@@ -74,12 +78,14 @@ public class FieldInput extends JPanel {
             public void keyTyped(KeyEvent e) {
 
 
+
                 if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {
                     return;
                 }
+
                 if(getInput() != null) {
 
-                    if(getInput().length() > 20) {
+                    if(getInput().length() > maxInput) {
                         enableError("Please enter a maximum length of " + maxInput);
                     }else {
                         removeError();
@@ -92,12 +98,13 @@ public class FieldInput extends JPanel {
             @Override
             public void keyPressed(KeyEvent e) {
 
+
                 if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {
                     return;
                 }
                 if(getInput() != null) {
 
-                    if(getInput().length() > 20) {
+                    if(getInput().length() > maxInput) {
                         enableError("Please enter a maximum length of " + maxInput);
                     }else {
                         removeError();
@@ -110,13 +117,14 @@ public class FieldInput extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
 
+
                 if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {
                     return;
                 }
 
                 if(getInput() != null) {
 
-                    if(getInput().length() > 20) {
+                    if(getInput().length() > maxInput) {
                         enableError("Please enter a maximum length of " + maxInput);
                     }else {
                         removeError();
@@ -130,6 +138,10 @@ public class FieldInput extends JPanel {
         passwordField.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
+
+                if(getInput() == null) {
+                    return;
+                }
 
 
                 if(e.isAltDown() || e.isControlDown() || e.isShiftDown()) {
@@ -206,8 +218,9 @@ public class FieldInput extends JPanel {
     } // end of getInput method
 
     private String removeSpaces(String input) {
-        return input.replaceFirst("\\s", "");
+        return input.trim().replaceAll("\\s+", " ");
     }
+
 
     /**
      * Validate user input and return true if the input is within the specified length range.
@@ -237,10 +250,15 @@ public class FieldInput extends JPanel {
      * @param message the error message to be displayed
      */
     public void enableError(String message) {
-        textField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.RED), new EmptyBorder(0, 10, 0, 10) ));
-        passwordField.setBorder(BorderFactory.createCompoundBorder( BorderFactory.createLineBorder(Color.RED), new EmptyBorder(0, 10, 0, 10)));
+
         errorMessage.setText(message);
         errorMessage.setVisible(true);
+
+        if (isPasswordField) {
+            passwordField.setBorder(BorderFactory.createCompoundBorder( BorderFactory.createLineBorder(Color.RED), new EmptyBorder(0, 10, 0, 10)));
+        } else {
+            textField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.RED), new EmptyBorder(0, 10, 0, 10) ));
+        } // end of if-else
     } // end of enableError method
 
     /**

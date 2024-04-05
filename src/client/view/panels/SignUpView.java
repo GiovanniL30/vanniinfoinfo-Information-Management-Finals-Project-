@@ -3,8 +3,10 @@ package client.view.panels;
 import client.controller.ClientControllerObserver;
 import client.view.ClientMainFrame;
 import client.view.utility.ClientViews;
+import shared.referenceClasses.User;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
+import shared.utilityClasses.UtilityMethods;
 import shared.viewComponents.ClickableText;
 import shared.viewComponents.FieldInput;
 import shared.viewComponents.FilledButton;
@@ -14,6 +16,12 @@ import javax.swing.*;
 import java.awt.*;
 
 public class SignUpView extends JPanel {
+
+    private FieldInput firstName;
+    private FieldInput lastName;
+    private FieldInput userName;
+    private FieldInput email;
+    private FieldInput password;
 
     public SignUpView(ClientControllerObserver clientControllerObserver) {
 
@@ -46,19 +54,40 @@ public class SignUpView extends JPanel {
         add(createAccountButton, layoutConstraints);
 
         loginButton.addActionListener(e -> clientControllerObserver.changeFrame(ClientViews.LOGIN));
+
+        createAccountButton.addActionListener(action -> {
+
+            String fName = firstName.getInput();
+            String lName = lastName.getInput();
+            String uName = userName.getInput();
+            String p = password.getInput();
+            String e = email.getInput();
+
+            if(UtilityMethods.haveNullOrEmpty(fName, lName, uName, p, e)){
+                return;
+            }
+
+            if(!UtilityMethods.isEmailValid(e)) {
+                email.enableError("Please enter a valid email (ex. myname@gmail.com)");
+                return;
+            }
+
+            User newUser = new User(UtilityMethods.generateRandomID(), fName, lName, uName, e, p, 0, "Active", false, "Client");
+            clientControllerObserver.signUp(newUser);
+        });
     }
 
-    private static JPanel createFieldInputs() {
+    private JPanel createFieldInputs() {
         JPanel fieldInputHolders = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.anchor = GridBagConstraints.CENTER;
 
 
-        FieldInput firstName = new FieldInput("First Name", new Dimension(450, 50), 40, 1, false);
-        FieldInput lastName = new FieldInput("Last Name", new Dimension(450, 50), 40, 1, false);
-        FieldInput userName = new FieldInput("User Name", new Dimension(450, 50), 40, 1, false);
-        FieldInput email = new FieldInput("Email", new Dimension(450, 50), 40, 1, false);
-        FieldInput password = new FieldInput("Password", new Dimension(450, 50), 40, 1, true);
+        firstName = new FieldInput("First Name", new Dimension(450, 50), 40, 1, false);
+        lastName = new FieldInput("Last Name", new Dimension(450, 50), 40, 1, false);
+        userName = new FieldInput("User Name", new Dimension(450, 50), 40, 1, false);
+        email = new FieldInput("Email", new Dimension(450, 50), 40, 1, false);
+        password = new FieldInput("Password", new Dimension(450, 50), 40, 1, true);
 
 
         constraints.gridy = 0;
@@ -73,13 +102,12 @@ public class SignUpView extends JPanel {
         constraints.gridx = 0;
         fieldInputHolders.add(userName, constraints);
 
-        constraints.gridx  = 1;
+        constraints.gridx = 1;
         fieldInputHolders.add(email, constraints);
 
         constraints.gridy = 2;
         constraints.fill = 3;
-        constraints.gridx  = 0;
-
+        constraints.gridx = 0;
 
 
         fieldInputHolders.add(password, constraints);

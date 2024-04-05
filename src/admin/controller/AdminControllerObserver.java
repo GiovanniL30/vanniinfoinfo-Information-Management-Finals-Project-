@@ -1,8 +1,11 @@
 package admin.controller;
 
 import admin.view.utility.AdminPanel;
+import shared.referenceClasses.Genre;
 import shared.referenceClasses.LiveSet;
 import shared.referenceClasses.Performer;
+
+import java.util.LinkedList;
 
 public interface AdminControllerObserver {
 
@@ -11,4 +14,12 @@ public interface AdminControllerObserver {
     void updatePerformer(Performer performer);
     void addPerformer(Performer performer);
     void addLiveSet(LiveSet liveSet);
+    void editLiveSet(LiveSet liveSet);
+    void openEditLiveSet(LiveSet liveSet, LinkedList<Performer> performers);
+    void openAddLiveSet(LiveSet liveSet, LinkedList<Performer> performers);
+    void showLiveSetBuyer(LiveSet liveSet);
+    LinkedList<Genre> getGenres();
+    void searchPerformers(String searchTerm);
+    void searchLiveSetsAdmin(String searchTerm);
+
 }

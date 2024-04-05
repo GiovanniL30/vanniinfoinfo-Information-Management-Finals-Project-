@@ -2,6 +2,7 @@ package admin.view.utility;
 
 import admin.controller.AdminControllerObserver;
 import admin.view.AdminMainFrame;
+import shared.referenceClasses.Performer;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
 import shared.viewComponents.Button;
@@ -11,6 +12,11 @@ import shared.viewComponents.IconButton;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.LinkedList;
 
 public class AdminSearchBar extends JPanel {
 
@@ -18,6 +24,7 @@ public class AdminSearchBar extends JPanel {
 
     private AdminControllerObserver adminControllerObserver;
     private FilledButton add;
+    private FieldInput searchField;
 
     public AdminSearchBar(AdminPanel adminPanel, AdminControllerObserver adminControllerObserver) {
         this.adminPanel = adminPanel;
@@ -43,8 +50,7 @@ public class AdminSearchBar extends JPanel {
         constraints.insets = new Insets(0, 40, 0, 0);
         buttonsPanel.add(add, constraints);
 
-        FieldInput search = new FieldInput("", new Dimension(600, 50), 40, 1 ,false);
-
+        searchField = new FieldInput("", new Dimension(600, 50), Integer.MAX_VALUE, 0, false);
 
         JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         labelPanel.setBackground(Color.WHITE);
@@ -59,14 +65,58 @@ public class AdminSearchBar extends JPanel {
         }
 
         centerPanel.add(buttonsPanel, BorderLayout.WEST);
-        centerPanel.add(search, BorderLayout.EAST);
+        centerPanel.add(searchField, BorderLayout.EAST);
 
         add(labelPanel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);
 
         back.addActionListener( e -> adminControllerObserver.changeFrame(AdminPanel.HOME));
 
+        searchField.getTextField().addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+                if (!Character.isLetterOrDigit(e.getKeyChar())) {
+                    if(!(e.getKeyCode() == KeyEvent.VK_BACK_SPACE)) return;
+                }
+
+                if (e.isAltDown() || e.isShiftDown() || e.isControlDown()) {
+                    return;
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+
+                    if (searchField.getInput() != null && searchField.getInput().isEmpty()) {
+                        searchField.removeError();
+                    }
+                    return;
+                }
+
+
+                if (searchField.getInput() != null) {
+                    searchField.removeError();
+
+                    if (adminPanel.equals(AdminPanel.PERFORMER)) {
+                        adminControllerObserver.searchPerformers(searchField.getInput());
+                    } else {
+                        adminControllerObserver.searchLiveSetsAdmin(searchField.getInput());
+                    }
+                }
+            }
+
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+
     }
+
 
     public Button getAddButton() {
         return add;
