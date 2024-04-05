@@ -752,7 +752,7 @@ public class Database {
 
         ensureConnection();
 
-        String query = "INSERT INTO lastwatched (lastWatchedID, userID, liveSetID, date) VALUES (?,? ,?, ? )";
+        String query = "INSERT INTO lastwatched (lastWatchedID, userID, liveSetID) VALUES (?,? ,?, ? )";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
