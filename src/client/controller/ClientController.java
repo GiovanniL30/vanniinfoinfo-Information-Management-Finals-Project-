@@ -187,6 +187,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
     @Override
     public void accessLiveSet(LiveSet liveSet, String ticketId) {
+
         if(!liveSet.getStatus().equals("Open")){
             JOptionPane.showMessageDialog(clientMainFrame, "Sorry the live set have been canceled");
             return;
@@ -194,9 +195,14 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
         Response<User> userResponse = Database.getTicketUser(ticketId, loggedInAccount.getUserID());
 
-
-
         if(userResponse.isSuccess() && userResponse.getPayload().getUserID().equals(loggedInAccount.getUserID())) {
+
+            Optional<Ticket> temp =  Database.getTickets().getPayload().stream().filter(ticket -> ticket.getTicketID().equals(ticketId) && ticket.getLiveSetID().equals(liveSet.getLiveSetID())).findFirst();
+            if(temp.isEmpty()) {
+                JOptionPane.showMessageDialog(clientMainFrame, "The ticket entered was not for this live set");
+                return;
+            }
+
             accessGigDialog.dispose();
             try {
                 Desktop.getDesktop().browse(new URI(liveSet.getStreamLinkURL()));
@@ -206,9 +212,13 @@ public class ClientController implements ClientControllerObserver, LoginControll
             return;
         }
 
+
+
        Response<String> response =  Database.accessLiveSet(ticketId, loggedInAccount.getUserID(),liveSet.getLiveSetID());
 
        if(response.isSuccess()){
+
+
            accessGigDialog.dispose();
            try {
                Desktop.getDesktop().browse(new URI(liveSet.getStreamLinkURL()));

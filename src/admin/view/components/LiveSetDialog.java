@@ -130,11 +130,15 @@ public class LiveSetDialog extends JDialog {
         Button uploadImageButton = new Button(isEdit() ? "Change Thumbnail" : "Upload Thumbnail", new Dimension(300, 50), FontFactory.newPoppinsDefault(14));
         uploadImageButton.setBounds(0, 0, 360, 50);
         thumbnailPreview = new Picture("asc", 400, 300);
+
         thumbnailPreview.setBounds(380, 0, 350, 300);
         if (isEdit()) {
             imagePath = liveSet.getThumbnail();
             thumbnailPreview.updatePicture(liveSet.getThumbnail());
+        }else {
+            thumbnailPreview.setBackground(ColorFactory.lightGrey());
         }
+
         thirdRow.add(uploadImageButton);
         thirdRow.add(thumbnailPreview);
 

@@ -149,6 +149,10 @@ public class LiveSetPanel extends JPanel {
             Button editButton = new Button("EDIT", new Dimension(95, 50), FontFactory.newPoppinsDefault(14));
             Button view = new Button("Purchases", new Dimension(150, 50), FontFactory.newPoppinsDefault(14));
 
+            if(!liveSet.getStatus().equals("Open")) {
+                firstRow.setBackground(ColorFactory.red());
+            }
+
             liveSetID.setEnabled(false);
             performerName.setEnabled(false);
             date.setEnabled(false);
