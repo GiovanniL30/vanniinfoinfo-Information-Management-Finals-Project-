@@ -18,7 +18,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/cas", "root", "password");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/hello", "root", "password");
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
                 System.exit(0);
@@ -267,13 +267,19 @@ public class Database {
 
         ensureConnection();
 
+        LinkedList<String> genres = getGenres().getPayload().stream().map(Genre::getGenreName).collect(Collectors.toCollection(LinkedList::new));
+        int genreIndex = genres.indexOf(performer.getGenre()) + 1;
+
+        LinkedList<String> performerType = getPerformerTypes().stream().map(PerformerType::getTypeName).collect(Collectors.toCollection(LinkedList::new));
+        int performerTypeIndex = performerType.indexOf(performer.getPerformerType()) + 1;
+
         String query = "INSERT INTO performer(performerID, performerName, genre, performerType, description, performerStatus)" + " VALUES (?, ?, ?, ?, ?, ?)";
         try{
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, performer.getPerformerID());
             preparedStatement.setString(2, performer.getPerformerName());
-            preparedStatement.setString(3, performer.getGenre());
-            preparedStatement.setString(4, performer.getPerformerType());
+            preparedStatement.setInt(3, genreIndex);
+            preparedStatement.setInt(4, performerTypeIndex);
             preparedStatement.setString(5, performer.getDescription());
             preparedStatement.setString(6, performer.getPerformerStatus());
             preparedStatement.execute();
