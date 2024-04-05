@@ -83,8 +83,11 @@ public class PerformerPanel extends JPanel {
             setPreferredSize(new Dimension(AdminMainFrame.WIDTH - 150, 60));
 
 
-            JLabel performerName = new JLabel(performer.getPerformerName());
+            JLabel performerName = new JLabel((!performer.getPerformerStatus().equals("Active") ? "NOT ACTIVE: ": "" )+ " " + performer.getPerformerName());
             performerName.setFont(FontFactory.newPoppinsDefault(14));
+            if(!performer.getPerformerStatus().equals("Active")) {
+                performerName.setForeground(ColorFactory.red());
+            }
             FilledButton editButton = new FilledButton("EDIT", new Dimension(100, 50), FontFactory.newPoppinsBold(13), ColorFactory.red(), Color.WHITE);
 
             add(performerName, BorderLayout.WEST);

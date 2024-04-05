@@ -59,8 +59,7 @@ public class LiveSetPanel extends JPanel {
         add(centerPanel, BorderLayout.CENTER);
 
         adminSearchBar.getAddButton().addActionListener(e -> {
-            LiveSet newLiveSet = new LiveSet("", "", 0, liveSets.element().getDate(), liveSets.element().getTime(), "", "", "");
-            adminControllerObserver.openAddLiveSet(newLiveSet, performers);
+            adminControllerObserver.openAddLiveSet(null, performers);
         });
 
     }
@@ -148,6 +147,10 @@ public class LiveSetPanel extends JPanel {
             Button price = new Button(liveSet.getPrice()+"", new Dimension(95, 50), FontFactory.newPoppinsDefault(14));
             Button editButton = new Button("EDIT", new Dimension(95, 50), FontFactory.newPoppinsDefault(14));
             Button view = new Button("Purchases", new Dimension(150, 50), FontFactory.newPoppinsDefault(14));
+
+            if(!liveSet.getStatus().equals("Open")) {
+                firstRow.setBackground(ColorFactory.red());
+            }
 
             liveSetID.setEnabled(false);
             performerName.setEnabled(false);

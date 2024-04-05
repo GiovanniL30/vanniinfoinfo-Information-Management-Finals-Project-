@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.MonthDay;
 import java.time.Year;
 import java.util.*;
@@ -34,6 +35,7 @@ public class LiveSetDialog extends JDialog {
     private JSpinner timeSpinner;
     private final LiveSetDialogType liveSetDialogType;
     private String imagePath = "";
+    private FieldInput dateInput;
 
     public LiveSetDialog(JFrame frame, LiveSet liveSet, LinkedList<Performer> performers, AdminControllerObserver adminControllerObserver, LiveSetDialogType liveSetDialogType) {
         super(frame);
@@ -85,11 +87,12 @@ public class LiveSetDialog extends JDialog {
 
         DropDown performersDropDown;
 
-        if (!isEdit()) {
+        if (isEdit()) {
             performersDropDown = new DropDown(new Dimension(350, 50), "Performer", performers.stream().map(Performer::getPerformerName).toList().toArray(new String[0]));
-        } else {
-            performersDropDown = new DropDown(new Dimension(350, 50), "Performer", performers.stream().filter(performer -> performer.getPerformerID().equals(liveSet.getPerformerID())).map(Performer::getPerformerName).toList().toArray(new String[0]));
             performersDropDown.enable(false);
+        } else {
+            performersDropDown = new DropDown(new Dimension(350, 50), "Performer", performers.stream().filter(performer -> performer.getPerformerStatus().equals("Active")).map(Performer::getPerformerName).toList().toArray(new String[0]));
+
         }
 
         FieldInput streamUrl = new FieldInput("Stream URL", new Dimension(350, 50), 200, 10, false);
@@ -102,7 +105,7 @@ public class LiveSetDialog extends JDialog {
         secondRow.setBackground(Color.white);
 
 
-        FieldInput dateInput = new FieldInput("Date", new Dimension(300, 50), 10, 10, false);
+        dateInput = new FieldInput("Date", new Dimension(300, 50), 10, 10, false);
         if (isEdit()) dateInput.getTextField().setText(liveSet.getDate().toString());
 
         JPanel spinnerPanel = new JPanel(new BorderLayout());
@@ -129,11 +132,15 @@ public class LiveSetDialog extends JDialog {
         Button uploadImageButton = new Button(isEdit() ? "Change Thumbnail" : "Upload Thumbnail", new Dimension(300, 50), FontFactory.newPoppinsDefault(14));
         uploadImageButton.setBounds(0, 0, 360, 50);
         thumbnailPreview = new Picture("asc", 400, 300);
+
         thumbnailPreview.setBounds(380, 0, 350, 300);
         if (isEdit()) {
             imagePath = liveSet.getThumbnail();
             thumbnailPreview.updatePicture(liveSet.getThumbnail());
+        }else {
+            thumbnailPreview.setBackground(ColorFactory.lightGrey());
         }
+
         thirdRow.add(uploadImageButton);
         thirdRow.add(thumbnailPreview);
 
@@ -151,9 +158,12 @@ public class LiveSetDialog extends JDialog {
         if (isEdit()) price.getTextField().setText(liveSet.getPrice() + "");
         pricePanel.add(price);
 
-        DropDown statusDropdown = new DropDown(new Dimension(350, 50), "Status", liveSet.getStatus().equals("Open") ? new String[]{"Open", "Canceled"} : new String[]{"Canceled", "Open"});
+        DropDown statusDropdown;
         if(isEdit()) {
+            statusDropdown = new DropDown(new Dimension(350, 50), "Status", liveSet.getStatus().equals("Open") ? new String[]{"Open", "Canceled"} : new String[]{"Canceled", "Open"});
             pricePanel.add(statusDropdown);
+        } else {
+            statusDropdown = null;
         }
 
         panel.add(firstRow);
@@ -172,6 +182,7 @@ public class LiveSetDialog extends JDialog {
             }
         });
 
+    
         add.addActionListener(e -> {
 
 
@@ -212,9 +223,10 @@ public class LiveSetDialog extends JDialog {
             }
 
             if (isEdit()) {
+                assert statusDropdown != null;
                 adminControllerObserver.editLiveSet(new LiveSet(liveSet.getLiveSetID(), statusDropdown.getChoice(), intP, optionalDate.get(), time, imagePath, streamURL, liveSet.getPerformerID()));
             } else {
-                adminControllerObserver.addLiveSet(new LiveSet(UtilityMethods.generateRandomID(), "Open", intP, optionalDate.get(), time, imagePath, streamURL, performers.get(performersDropDown.choiceIndex()).getPerformerID()));
+                adminControllerObserver.addLiveSet(performers.get(performersDropDown.choiceIndex()) ,new LiveSet(UtilityMethods.generateRandomID(), "Open", intP, optionalDate.get(), time, imagePath, streamURL, performers.get(performersDropDown.choiceIndex()).getPerformerID()));
             }
 
         });
@@ -271,8 +283,7 @@ public class LiveSetDialog extends JDialog {
         return url.matches(regex);
     }
 
-    private Optional<java.sql.Date> getDate(String dateInput) {
-
+    public Optional<java.sql.Date> getDate(String dateInput) {
         String[] date = dateInput.split("-");
 
         if (date.length != 3) {
@@ -284,23 +295,30 @@ public class LiveSetDialog extends JDialog {
             int month = Integer.parseInt(date[1]);
             int day = Integer.parseInt(date[2]);
 
-            try {
-                Year tempYear = Year.of(year);
-                if( tempYear.isValidMonthDay(MonthDay.of(month, day))) {
-                    GregorianCalendar c = new GregorianCalendar(year, month, day);
-                    return Optional.of(new java.sql.Date(c.getTime().getTime()));
-                }else {
-                    return Optional.empty();
-                }
-            }catch (Exception e) {
+            if (!isValidDate(year, month, day)) {
                 return Optional.empty();
             }
 
+            LocalDate localDate = LocalDate.of(year, month, day);
+            return Optional.of(java.sql.Date.valueOf(localDate));
         } catch (NumberFormatException exception) {
             JOptionPane.showMessageDialog(null, "Please enter a valid integer date number");
+            return Optional.empty();
         }
+    }
 
-        return Optional.empty();
+    private boolean isValidDate(int year, int month, int day) {
+        try {
+            Year tempYear = Year.of(year);
+            MonthDay monthDay = MonthDay.of(month, day);
+            return tempYear.isValidMonthDay(monthDay);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public FieldInput getDateInput() {
+        return dateInput;
     }
 
     private boolean isEdit() {

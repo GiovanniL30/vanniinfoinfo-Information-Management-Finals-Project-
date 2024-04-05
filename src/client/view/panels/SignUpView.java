@@ -72,6 +72,20 @@ public class SignUpView extends JPanel {
                 return;
             }
 
+            if(uName.matches(".*\\s+.*") || p.matches(".*\\s+.*")) {
+
+                if(uName.matches(".*\\s+.*")) {
+                    userName.enableError("Spaces are not allowed here");
+                }
+
+                if(p.matches(".*\\s+.*")) {
+                    password.enableError("Spaces are not allowed here");
+                }
+
+                return;
+            }
+
+
             User newUser = new User(UtilityMethods.generateRandomID(), fName, lName, uName, e, p, 0, "Active", false, "Client");
             clientControllerObserver.signUp(newUser);
         });
