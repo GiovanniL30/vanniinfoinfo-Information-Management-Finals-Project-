@@ -4,6 +4,7 @@ import admin.controller.AdminControllerObserver;
 import admin.view.AdminMainFrame;
 import admin.view.utility.AdminPanel;
 import shared.referenceClasses.Performer;
+import shared.referenceClasses.PerformerType;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
 import shared.utilityClasses.UtilityMethods;
@@ -56,7 +57,7 @@ public class AddPerformer extends JPanel {
 
         JPanel dropDowns = new JPanel(new FlowLayout(FlowLayout.LEFT));
         dropDowns.setBackground(Color.WHITE);
-        DropDown performerType = new DropDown(new Dimension(355, 60), "Performer Type", performer.getPerformerType().equals("Band") ? new String[] {"Band", "Solo"}:new String[] {"Solo", "Band"});
+        DropDown performerType = new DropDown(new Dimension(355, 60), "Performer Type", adminControllerObserver.getPerformerTypes().stream().map(PerformerType::getTypeName).toList().toArray(new String[0]));
         DropDown genre = new DropDown(new Dimension(355, 60), "Genre", UtilityMethods.populateGenres(adminControllerObserver.getGenres()));
         dropDowns.add(genre);
         dropDowns.add(performerType);
