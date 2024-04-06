@@ -71,7 +71,7 @@ public class TicketsPanel extends JPanel {
             JLabel purchasedDate = new JLabel("Purchased Date: " + UtilityMethods.formatDate(purchased.getDate()) + " " + UtilityMethods.formatTime(purchased.getTime()));
             purchasedDate.setHorizontalAlignment(BoxLayout.LINE_AXIS);
             purchasedDate.setFont(FontFactory.newPoppinsDefault(15));
-             JLabel totalPrice = new JLabel("Total: " + (user.isHaveEarnedLoyalty() ? UtilityMethods.computeDiscount(purchased.getLiveSetPrice()) : purchased.getLiveSetPrice()));
+             JLabel totalPrice = new JLabel("Total: " + (user.getLoyaltyCard().isPresent() ? UtilityMethods.computeDiscount(purchased.getLiveSetPrice()) : purchased.getLiveSetPrice()));
             totalPrice.setFont(FontFactory.newPoppinsDefault(15));
              totalPrice.setHorizontalAlignment(BoxLayout.LINE_AXIS);
             purchaseInformationPanel.add(name);

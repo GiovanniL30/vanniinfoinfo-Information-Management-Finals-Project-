@@ -27,7 +27,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
 
     private Loading loading;
-    private User loggedInAccount = new User("asc", "asc", "asc", "acs", "asc", "cas", 1, "asc", true, "asc");
+    private User loggedInAccount = new User("asc", "asc", "asc", "acs", "asc", "cas", 1, "asc", Optional.empty(), "asc");
 
     private  AccessGigDialog accessGigDialog;
 

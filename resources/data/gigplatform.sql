@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: vanni2
+-- Host: 127.0.0.1    Database: vanniinfoinfo
 -- ------------------------------------------------------
 -- Server version	8.2.0
 
@@ -109,11 +109,8 @@ DROP TABLE IF EXISTS `loyaltycard`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `loyaltycard` (
   `loyaltyCardID` varchar(20) NOT NULL,
-  `userID` varchar(20) NOT NULL,
   `receiveDate` date NOT NULL,
-  PRIMARY KEY (`loyaltyCardID`),
-  KEY `userID_idx` (`userID`),
-  CONSTRAINT `userID` FOREIGN KEY (`userID`) REFERENCES `user` (`userID`) ON UPDATE CASCADE
+  PRIMARY KEY (`loyaltyCardID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -257,7 +254,7 @@ CREATE TABLE `user` (
   `password` varchar(20) NOT NULL,
   `watchedConsecShows` int NOT NULL DEFAULT '0',
   `userStatus` varchar(20) NOT NULL DEFAULT 'Active',
-  `loyaltyCardID` varchar(20) DEFAULT '0',
+  `loyaltyCardID` varchar(20) DEFAULT NULL,
   `userType` varchar(45) NOT NULL DEFAULT 'Client',
   PRIMARY KEY (`userID`),
   KEY `asc_idx` (`loyaltyCardID`),
@@ -284,4 +281,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-06 20:26:29
+-- Dump completed on 2024-04-06 21:33:44

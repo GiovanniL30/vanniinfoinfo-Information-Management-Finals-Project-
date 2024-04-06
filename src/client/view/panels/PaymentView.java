@@ -57,7 +57,7 @@ public class PaymentView extends JPanel {
     }
 
     private JPanel southPanel() {
-        boolean haveLoyalty = clientControllerObserver.getLoggedInAccount().isHaveEarnedLoyalty();
+        boolean haveLoyalty = clientControllerObserver.getLoggedInAccount().getLoyaltyCard().isPresent();
 
         JPanel southPanel = new JPanel(new GridLayout(2, 1, 0, 30));
 

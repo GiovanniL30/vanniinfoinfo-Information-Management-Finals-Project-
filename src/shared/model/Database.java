@@ -3,6 +3,7 @@ package shared.model;
 import shared.referenceClasses.*;
 import shared.utilityClasses.UtilityMethods;
 
+import javax.swing.text.html.Option;
 import java.io.*;
 import java.sql.*;
 import java.util.Calendar;
@@ -18,7 +19,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/hello", "root", "password");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanniinfoinfo", "root", "password");
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
                 System.exit(0);
@@ -87,7 +88,7 @@ public class Database {
 
         ensureConnection();
     
-        String query = "INSERT INTO user (userID, firstName, lastName,userName, email, password, watchedConsecShows, userStatus, haveEarnedLoyalty, userType) VALUES (?, ?, ?, ?, ?, ?, ?,?, ?, ?)";
+        String query = "INSERT INTO user (userID, firstName, lastName,userName, email, password, watchedConsecShows, userStatus, loyaltyCardID, userType) VALUES (?, ?, ?, ?, ?, ?, ?,?, ?, ?)";
     
         try {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -99,7 +100,7 @@ public class Database {
             statement.setString(6, user.getPassword());
             statement.setInt(7, user.getWatchedConsecutiveShows());
             statement.setString(8, user.getUserStatus());
-            statement.setInt(9, user.isHaveEarnedLoyalty() ? 1 : 0);
+            statement.setString(9, null);
             statement.setString(10, user.getUserType());
             statement.execute();
             return new Response<>("User signed up successfully", true);
@@ -157,7 +158,7 @@ public class Database {
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
         }
-        return new Response<>(new User("","","","","","",0,"",false,""), false);
+        return new Response<>(new User("","","","","","",0,"", Optional.empty() ,""), false);
     }
 
     public static Response<String> addLiveSet(Performer performer, LiveSet liveSet) {
@@ -540,9 +541,9 @@ public class Database {
 
             while(resultSet.next()) {
                 String loyaltyCardId = resultSet.getString(1);
-                String userID = resultSet.getString(2);
+                Date dateReceived = resultSet.getDate(2);
 
-                loyaltyCards.add(new LoyaltyCard(loyaltyCardId, userID));
+                loyaltyCards.add(new LoyaltyCard(loyaltyCardId, dateReceived));
             }
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
@@ -698,14 +699,36 @@ public class Database {
             String password = resultSet.getString(6);
             int watchedCons = resultSet.getInt(7);
             String userStatus = resultSet.getString(8);
-            boolean haveEarnedLoyalty = resultSet.getString(9) != null;
+            Optional<LoyaltyCard> loyaltyCard = getLoyaltyCard(resultSet.getString(9));
             String userType = resultSet.getString(10);
-            return new Response<>(Optional.of(new User(userId, firstName, lastName, userName, email, password, watchedCons, userStatus, haveEarnedLoyalty, userType)), true);
+            return new Response<>(Optional.of(new User(userId, firstName, lastName, userName, email, password, watchedCons, userStatus, loyaltyCard, userType)), true);
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
 
         return new Response<>(Optional.empty(), false);
+    }
+
+    private static Optional<LoyaltyCard> getLoyaltyCard(String loyaltyCardId) {
+        ensureConnection();
+
+        String query = "SELECT * FROM loyaltycard WHERE loyaltyCardID = ?";
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, loyaltyCardId);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                String id = resultSet.getString(1);
+                Date date = resultSet.getDate(2);
+                return Optional.of(new LoyaltyCard(id, date));
+            } else {
+                return Optional.empty();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -752,7 +775,7 @@ public class Database {
 
         ensureConnection();
 
-        String query = "INSERT INTO lastwatched (lastWatchedID, userID, liveSetID) VALUES (?,? ,?, ? )";
+        String query = "INSERT INTO lastwatched (lastWatchedID, userID, liveSetID, date) VALUES (?,? ,?, ? )";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);

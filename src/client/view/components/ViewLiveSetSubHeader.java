@@ -15,12 +15,11 @@ import java.util.LinkedList;
 public class ViewLiveSetSubHeader extends JPanel {
 
     private final ClickableText liveSets = new ClickableText("Live Sets", 100, 50, FontFactory.newPoppinsBold(14));
-    private final ClickableText myTickets = new ClickableText("My Tickets", 100, 50, FontFactory.newPoppinsBold(14));
+    private final ClickableText myTickets = new ClickableText("My Tickets", 150, 50, FontFactory.newPoppinsBold(14));
     private final ClickableText logout = new ClickableText("Logout", 100, 50, FontFactory.newPoppinsBold(14));
     private final ClientControllerObserver clientControllerObserver;
     private LinkedList<ClickableText> clickableTexts = new LinkedList<>();
-    private ClickableText currentButton;
-    private final SearchBar searchBar = new SearchBar(new Dimension(750, 45));
+    private final SearchBar searchBar = new SearchBar(new Dimension(700, 45));
     private boolean haveSearched = false;
     public ViewLiveSetSubHeader(ClientControllerObserver clientControllerObserver) {
         this.clientControllerObserver = clientControllerObserver;

@@ -1,13 +1,15 @@
 package shared.referenceClasses;
 
+import java.sql.Date;
+
 public class LoyaltyCard {
 
     private String loyaltyCardID;
-    private String userID;
+    private Date dateReceived;
 
-    public LoyaltyCard(String loyaltyCardID, String userID) {
+    public LoyaltyCard(String loyaltyCardID, Date dateReceived) {
         this.loyaltyCardID = loyaltyCardID;
-        this.userID = userID;
+        this.dateReceived = dateReceived;
     }
 
     public String getLoyaltyCardID() {
@@ -18,11 +20,11 @@ public class LoyaltyCard {
         this.loyaltyCardID = loyaltyCardID;
     }
 
-    public String getUserID() {
-        return userID;
+    public Date getDateReceived() {
+        return dateReceived;
     }
 
-    public void setUserID(String userID) {
-        this.userID = userID;
+    public void setDateReceived(Date dateReceived) {
+        this.dateReceived = dateReceived;
     }
 }
