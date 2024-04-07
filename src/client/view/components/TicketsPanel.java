@@ -7,11 +7,13 @@ import shared.referenceClasses.User;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
 import shared.utilityClasses.UtilityMethods;
+import shared.viewComponents.Button;
 import shared.viewComponents.Picture;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.util.LinkedList;
 
 public class TicketsPanel extends JPanel {
@@ -54,7 +56,7 @@ public class TicketsPanel extends JPanel {
     private static class PurchasedCard extends JPanel {
 
         public PurchasedCard(Purchased purchased) {
-            boolean isCanceled = !purchased.getLiveSetStatus().equals("Open");
+            boolean notOpen = !purchased.getLiveSetStatus().equals("Open");
 
             setLayout(new FlowLayout(FlowLayout.LEFT));
             setBorder(new EmptyBorder(0, 30, 0, 0));
@@ -71,7 +73,7 @@ public class TicketsPanel extends JPanel {
             JLabel purchasedDate = new JLabel("Purchased Date: " + UtilityMethods.formatDate(purchased.getDate()) + " " + UtilityMethods.formatTime(purchased.getTime()));
             purchasedDate.setHorizontalAlignment(BoxLayout.LINE_AXIS);
             purchasedDate.setFont(FontFactory.newPoppinsDefault(15));
-             JLabel totalPrice = new JLabel("Total: " + (user.isHaveEarnedLoyalty() ? UtilityMethods.computeDiscount(purchased.getLiveSetPrice()) : purchased.getLiveSetPrice()));
+             JLabel totalPrice = new JLabel("Total: " + (user.getLoyaltyCard().isPresent() ? UtilityMethods.computeDiscount(purchased.getLiveSetPrice()) : purchased.getLiveSetPrice()));
             totalPrice.setFont(FontFactory.newPoppinsDefault(15));
              totalPrice.setHorizontalAlignment(BoxLayout.LINE_AXIS);
             purchaseInformationPanel.add(name);
@@ -85,17 +87,28 @@ public class TicketsPanel extends JPanel {
             JLabel ticketNumber = new JLabel("Ticket Number: " + purchased.getTicketId());
             ticketNumber.setFont(FontFactory.newPoppinsBold(15));
             ticketNumber.setHorizontalAlignment(BoxLayout.LINE_AXIS);
-            JLabel canceled = new JLabel("Live Set Cancelled".toUpperCase());
+            JLabel canceled = new JLabel(("Live Set " + purchased.getLiveSetStatus()).toUpperCase());
             canceled.setFont(FontFactory.newPoppinsBold(18));
             canceled.setForeground(ColorFactory.red());
             canceled.setHorizontalAlignment(BoxLayout.LINE_AXIS);
             JLabel status = new JLabel(purchased.getTicketStatus() == null ? "NOT USED" : "USED BY: " + purchased.getUserName());
             status.setHorizontalAlignment(BoxLayout.LINE_AXIS);
             status.setFont(FontFactory.newPoppinsBold(15));
-            if(isCanceled) ticketInformationPanel.add(canceled);
-            ticketInformationPanel.add(status);
-            ticketInformationPanel.add(ticketNumber);
 
+            if(notOpen) ticketInformationPanel.add(canceled);
+            ticketInformationPanel.add(status);
+           ticketInformationPanel.add(ticketNumber);
+
+
+
+            Button copyID = new Button("Copy Ticket Number", new Dimension(100, 50), FontFactory.newPoppinsDefault(13));
+            if(!notOpen)ticketInformationPanel.add(copyID);
+
+            copyID.addActionListener(e -> {
+                StringSelection selection = new StringSelection(purchased.getTicketId());
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
+                JOptionPane.showMessageDialog(null, "Copied to clipboard");
+            });
 
             JPanel rightSide = new JPanel(new BorderLayout());
             rightSide.setBorder(new EmptyBorder(25, 0, 0 ,0));

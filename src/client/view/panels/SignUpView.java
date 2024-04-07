@@ -14,6 +14,7 @@ import shared.viewComponents.Picture;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Optional;
 
 public class SignUpView extends JPanel {
 
@@ -86,7 +87,7 @@ public class SignUpView extends JPanel {
             }
 
 
-            User newUser = new User(UtilityMethods.generateRandomID(), fName, lName, uName, e, p, 0, "Active", false, "Client");
+            User newUser = new User(UtilityMethods.generateRandomID(), fName, lName, uName, e, p, 0, "Active", Optional.empty(), "Client");
             clientControllerObserver.signUp(newUser);
         });
     }

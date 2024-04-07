@@ -27,7 +27,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
 
     private Loading loading;
-    private User loggedInAccount = new User("asc", "asc", "asc", "acs", "asc", "cas", 1, "asc", true, "asc");
+    private User loggedInAccount = new User("asc", "asc", "asc", "acs", "asc", "cas", 1, "asc", Optional.empty(), "asc");
 
     private  AccessGigDialog accessGigDialog;
 
@@ -209,6 +209,8 @@ public class ClientController implements ClientControllerObserver, LoginControll
             } catch (IOException | URISyntaxException e) {
                 JOptionPane.showMessageDialog(clientMainFrame, "The link on this live set is broken");
             }
+
+
             return;
         }
 
@@ -224,6 +226,10 @@ public class ClientController implements ClientControllerObserver, LoginControll
                Desktop.getDesktop().browse(new URI(liveSet.getStreamLinkURL()));
            } catch (IOException | URISyntaxException e) {
               JOptionPane.showMessageDialog(clientMainFrame, "The link on this live set is broken");
+           }
+
+           if(!response.getPayload().equals("Success")) {
+               JOptionPane.showMessageDialog(clientMainFrame, response.getPayload());
            }
        }else {
            JOptionPane.showMessageDialog(clientMainFrame, response.getPayload());
@@ -255,6 +261,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
     @Override
     public LinkedList<LiveSet> getLiveSet() {
+        Database.updateCompletedLiveSets();
         return Database.getLiveSets().getPayload();
     }
 

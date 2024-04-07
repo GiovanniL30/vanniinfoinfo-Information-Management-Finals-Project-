@@ -1,5 +1,7 @@
 package shared.referenceClasses;
 
+import java.util.Optional;
+
 public class User {
 
     private String userID;
@@ -10,10 +12,10 @@ public class User {
     private String password;
     private int watchedConsecutiveShows;
     private String userStatus;
-    private boolean haveEarnedLoyalty;
+    private Optional<LoyaltyCard> loyaltyCard;
     private String userType;
 
-    public User(String userID, String firstName, String lastName, String userName, String email, String password, int watchedConsecutiveShows, String userStatus, boolean haveEarnedLoyalty, String userType) {
+    public User(String userID, String firstName, String lastName, String userName, String email, String password, int watchedConsecutiveShows, String userStatus, Optional<LoyaltyCard> loyaltyCard, String userType) {
         this.userID = userID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -22,7 +24,7 @@ public class User {
         this.password = password;
         this.watchedConsecutiveShows = watchedConsecutiveShows;
         this.userStatus = userStatus;
-        this.haveEarnedLoyalty = haveEarnedLoyalty;
+        this.loyaltyCard = loyaltyCard;
         this.userType = userType;
     }
 
@@ -90,13 +92,6 @@ public class User {
         this.userStatus = userStatus;
     }
 
-    public boolean isHaveEarnedLoyalty() {
-        return haveEarnedLoyalty;
-    }
-
-    public void setHaveEarnedLoyalty(boolean haveEarnedLoyalty) {
-        this.haveEarnedLoyalty = haveEarnedLoyalty;
-    }
 
     public String getUserType() {
         return userType;
@@ -106,19 +101,8 @@ public class User {
         this.userType = userType;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "userID='" + userID + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", userName='" + userName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", watchedConsecutiveShows=" + watchedConsecutiveShows +
-                ", userStatus='" + userStatus + '\'' +
-                ", haveEarnedLoyalty=" + haveEarnedLoyalty +
-                ", userType='" + userType + '\'' +
-                '}';
+
+    public Optional<LoyaltyCard> getLoyaltyCard() {
+        return loyaltyCard;
     }
 }
