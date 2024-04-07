@@ -3,13 +3,11 @@ package shared.model;
 import shared.referenceClasses.*;
 import shared.utilityClasses.UtilityMethods;
 
-import javax.swing.text.html.Option;
 import java.io.*;
 import java.sql.*;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class Database {
 
@@ -383,10 +381,138 @@ public class Database {
        }
 
        if(updateTicketUser(ticketId, userId) && addLastWatched(userId, liveSetBeingAccessedID)) {
+
+           int userWatch = getWatchesCount(userId);
+           updateUserConsecutiveWatchesCount(userId, userWatch);
+
+           if(userWatch >= 30){
+                addLoyaltyCard(userId);
+               return new Response<>("You have earned a loyalty card", true);
+           }
+
            return new Response<>("Success", true);
        }else {
-           return new Response<>("Having error accessing the liveset", false);
+           return new Response<>("Having error accessing the live set", false);
        }
+    }
+
+    private static LoyaltyCard newLoyaltyCard() {
+
+        String query = "INSERT INTO loyaltycard (loyaltyCardID, receiveDate) VALUES (?, ?);";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            String loyaltyCardID = UtilityMethods.generateRandomID();
+            Date dateNow =  new Date(Calendar.getInstance().getTime().getTime());
+            preparedStatement.setString(1, loyaltyCardID);
+            preparedStatement.setDate(2,dateNow);
+
+            if(preparedStatement.executeUpdate() > 0) {
+                return new LoyaltyCard(loyaltyCardID, dateNow);
+            }
+        } catch (SQLException e) {
+            return null;
+        }
+
+        return null;
+    }
+
+    private static void addLoyaltyCard(String userId) {
+
+        LoyaltyCard newLoyaltyCard = newLoyaltyCard();
+        if(newLoyaltyCard == null) return;
+
+        String query = "UPDATE user SET loyaltyCardID = ? WHERE (userID = ?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, newLoyaltyCard.getLoyaltyCardID());
+            preparedStatement.setString(2, userId);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void updateUserConsecutiveWatchesCount(String userId, int count) {
+        String query = "UPDATE user SET watchedConsecShows = ? WHERE (userID = ?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, count);
+            preparedStatement.setString(2, userId);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static int getWatchesCount(String userId) {
+
+        ensureConnection();
+
+        Date dateNow = new Date(Calendar.getInstance().getTime().getTime());
+        LinkedList<Date> allLiveSetDates = getAllLiveSetDate();
+        LinkedList<Date> userWatchDates = userWatchDates(userId);
+
+        int consecutiveWatches = 0;
+        for(int i = 0; i < allLiveSetDates.size(); i++) {
+
+            Date currentDate = allLiveSetDates.get(i);
+
+            if(currentDate.toLocalDate().isAfter(dateNow.toLocalDate())) break;
+            else {
+
+                if(currentDate.toLocalDate().isEqual(userWatchDates.get(i).toLocalDate())) {
+                    consecutiveWatches++;
+                }else {
+                    consecutiveWatches = 0;
+                    break;
+                }
+
+            }
+
+
+        }
+
+        return consecutiveWatches;
+    }
+
+    private static LinkedList<Date> userWatchDates(String userID) {
+
+        LinkedList<Date> dates = new LinkedList<>();
+        String query = "SELECT distinct(date) from lastwatched where userID = ? order by 1;";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, userID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()) {
+                dates.add(resultSet.getDate(1));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return dates;
+    }
+
+    private static LinkedList<Date> getAllLiveSetDate(){
+
+        LinkedList<Date> dates = new LinkedList<>();
+        String query = "SELECT distinct(date) from liveset order by 1";
+        try {
+            Statement preparedStatement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet resultSet = preparedStatement.executeQuery(query);
+
+            while(resultSet.next()) {
+                dates.add(resultSet.getDate(1));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return dates;
     }
 
 
@@ -469,7 +595,7 @@ public class Database {
                 " INNER JOIN liveset ON liveset.liveSetID = ticket.liveSetID" +
                 " INNER JOIN performer ON liveset.performerID = performer.performerID" +
                 " WHERE user.userID = ?" +
-                " ORDER BY 1";
+                " ORDER BY 1 desc";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);

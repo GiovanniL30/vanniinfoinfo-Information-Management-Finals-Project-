@@ -209,6 +209,8 @@ public class ClientController implements ClientControllerObserver, LoginControll
             } catch (IOException | URISyntaxException e) {
                 JOptionPane.showMessageDialog(clientMainFrame, "The link on this live set is broken");
             }
+
+
             return;
         }
 
@@ -224,6 +226,10 @@ public class ClientController implements ClientControllerObserver, LoginControll
                Desktop.getDesktop().browse(new URI(liveSet.getStreamLinkURL()));
            } catch (IOException | URISyntaxException e) {
               JOptionPane.showMessageDialog(clientMainFrame, "The link on this live set is broken");
+           }
+
+           if(!response.getPayload().equals("Success")) {
+               JOptionPane.showMessageDialog(clientMainFrame, response.getPayload());
            }
        }else {
            JOptionPane.showMessageDialog(clientMainFrame, response.getPayload());

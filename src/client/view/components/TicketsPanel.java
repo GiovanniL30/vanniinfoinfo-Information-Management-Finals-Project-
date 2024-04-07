@@ -56,7 +56,7 @@ public class TicketsPanel extends JPanel {
     private static class PurchasedCard extends JPanel {
 
         public PurchasedCard(Purchased purchased) {
-            boolean isCanceled = !purchased.getLiveSetStatus().equals("Open");
+            boolean notOpen = !purchased.getLiveSetStatus().equals("Open");
 
             setLayout(new FlowLayout(FlowLayout.LEFT));
             setBorder(new EmptyBorder(0, 30, 0, 0));
@@ -87,21 +87,22 @@ public class TicketsPanel extends JPanel {
             JLabel ticketNumber = new JLabel("Ticket Number: " + purchased.getTicketId());
             ticketNumber.setFont(FontFactory.newPoppinsBold(15));
             ticketNumber.setHorizontalAlignment(BoxLayout.LINE_AXIS);
-            JLabel canceled = new JLabel("Live Set Cancelled".toUpperCase());
+            JLabel canceled = new JLabel(("Live Set " + purchased.getLiveSetStatus()).toUpperCase());
             canceled.setFont(FontFactory.newPoppinsBold(18));
             canceled.setForeground(ColorFactory.red());
             canceled.setHorizontalAlignment(BoxLayout.LINE_AXIS);
             JLabel status = new JLabel(purchased.getTicketStatus() == null ? "NOT USED" : "USED BY: " + purchased.getUserName());
             status.setHorizontalAlignment(BoxLayout.LINE_AXIS);
             status.setFont(FontFactory.newPoppinsBold(15));
-            if(isCanceled) ticketInformationPanel.add(canceled);
+
+            if(notOpen) ticketInformationPanel.add(canceled);
             ticketInformationPanel.add(status);
-            ticketInformationPanel.add(ticketNumber);
+           ticketInformationPanel.add(ticketNumber);
 
 
 
             Button copyID = new Button("Copy Ticket Number", new Dimension(100, 50), FontFactory.newPoppinsDefault(13));
-            ticketInformationPanel.add(copyID);
+            if(!notOpen)ticketInformationPanel.add(copyID);
 
             copyID.addActionListener(e -> {
                 StringSelection selection = new StringSelection(purchased.getTicketId());
