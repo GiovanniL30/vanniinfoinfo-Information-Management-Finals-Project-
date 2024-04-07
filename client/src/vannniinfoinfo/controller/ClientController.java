@@ -293,6 +293,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
     public void logOut() {
         loggedInAccount = null;
         changeFrame(ClientViews.LOGIN);
+        clientMainFrame.getHeader().setUserName("");
         JOptionPane.showMessageDialog(clientMainFrame, "Logged Out");
     }
 

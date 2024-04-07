@@ -81,6 +81,8 @@ public class TicketsPanel extends JPanel {
             purchaseInformationPanel.add(totalPrice);
 
 
+
+
             JPanel ticketInformationPanel = new JPanel();
             ticketInformationPanel.setLayout(new BoxLayout(ticketInformationPanel, BoxLayout.Y_AXIS));
             ticketInformationPanel.setSize(new Dimension(200, 100));
@@ -95,9 +97,19 @@ public class TicketsPanel extends JPanel {
             status.setHorizontalAlignment(BoxLayout.LINE_AXIS);
             status.setFont(FontFactory.newPoppinsBold(15));
 
+            JLabel refunded = new JLabel("Payment was refunded");
+            refunded.setHorizontalAlignment(BoxLayout.LINE_AXIS);
+
             if(notOpen) ticketInformationPanel.add(canceled);
-            ticketInformationPanel.add(status);
-           ticketInformationPanel.add(ticketNumber);
+
+            if(purchased.getTicketStatus() != null && purchased.getTicketStatus().equals("Refunded")) {
+                ticketInformationPanel.add(refunded);
+                ticketInformationPanel.add(ticketNumber);
+            }else {
+                ticketInformationPanel.add(status);
+            }
+
+
 
 
 
