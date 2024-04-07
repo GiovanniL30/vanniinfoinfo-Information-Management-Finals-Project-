@@ -210,6 +210,33 @@ LOCK TABLES `purchased` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `refund`
+--
+
+DROP TABLE IF EXISTS `refund`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `refund` (
+  `refundID` varchar(20) NOT NULL,
+  `amountRefunded` int DEFAULT NULL,
+  `userID` varchar(20) DEFAULT NULL,
+  `date` date DEFAULT NULL,
+  PRIMARY KEY (`refundID`),
+  KEY `userID_idx` (`userID`),
+  CONSTRAINT `userID` FOREIGN KEY (`userID`) REFERENCES `user` (`userID`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `refund`
+--
+
+LOCK TABLES `refund` WRITE;
+/*!40000 ALTER TABLE `refund` DISABLE KEYS */;
+/*!40000 ALTER TABLE `refund` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `ticket`
 --
 
@@ -281,4 +308,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-07 20:05:27
+-- Dump completed on 2024-04-07 22:07:12
