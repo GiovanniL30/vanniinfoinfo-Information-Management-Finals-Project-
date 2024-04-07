@@ -178,10 +178,13 @@ public class ClientController implements ClientControllerObserver, LoginControll
             return;
         }
 
-        if(Database.addPurchase(liveSetID, loggedInAccount.getUserID())) {
-            JOptionPane.showMessageDialog(clientMainFrame, "You have successfully bought a ticket for this liveset");
+        Response<String> purchaseResponse = Database.addPurchase(liveSetID, loggedInAccount.getUserID());
+
+        if(purchaseResponse.isSuccess()) {
             changeFrame(ClientViews.HOME);
         }
+
+        JOptionPane.showMessageDialog(clientMainFrame, purchaseResponse.getPayload());
 
     }
 

@@ -17,7 +17,7 @@ public class Database {
 
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/vanniinfoinfo", "root", "password");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost/asc", "root", "password");
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
                 System.exit(0);
@@ -236,13 +236,64 @@ public class Database {
             preparedStatement.setString(5, performer.getPerformerStatus());
             preparedStatement.setString(6, performer.getPerformerID());
             preparedStatement.execute();
-            return true;
 
+            cancelPerformersLiveSets(performer.getPerformerID());
+            return true;
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
 
         return false;
+    }
+
+    private static void cancelPerformersLiveSets(String performerId) {
+
+        LinkedList<String> performerLiveSets = getLiveSetIDofPerformer(performerId);
+
+        if(performerLiveSets.isEmpty()){
+            return;
+        }
+
+        ensureConnection();
+
+        String query = "UPDATE liveset SET `status` = 'Canceled' WHERE (liveSetID = ?)";
+
+        try {
+            for(String s : performerLiveSets) {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, s);
+                preparedStatement.executeUpdate();
+                preparedStatement.close();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static LinkedList<String> getLiveSetIDofPerformer(String performerId){
+        ensureConnection();
+
+        LinkedList<String> ids = new LinkedList<>();
+
+        String query = "SELECT liveset.livesetID " +
+                "FROM liveset " +
+                "INNER JOIN performer ON liveset.performerID = performer.performerID " +
+                "WHERE liveset.performerID = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, performerId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()) {
+                ids.add(resultSet.getString(1));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return ids;
     }
 
 
@@ -303,10 +354,15 @@ public class Database {
         return true;
     }
 
-    public static boolean addPurchase(String liveSetId, String buyerId) {
+    public static Response<String> addPurchase(String liveSetId, String buyerId) {
+
+        if(!isLiveSetOpen(liveSetId)){
+            return new Response<>("Live set was already canceled due to performers inactive", false);
+        }
 
         String query = "INSERT INTO purchased (`purchasedID`, `date`, `time`, `buyerID`, `ticketID`) VALUES (?, ?,  ?, ?,  ?)";
-        String newTicket = createNewTicket(liveSetId).getPayload();
+        Response<String> newTicket = createNewTicket(liveSetId);
+
         String purchaseID = UtilityMethods.generateRandomID();
 
         try {
@@ -315,14 +371,14 @@ public class Database {
             statement.setDate(2, UtilityMethods.getCurrentDate());
             statement.setTime(3, UtilityMethods.getCurrentTime());
             statement.setString(4, buyerId);
-            statement.setString(5, newTicket);
+            statement.setString(5, newTicket.getPayload());
             statement.execute();
-            return true;
+            return new Response<>("You have successfully bought a ticket for this liveset", true);
         } catch (SQLException e) {
             System.err.println("Having error executing query " + query);
         }
 
-        return false;
+        return new Response<>("Purchase failed", false);
     }
 
 
@@ -376,7 +432,7 @@ public class Database {
 
         LinkedList<LiveSet> liveSets = new LinkedList<>();
 
-        String query = "SELECT * from liveset WHERE status = 'Open' ORDER BY 3, 4 desc";
+        String query = "SELECT * from liveset ORDER BY 3, 4 desc";
 
         try {
             Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -974,6 +1030,7 @@ public class Database {
     }
 
     private static Response<String> createNewTicket(String liveSetID) {
+
         ensureConnection();
         String ticketId = UtilityMethods.generateRandomID();
         String query = "INSERT INTO ticket (`ticketID`, `liveSetID`) VALUES (?, ?)";
@@ -988,6 +1045,26 @@ public class Database {
         }
 
         return new Response<>(ticketId, true);
+    }
+
+    private static boolean isLiveSetOpen(String liveSetId) {
+
+        ensureConnection();
+
+        System.out.println(liveSetId);
+        String query = "SELECT count(*) FROM liveset WHERE status = 'Open' AND livesetID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, liveSetId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                return resultSet.getInt(1) == 1;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return false;
     }
 
     private static Response<String> getImage(String liveSetID, Blob blob) {
@@ -1108,5 +1185,7 @@ public class Database {
 
         return false;
     }
+
+
 
 }
