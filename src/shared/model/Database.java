@@ -376,7 +376,7 @@ public class Database {
 
         LinkedList<LiveSet> liveSets = new LinkedList<>();
 
-        String query = "SELECT * from liveset WHERE status = 'Open'";
+        String query = "SELECT * from liveset WHERE status = 'Open' ORDER BY 3, 4 desc";
 
         try {
             Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
