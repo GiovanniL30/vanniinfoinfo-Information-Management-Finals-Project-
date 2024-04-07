@@ -110,9 +110,6 @@ public class TicketsPanel extends JPanel {
             }
 
 
-
-
-
             Button copyID = new Button("Copy Ticket Number", new Dimension(100, 50), FontFactory.newPoppinsDefault(13));
             if(!notOpen)ticketInformationPanel.add(copyID);
 

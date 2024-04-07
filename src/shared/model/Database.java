@@ -160,6 +160,11 @@ public class Database {
 
     public static boolean editLiveSet(LiveSet liveSet) {
         ensureConnection();
+
+        if(liveSet.getStatus().equals("Canceled")) {
+            refund(liveSet.getLiveSetID());
+        }
+
         String query = "UPDATE liveset SET status=?, date=?, time=?, thumbnail=?, streamLinkURL=?, price=? WHERE liveSetID=?";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -177,9 +182,8 @@ public class Database {
                 }
                 preparedStatement.setBinaryStream(4, new ByteArrayInputStream(outputStream.toByteArray()));
             } catch (IOException e) {
-                // In case thumbnail is not updated, handle it here.
                 System.err.println("Error reading file: " + e.getMessage());
-                preparedStatement.setBytes(4, null); // Set thumbnail to null in case of error
+                preparedStatement.setBytes(4, null);
             }
 
             preparedStatement.setString(5, liveSet.getStreamLinkURL());
