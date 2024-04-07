@@ -15,6 +15,9 @@ import shared.viewComponents.Picture;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.sql.Date;
+import java.sql.Time;
+import java.util.Calendar;
 
 public class OpenedLiveSet extends JPanel {
 
@@ -62,15 +65,21 @@ public class OpenedLiveSet extends JPanel {
     private JPanel buttonPanel() {
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
-        buttons.setBorder(new EmptyBorder(0, 0, 0,120));
+        buttons.setBorder(new EmptyBorder(0, 0, 0, 120));
         buttons.setBackground(Color.WHITE);
 
         Button accessGig = new Button("ACCESS GIG", new Dimension(505, 60), FontFactory.newPoppinsBold(14));
         accessGig.setForeground(ColorFactory.red());
         FilledButton purchaseTicket = new FilledButton("PURCHASE TICKET", new Dimension(560, 60), FontFactory.newPoppinsBold(14), ColorFactory.red(), Color.WHITE);
 
+        if(!liveSet.getDate().toLocalDate().isEqual(new Date(Calendar.getInstance().getTime().getTime()).toLocalDate()) || liveSet.getTime().toLocalTime().isAfter(new Time(Calendar.getInstance().getTime().getTime()).toLocalTime())) {
+            accessGig.setText("ACCESS GIG (Stream is not yet available)");
+            accessGig.setEnabled(false);
+        }
+
         buttons.add(accessGig);
         buttons.add(purchaseTicket);
+
 
         accessGig.addActionListener( e -> clientControllerObserver.openAccess(liveSet));
         purchaseTicket.addActionListener( e -> clientControllerObserver.openPaymentView(liveSet, performer));

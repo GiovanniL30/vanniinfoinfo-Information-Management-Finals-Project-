@@ -7,11 +7,13 @@ import shared.referenceClasses.User;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
 import shared.utilityClasses.UtilityMethods;
+import shared.viewComponents.Button;
 import shared.viewComponents.Picture;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.util.LinkedList;
 
 public class TicketsPanel extends JPanel {
@@ -96,6 +98,16 @@ public class TicketsPanel extends JPanel {
             ticketInformationPanel.add(status);
             ticketInformationPanel.add(ticketNumber);
 
+
+
+            Button copyID = new Button("Copy Ticket Number", new Dimension(100, 50), FontFactory.newPoppinsDefault(13));
+            ticketInformationPanel.add(copyID);
+
+            copyID.addActionListener(e -> {
+                StringSelection selection = new StringSelection(purchased.getTicketId());
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
+                JOptionPane.showMessageDialog(null, "Copied to clipboard");
+            });
 
             JPanel rightSide = new JPanel(new BorderLayout());
             rightSide.setBorder(new EmptyBorder(25, 0, 0 ,0));

@@ -255,6 +255,7 @@ public class ClientController implements ClientControllerObserver, LoginControll
 
     @Override
     public LinkedList<LiveSet> getLiveSet() {
+        Database.updateCompletedLiveSets();
         return Database.getLiveSets().getPayload();
     }
 

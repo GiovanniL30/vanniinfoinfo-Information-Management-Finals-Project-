@@ -115,7 +115,7 @@ public class Database {
 
         ensureConnection();
 
-        String query = "SELECT * FROM user WHERE userName = ? AND password = ?";
+        String query = "SELECT * FROM user WHERE userStatus = 'Active' AND userName = ? AND password = ?";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -161,10 +161,42 @@ public class Database {
         return new Response<>(new User("","","","","","",0,"", Optional.empty() ,""), false);
     }
 
+
+
+    public static void updateCompletedLiveSets() {
+
+        ensureConnection();
+        LinkedList<LiveSet> liveSets = getLiveSets().getPayload();
+
+        String query = "UPDATE liveset SET status = 'Finished' WHERE liveSetID = ?";
+
+        for (LiveSet liveSet : liveSets) {
+
+            Date dateNow = new Date(Calendar.getInstance().getTime().getTime());
+
+            if (liveSet.getDate().toLocalDate().isBefore(dateNow.toLocalDate())) {
+
+                try {
+                    PreparedStatement preparedStatement = connection.prepareStatement(query);
+                    preparedStatement.setString(1, liveSet.getLiveSetID());
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+
+        }
+    }
+
+
     public static Response<String> addLiveSet(Performer performer, LiveSet liveSet) {
         ensureConnection();
 
-        if(liveSet.getDate().before(Calendar.getInstance().getTime())) {
+        Date dateNow = new Date(Calendar.getInstance().getTime().getTime());
+
+        if(liveSet.getDate().toLocalDate().isBefore(dateNow.toLocalDate())) {
             return new Response<>("The given date is a past date", false);
         }
 
@@ -211,7 +243,7 @@ public class Database {
 
         String query = "SELECT count(*) FROM liveset " +
                 "INNER JOIN performer ON performer.performerID = liveset.performerID " +
-                "WHERE performer.performerID = ? AND liveset.date = ?";
+                "WHERE liveset.status = 'Open' AND performer.performerID = ? AND liveset.date = ?";
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -430,14 +462,14 @@ public class Database {
 
         LinkedList<Purchased> purchasedLinkedList = new LinkedList<>();
 
-        String query = "SELECT purchased.date, purchased.time, performer.performerName, liveset.price, liveset.thumbnail, ticket.ticketID, ticket.status, liveset.livesetID, concat(user.firstName, user.lastName), liveset.status" +
+        String query = "SELECT purchased.date, purchased.time, performer.performerName, liveset.price, liveset.thumbnail, ticket.ticketID, ticket.status, liveset.livesetID, ticket.userID, liveset.status" +
                 " FROM purchased" +
                 " INNER JOIN user ON purchased.buyerID = user.userID" +
                 " INNER JOIN ticket ON purchased.ticketID = ticket.ticketID" +
                 " INNER JOIN liveset ON liveset.liveSetID = ticket.liveSetID" +
                 " INNER JOIN performer ON liveset.performerID = performer.performerID" +
                 " WHERE user.userID = ?" +
-                " ORDER BY 3";
+                " ORDER BY 1";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -453,7 +485,7 @@ public class Database {
                 String liveSetThumbnail = getImage(resultSet.getString(8), resultSet.getBlob(5)).getPayload();
                 String ticketId = resultSet.getString(6);
                 String ticketStatus = resultSet.getString(7);
-                String userName = resultSet.getString(9);
+                String userName = getUser(resultSet.getString(9));
                 String status = resultSet.getString(10);
 
                 purchasedLinkedList.add(new Purchased(date, time, performerName, liveSetPrice, liveSetThumbnail, ticketId, ticketStatus, userName, status));
@@ -466,13 +498,32 @@ public class Database {
         return new Response<>(purchasedLinkedList, true);
     }
 
+    private static String getUser(String userId) {
+        ensureConnection();
+
+        String query = "SELECT concat(firstName, ' ', lastName) from user WHERE userID = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, userId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                return resultSet.getString(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return "";
+    }
+
     public static Response<LinkedList<LiveSet>> getLiveSets() {
 
         ensureConnection();
 
         LinkedList<LiveSet> liveSets = new LinkedList<>();
 
-        String query = "SELECT * from liveset";
+        String query = "SELECT * from liveset WHERE status = 'Open'";
 
         try {
             Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);

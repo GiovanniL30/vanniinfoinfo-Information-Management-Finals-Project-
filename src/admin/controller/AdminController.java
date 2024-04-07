@@ -15,6 +15,7 @@ import shared.referenceClasses.*;
 import shared.viewComponents.Loading;
 
 import javax.swing.*;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -45,7 +46,7 @@ public class AdminController implements AdminControllerObserver, LoginController
                     }
                     case LIVE_SET -> {
 
-                        LiveSetPanel liveSetPanel = new LiveSetPanel(Database.getLiveSets().getPayload(), Database.getPerformers().getPayload(), AdminController.this);
+                        LiveSetPanel liveSetPanel = new LiveSetPanel(getLiveSet(), Database.getPerformers().getPayload(), AdminController.this);
                         adminMainFrame.setLiveSetPanel(liveSetPanel);
                         adminMainFrame.getContentPane().add(liveSetPanel, 1);
                     }
@@ -65,6 +66,12 @@ public class AdminController implements AdminControllerObserver, LoginController
 
 
     }
+
+    private LinkedList<LiveSet> getLiveSet() {
+        Database.updateCompletedLiveSets();
+        return Database.getLiveSets().getPayload();
+    }
+
 
     @Override
     public void editPerformerFrame(Performer performer) {
