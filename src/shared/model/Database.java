@@ -160,6 +160,11 @@ public class Database {
 
     public static boolean editLiveSet(LiveSet liveSet) {
         ensureConnection();
+
+        if(liveSet.getStatus().equals("Canceled")) {
+            refund(liveSet.getLiveSetID());
+        }
+
         String query = "UPDATE liveset SET status=?, date=?, time=?, thumbnail=?, streamLinkURL=?, price=? WHERE liveSetID=?";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -177,9 +182,8 @@ public class Database {
                 }
                 preparedStatement.setBinaryStream(4, new ByteArrayInputStream(outputStream.toByteArray()));
             } catch (IOException e) {
-                // In case thumbnail is not updated, handle it here.
                 System.err.println("Error reading file: " + e.getMessage());
-                preparedStatement.setBytes(4, null); // Set thumbnail to null in case of error
+                preparedStatement.setBytes(4, null);
             }
 
             preparedStatement.setString(5, liveSet.getStreamLinkURL());
@@ -264,10 +268,90 @@ public class Database {
                 preparedStatement.setString(1, s);
                 preparedStatement.executeUpdate();
                 preparedStatement.close();
+                refund(s);
             }
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Having error executing the query: " + query);
+            System.out.println("Cause: " + e.getMessage());
         }
+    }
+
+    private static void refund(String liveSetID) {
+
+        ensureConnection();
+
+        LinkedList<RefundInformation> refundInformations = getRefundInformations(liveSetID);
+        refundInformations.forEach(r -> updateTicketToRefunded(r.getTicketID()));
+
+        String query = "INSERT INTO refund (refundID, amountRefunded, userID, date) VALUES (?, ?, ?, ?)";
+
+        try {
+
+            for (RefundInformation refundInformation : refundInformations) {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, UtilityMethods.generateRandomID());
+                preparedStatement.setInt(2, refundInformation.getAmount());
+                preparedStatement.setString(3, refundInformation.getBuyerID());
+                preparedStatement.setDate(4, new Date(Calendar.getInstance().getTime().getTime()));
+                preparedStatement.executeUpdate();
+                preparedStatement.close();
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Having error executing the query: " + query);
+            System.out.println("Cause: " + e.getMessage());
+        }
+
+    }
+
+    private static LinkedList<RefundInformation> getRefundInformations(String liveSetID) {
+        ensureConnection();
+
+        LinkedList<RefundInformation> refundInformations = new LinkedList<>();
+
+        String query = "SELECT purchased.buyerID, ticket.ticketID, liveset.price " +
+                "from purchased " +
+                "INNER JOIN ticket ON purchased.ticketID = ticket.ticketID " +
+                "INNER JOIN liveset ON liveset.liveSetID = ticket.liveSetID " +
+                "WHERE ticket.userID is NULL AND liveset.liveSetID = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, liveSetID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()) {
+                refundInformations.add(new RefundInformation(resultSet.getString(1), resultSet.getString(2), resultSet.getInt(3)));
+            }
+
+            preparedStatement.close();
+        } catch (SQLException e) {
+            System.out.println("Having error executing the query: " + query);
+            System.out.println("Cause: " + e.getMessage());
+        }
+
+        return refundInformations;
+    }
+
+
+
+    private static void updateTicketToRefunded(String ticketID) {
+
+        ensureConnection();
+
+        String query = "UPDATE ticket SET status = 'Refunded' WHERE (ticketID = ?)";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, ticketID);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            System.out.println("Having error executing the query: " + query);
+            System.out.println("Cause: " + e.getMessage());
+        }
+
     }
 
     private static LinkedList<String> getLiveSetIDofPerformer(String performerId){
@@ -290,7 +374,8 @@ public class Database {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Having error executing the query: " + query);
+            System.out.println("Cause: " + e.getMessage());
         }
 
         return ids;
@@ -641,6 +726,7 @@ public class Database {
                 String status = resultSet.getString(3);
                 String userId = resultSet.getString(4);
 
+                System.out.println(userId);
                 tickets.add(new Ticket(ticketId, liveSetId, status, userId));
             }
 
@@ -867,7 +953,8 @@ public class Database {
                 return count > 0;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Having error executing the query: " + query);
+            System.out.println("Cause: " + e.getMessage());
         }
         return false;
     }
@@ -970,6 +1057,11 @@ public class Database {
 
         return consecutiveWatches;
     }
+
+
+
+
+
 
     private static LinkedList<Date> userWatchDates(String userID) {
 

@@ -1,6 +1,5 @@
 package shared.viewComponents;
 
-import client.view.utility.ClientViews;
 import shared.controller.LoginController;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
