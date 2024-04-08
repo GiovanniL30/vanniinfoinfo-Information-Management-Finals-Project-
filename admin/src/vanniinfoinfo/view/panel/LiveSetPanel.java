@@ -146,6 +146,7 @@ public class LiveSetPanel extends JPanel {
 
             if(!liveSet.getStatus().equals("Open")) {
                 firstRow.setBackground(ColorFactory.red());
+                editButton.setEnabled(false);
             }
 
             liveSetID.setEnabled(false);
