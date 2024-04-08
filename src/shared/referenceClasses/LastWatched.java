@@ -3,18 +3,18 @@ package shared.referenceClasses;
 public class LastWatched {
 
     private String lastWatchedID;
-    private String userID;
+    private String userName;
     private String liveSetID;
 
     public LastWatched() {
         this.lastWatchedID = "";
-        this.userID = "";
+        this.userName = "";
         this.liveSetID = "";
     }
 
-    public LastWatched(String lastWatchedID, String userID, String liveSetID) {
+    public LastWatched(String lastWatchedID, String userName, String liveSetID) {
         this.lastWatchedID = lastWatchedID;
-        this.userID = userID;
+        this.userName = userName;
         this.liveSetID = liveSetID;
     }
 
@@ -22,8 +22,8 @@ public class LastWatched {
         return lastWatchedID;
     }
 
-    public String getUserID() {
-        return userID;
+    public String getUserName() {
+        return userName;
     }
 
     public String getLiveSetID() {
@@ -34,8 +34,8 @@ public class LastWatched {
         this.lastWatchedID = lastWatchedID;
     }
 
-    public void setUserID(String userID) {
-        this.userID = userID;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public void setLiveSetID(String liveSetID) {

@@ -24,5 +24,6 @@ public interface AdminControllerObserver {
     LinkedList<Performer> getPerformers();
     void searchPerformers(String searchTerm);
     void searchLiveSetsAdmin(String searchTerm);
+    void showViewers(String livesetID);
 
 }

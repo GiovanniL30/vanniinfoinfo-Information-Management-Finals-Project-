@@ -220,6 +220,28 @@ public class Database {
         }
     }
 
+    public static LinkedList<User> getViewers(String liveSetID) {
+        ensureConnection();
+
+        LinkedList<User> viewers = new LinkedList<>();
+        String query = "SELECT user.* FROM user INNER JOIN lastwatched ON lastwatched.userID = user.userID WHERE lastwatched.lastWatchedID = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, liveSetID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()) {
+                Optional<User> user = toUser(resultSet).getPayload();
+                user.ifPresent(viewers::add);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return viewers;
+    }
+
     public static boolean updatePerformer(Performer performer) {
 
         ensureConnection();

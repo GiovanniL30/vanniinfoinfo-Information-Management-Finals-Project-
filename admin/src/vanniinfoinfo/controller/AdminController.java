@@ -235,4 +235,19 @@ public class AdminController implements AdminControllerObserver, LoginController
         adminMainFrame.getLiveSetPanel().searchLiveSetsAdmin(searchTerm);
     }
 
+    @Override
+    public void showViewers(String livesetID) {
+        LinkedList<User> users = Database.getViewers(livesetID);
+
+        StringBuilder messageBuilder = new StringBuilder();
+        messageBuilder.append("Total Viewers: ").append(users.size()).append("\n");
+
+        int i = 1;
+        for (User user : users) {
+            messageBuilder.append(i++).append(". ").append(user.getFirstName()).append(" ").append(user.getLastName()).append(" (").append(user.getUserName()).append(")").append("\n");
+        }
+
+        JOptionPane.showMessageDialog(adminMainFrame, messageBuilder.toString());
+    }
+
 }

@@ -143,6 +143,7 @@ public class LiveSetPanel extends JPanel {
             Button price = new Button(liveSet.getPrice()+"", new Dimension(95, 50), FontFactory.newPoppinsDefault(14));
             Button editButton = new Button("EDIT", new Dimension(95, 50), FontFactory.newPoppinsDefault(14));
             Button view = new Button("Purchases", new Dimension(150, 50), FontFactory.newPoppinsDefault(14));
+            Button viewers = new Button("Viewers", new Dimension(150, 50), FontFactory.newPoppinsDefault(14));
 
             if(!liveSet.getStatus().equals("Open")) {
                 firstRow.setBackground(ColorFactory.red());
@@ -165,6 +166,7 @@ public class LiveSetPanel extends JPanel {
             JPanel lastRow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             lastRow.setBackground(Color.WHITE);
             lastRow.add(view);
+            lastRow.add(viewers);
 
             if(liveSet.getStatus().equals("Open")) {
                 lastRow.add(editButton);
@@ -177,6 +179,7 @@ public class LiveSetPanel extends JPanel {
 
             view.addActionListener( e -> adminControllerObserver.showLiveSetBuyer(liveSet));
             editButton.addActionListener(e -> adminControllerObserver.openEditLiveSet(liveSet, performers));
+            viewers.addActionListener( e -> adminControllerObserver.showViewers(liveSet.getLiveSetID()));
         }
 
     }
