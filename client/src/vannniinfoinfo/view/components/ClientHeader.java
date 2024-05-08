@@ -1,5 +1,6 @@
 package vannniinfoinfo.view.components;
 
+import shared.viewComponents.IconButton;
 import vannniinfoinfo.view.ClientMainFrame;
 import shared.utilityClasses.ColorFactory;
 import shared.utilityClasses.FontFactory;
@@ -11,12 +12,13 @@ import java.awt.*;
 public class ClientHeader extends JPanel {
 
     private JLabel userName;
+    private IconButton logo;
     public ClientHeader(String name) {
         setPreferredSize(new Dimension(ClientMainFrame.WIDTH, 50));
         setLayout(new BorderLayout());
         setBackground(Color.white);
 
-        Picture logo = new Picture("resources/images/GigPlatform.png", 100, 30);
+        logo = new IconButton("resources/images/GigPlatform.png", 100, 30);
         logo.setBackground(Color.WHITE);
 
         userName = new JLabel(name.toUpperCase());
@@ -30,5 +32,9 @@ public class ClientHeader extends JPanel {
         userName.setText(name);
         revalidate();
         repaint();
+    }
+
+    public IconButton getLogo() {
+        return logo;
     }
 }

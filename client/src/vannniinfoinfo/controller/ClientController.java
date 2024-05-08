@@ -46,11 +46,13 @@ public class ClientController implements ClientControllerObserver, LoginControll
             protected Object doInBackground() {
                 switch (clientViews) {
                     case SIGN_UP ->  {
+                        clientMainFrame.setCurrentView(ClientViews.SIGN_UP);
                         clientMainFrame.getContentPane().remove(1);
                         clientMainFrame.setSignUpView(new SignUpView(ClientController.this));
                         clientMainFrame.getContentPane().add(clientMainFrame.getSignUpView(), 1);
                     }
                     case LOGIN -> {
+                        clientMainFrame.setCurrentView(ClientViews.LOGIN);
                         clientMainFrame.getContentPane().remove(1);
                         LoginView loginView = new LoginView(ClientController.this, false);
                         clientMainFrame.setLoginView(loginView);
@@ -58,12 +60,14 @@ public class ClientController implements ClientControllerObserver, LoginControll
                         clientMainFrame.getContentPane().add(clientMainFrame.getLoginView(), 1);
                     }
                     case HOME, LIVE_SETS -> {
+                        clientMainFrame.setCurrentView(ClientViews.LIVE_SETS);
                         clientMainFrame.getContentPane().remove(1);
                         clientMainFrame.setHomeView(new HomeView(ClientController.this));
                         clientMainFrame.getContentPane().add(clientMainFrame.getHomeView(), 1);
                     }
                     case MY_TICKETS -> {
 
+                        clientMainFrame.setCurrentView(ClientViews.MY_TICKETS);
                         clientMainFrame.getHomeView().remove(1);
 
                         new SwingWorker<LinkedList<Purchased>, Void>() {

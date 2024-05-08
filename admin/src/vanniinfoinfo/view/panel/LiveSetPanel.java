@@ -146,7 +146,6 @@ public class LiveSetPanel extends JPanel {
 
             if(!liveSet.getStatus().equals("Open")) {
                 firstRow.setBackground(ColorFactory.red());
-                editButton.setEnabled(false);
             }
 
             liveSetID.setEnabled(false);
@@ -166,7 +165,11 @@ public class LiveSetPanel extends JPanel {
             JPanel lastRow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             lastRow.setBackground(Color.WHITE);
             lastRow.add(view);
-            lastRow.add(editButton);
+
+            if(liveSet.getStatus().equals("Open")) {
+                lastRow.add(editButton);
+            }
+
 
 
             add(firstRow);

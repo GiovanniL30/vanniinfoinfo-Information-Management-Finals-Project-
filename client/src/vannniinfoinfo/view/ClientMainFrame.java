@@ -23,19 +23,21 @@ public class ClientMainFrame extends JFrame {
     private HomeView homeView;
     private LoginView loginView;
     private SignUpView signUpView;
+    private ClientViews currentView;
 
     public ClientMainFrame(ClientController clientControllerObserver) {
         this.clientControllerObserver = clientControllerObserver;
         initializeFrame();
         getContentPane().add(clientHeader, BorderLayout.NORTH);
+        currentView = ClientViews.LOGIN;
         loginView = new LoginView(clientControllerObserver, false);
         loginView.getSignUpButton().addActionListener(e -> this.clientControllerObserver.changeFrame(ClientViews.SIGN_UP));
         getContentPane().add(loginView, BorderLayout.CENTER);
+
+        clientHeader.getLogo().addActionListener( e -> clientControllerObserver.changeFrame(currentView));
     }
 
     private void initializeFrame() {
-
-
         setSize(new Dimension(WIDTH, HEIGHT));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -78,5 +80,13 @@ public class ClientMainFrame extends JFrame {
 
     public ClientHeader getHeader() {
         return clientHeader;
+    }
+
+    public ClientViews getCurrentView() {
+        return currentView;
+    }
+
+    public void setCurrentView(ClientViews currentView) {
+        this.currentView = currentView;
     }
 }
